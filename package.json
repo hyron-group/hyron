@@ -1,0 +1,68 @@
+{
+  "_from": "hyron",
+  "_id": "hyron@1.2.6",
+  "_inBundle": false,
+  "_integrity": "sha512-1yBEpkueYoAy8esGPFUrwJs70eJVQS70d9uHymOddN+TXTobjrV9Yg4g/fiVRql8EUrNR8vN8T1fFwn9NwlaMQ==",
+  "_location": "/hyron",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "hyron",
+    "name": "hyron",
+    "escapedName": "hyron",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/hyron/-/hyron-1.2.6.tgz",
+  "_shasum": "ee1f2545f2bd72156ca78f016f15d9ce1513c0c8",
+  "_spec": "hyron",
+  "_where": "D:\\Workspace\\Program\\Nodejs\\hyron.v2",
+  "author": {
+    "name": "thangphung"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
+    "date-format": "^1.2.0",
+    "express": "^4.16.3",
+    "express-fileupload": "^0.4.0",
+    "http2": "^3.3.7",
+    "jsonwebtoken": "^8.3.0",
+    "multer": "^1.3.1",
+    "nodemon": "^1.17.5",
+    "request": "^2.87.0",
+    "static-memory": "^1.0.7",
+    "writelog": "^1.1.3"
+  },
+  "deprecated": false,
+  "description": "Create your server app in OOP model, easy to management your code, and more",
+  "keywords": [
+    "framework",
+    "management",
+    "clear",
+    "router",
+    "api",
+    "middleware",
+    "request",
+    "package",
+    "http",
+    "module",
+    "oop",
+    "method"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "hyron",
+  "scripts": {
+    "start": "node ./test/app.js",
+    "test": "nodemon ./test/app.js"
+  },
+  "version": "1.2.6"
+}
