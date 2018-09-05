@@ -3,12 +3,11 @@ const funcBegin = /^\s*.*[(]/;
 const bodyReg = /[)]\s*[{][^]*[}]\s*$/;
 const cmtReg = /([/]{2}.*)|(\/\*[^]*\*\/)/g;
 const defaultValReg = /\s*=\s*(([{]([^=]*)[}])|([\u005b]\2[\u005d])|(["'].*['"])|(true|false)|\s\d*)/g;
-const { stringToObject } = require("../paramParser");
 
 
 module.exports = function parseArgument(rawFunc) {
   var params = [];
-  var rawParam = rawFunc.toString();
+  var rawParam = rawFunc;
 
 
   //skip function begin
@@ -18,14 +17,14 @@ module.exports = function parseArgument(rawFunc) {
   //skip comment
   rawParam = rawParam.replace(cmtReg, "");
   //skip default value
-  
 
   var listArgName = rawParam.replace(defaultValReg, "").split(",");
   var i = 0;
   var iterableControl = "";
   for (var i = 0; i < listArgName.length; i++) {
     var argName = listArgName[i].trim();
-    iterableControl += `params.push({name:'${argName}',default:${argName}});\n`;
+    var defaultVal = null;
+    iterableControl += `params.push('${argName}');\n`;
   }
 
   var argEval = `((${rawParam})=>{

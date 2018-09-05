@@ -1,96 +1,95 @@
-const app = require("express")();
+const http = require("http");
 const RouterFactory = require("./routerFactory");
-const writeLog = require("writelog");
-const { addRouter } = require("./middleware");
-const TokenManager = require("../lib/token");
+const { generalSecretKey } = require("../lib/token");
+const { addMiddleware } = require("./middleware");
+const configLoaded = require("../lib/configReader");
+
+var defaultConfig = {
+    prefix: "",
+    secret: generalSecretKey()
+};
 
 module.exports = class {
-  constructor(
-    port = 80,
-    host = "localhost",
-    config = {
-      prefix: "",
-      secret: "",
-      jwt: ""
-    }
-  ) {
-    this.port = port;
-    this.host = host;
-    this.prefix = config.prefix != "" ? "/" + config.prefix : "";
-    this.secret = TokenManager.generalSecretKey();
-    this.config = config;
-    
-    app.set("x-powered-by",'hyron');
-  }
-
-  setting(
-    props = {
-      sensitive: null,
-      env: "development",
-      etag: "weak",
-      viewsDir: "./",
-      viewCache: true,
-      viewEngine: null
-    }
-  ) {
-    if(props.sensitive!=null){
-      app.set("case sensitive routing",props.sensitive);
-      delete props.sensitive;
-    }
-    if(props.viewsDir!=null){
-      app.set("views", props.viewsDir);
-      delete props.viewsDir;
-    }
-    if(props.viewCache!=null){
-      app.set("view cache", props.viewCache);
-      delete props.viewCache;
-    }
-    if(props.viewEngine!=null){
-      app.set("view engine",props.viewEngine);
-      delete props.viewEngine;
+    constructor(port = 3000, host = "localhost", config = defaultConfig) {
+        this.port = port;
+        this.host = host;
+        this.loadSetting(config);
+        this.routerFactory = new RouterFactory(config);
     }
 
-    Object.keys(props).forEach(key=>{
-      val=props[key];
-      app.set(key, val);
-    })
+    loadSetting(config = { inDevMode: true }) {
+        this.config = Object.assign(defaultConfig, config);
+        config = configLoaded();
+        var fontwareList = config.fontware;
+        Object.keys(fontwareList).forEach(key => {
+            fontwareList[key] = {
+                global: true,
+                name: key,
+                handle: require(fontwareList[key])
+            };
+        });
+        this.enableFontware(config.fontware);
 
-  }
+        var backwareList = config.backware;
+        Object.keys(backwareList).forEach(key => {
+            backwareList[key] = {
+                global: true,
+                name: key,
+                handle: require(backwareList[key])
+            };
+        });
+        this.enableBackware(config.backware);
+    }
 
-  enableFontWare(moduleList) {
-    addRouter(moduleList, true);
-  }
+    enableModule(moduleList) {
+        var url = this.config.prefix;
+        if (url != "") url = "/" + url;
+        url += "/";
+        Object.keys(moduleList).forEach(moduleName => {
+            this.routerFactory.registerRouter(
+                url,
+                moduleName,
+                moduleList[moduleName]
+            );
+        });
+    }
 
-  enableBackWare(moduleList) {
-    addRouter(moduleList, false);
-  }
+    enableFontware(fontwareList) {
+        Object.keys(fontwareList).forEach(name => {
+            this.addMiddleware(name, fontwareList[name], true);
+        });
+    }
 
-  enableModule(moduleList = {}) {
-    return new Promise((resolve, reject) => {
-      for (var moduleName in moduleList) {
-        var controller = moduleList[moduleName];
-        new RouterFactory().build(
-          app,
-          moduleName==""?this.prefix: this.prefix +"/"+ moduleName,
-          controller,
-          {
-            secret: this.secret,
-            jwt: this.config.jwt
-          }
-        );
+    enableBackware(backwareList) {
+        Object.keys(backwareList).forEach(name => {
+            this.addMiddleware(name, backwareList[name], false);
+        });
+    }
 
-        console.log("started module : " + moduleName);
-      }
+    addMiddleware(name, meta, inFont) {
+        var handler = meta;
+        var isGlobal = false;
+        if (typeof handler == "object") {
+            if (handler.global == true) isGlobal = true;
+            handler = handler.handle;
+        }
+        if (typeof handler != "function") {
+            throw new Error(
+                `Fontware ${name} haven't declare handle properties`
+            );
+        }
 
-      app.listen(this.port, this.host, err => {
-        console.log(`start listener on ${this.getHTTPPart()}\n`);
-        if (err != null) reject(err);
-        resolve(true);
-      });
-    });
-  }
+        addMiddleware(name, handler, isGlobal, inFont);
+    }
 
-  getHTTPPart() {
-    return `http://${this.host}:${this.port}${this.prefix}/`;
-  }
+    startServer() {
+        var app = http.createServer((req, res) => {
+            this.routerFactory.triggerRouter(req, res);
+        });
+        app.listen(this.port, this.host, () => {
+            console.log(
+                `\nServer started at : http://${this.host}:${this.port}`
+            );
+        });
+    }
 };

@@ -1,8 +1,8 @@
-var a = {
-    b:'c'
-};
+const obj = require('../lib//objectParser');
 
-var d = a.b;
-d=12;
+var res = obj('{a:b, c:[d, e, {f:g},[i, j]]}')
+// var res = obj('[a, [b, c, [d, e]],, [f, g]]')
 
-console.log(a);
+
+console.log(res);
+

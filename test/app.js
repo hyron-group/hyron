@@ -9,6 +9,13 @@ HyronApp.enableFontWare({
       return arg;
     },
     global:true
+  },
+  say2: {
+    handle: function (...arg) {
+      console.log("start 2");
+      return arg;
+    },
+    global:true
   }
 });
 
