@@ -1,5 +1,11 @@
-var a = ['a', 'b'];
+function a(v1){
+    console.log('world')
+}
 
-a.forEach(v=>{
-    console.log(v)
-})
+function a(v1, v2){
+    console.log('hello')
+}
+
+
+
+a('h34', 'adf')

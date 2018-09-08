@@ -5,10 +5,10 @@ var argsStorage = {};
 
 module.exports = function (req, res, prev) {
     return new Promise((resolve, reject)=>{
-        var rawExec = this.$rawExecuter;
-        var argList = prepareArgList(this.$eventName, rawExec);
+        var executer = this.$executer;
+        var argList = prepareArgList(this.$eventName, executer);
         getDataFromRequest(req, (data)=>{
-            var err = paramChecker(this.$eventName, rawExec, data);
+            var err = paramChecker(this.$eventName, executer, data);
             if(err!=null) reject(err)
             var standardInput =  resortDataIndex(data, argList);
             resolve(standardInput)
@@ -16,10 +16,10 @@ module.exports = function (req, res, prev) {
     })
 };
 
-function prepareArgList(name, rawExec){
+function prepareArgList(name, func){
     var res = argsStorage[name];
     if(res==null){
-        res = argumentParser(rawExec);
+        res = argumentParser(func.toString());
         argsStorage[name] = res;
     }
     return res;

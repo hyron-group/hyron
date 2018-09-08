@@ -6,20 +6,21 @@ const configLoaded = require("../lib/configReader");
 
 var defaultConfig = {
     prefix: "",
+    inDevMode: true,
     secret: generalSecretKey()
 };
 
 module.exports = class {
-    constructor(port = 3000, host = "localhost", config = defaultConfig) {
+    constructor(port = 3000, host = "localhost", prefix = "") {
         this.port = port;
         this.host = host;
-        this.loadConfig(config);
-        this.routerFactory = new RouterFactory(config);
+        this.prefix = prefix;
+        this.loadConfigFile();
     }
 
-    loadConfig(config = { inDevMode: true }) {
-        this.config = Object.assign(defaultConfig, config);
-        config = configLoaded();
+    loadConfigFile() {
+        var config = configLoaded();
+        Object.assign(defaultConfig, config);
         var fontwareList = config.fontware;
         Object.keys(fontwareList).forEach(key => {
             fontwareList[key] = {
@@ -39,25 +40,29 @@ module.exports = class {
             };
         });
         this.enableBackware(config.backware);
+        this.routerFactory = new RouterFactory(config);
     }
 
     setting(
-        cgf = {
+        config = {
             viewEngine: null,
             homeDir: "./",
             allowCache: true,
             enableRestful: false,
-            poweredBy: 'hyron',
+            poweredBy: "hyron",
             hotReload: false,
-            timeout: 60000,
-
+            timeout: 60000
         }
     ) {
-        return null;
+        Object.assign(this.config, config);
+    }
+
+    static getConfig(name) {
+        return defaultConfig[name];
     }
 
     enableModule(moduleList) {
-        var url = this.config.prefix;
+        var url = this.prefix;
         if (url != "") url = "/" + url;
         url += "/";
         Object.keys(moduleList).forEach(moduleName => {

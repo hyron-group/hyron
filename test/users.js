@@ -14,7 +14,8 @@ module.exports = class {
         /**
          * @param name {type:string, size: 10}
          */
-        return "Nice to meet you, "+JSON.stringify(name);
+        var a = this.$requestHeaders;
+        return "Nice to meet you, "+name;
     }
     showHeader(){
         return "This is req heeader : "+this.$headers

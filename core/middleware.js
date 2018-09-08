@@ -66,6 +66,7 @@ function runFontWare(eventName, reqMidWare, thisArgs, args, onComplete, onFailed
                 });
         } else {
             args[2] = result;
+            runNextMiddleware();
         }
     }
 
@@ -105,6 +106,8 @@ async function runBackWare(
                 .catch(err => {
                     onFailed(err)
                 });
+        } else {
+            runNextMiddleware();
         }
     }
 

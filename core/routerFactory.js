@@ -37,10 +37,13 @@ module.exports = class {
         var execute = this.listener.get(req.method + uriPath);
         if (execute == null) {
             execute = this.listener.get("ALL" + uriPath); // support for all method
-            if (execute == null)
-                throw new Error(
+            if (execute == null) {
+                var err = new Error(
                     `${404}:Can't find router at path ${req.method + uriPath}`
-                ); // not found
+                );
+                handleResult(err, res, this.config.isDevMode);
+                return;
+            }
         }
         execute(req, res);
     }
@@ -85,7 +88,6 @@ module.exports = class {
             this.listener.set(eventName, (req, res) => {
                 var thisArgs = {
                     $executer: mainExecute,
-                    $rawExecuter: mainExecute.toString(),
                     $eventName: eventName
                 };
                 runFontWare(
@@ -103,12 +105,12 @@ module.exports = class {
                             result => {
                                 handleResult(result, res, isDevMode);
                             },
-                            (err)=>{
+                            err => {
                                 handleResult(err, res, isDevMode);
                             }
                         );
                     },
-                    (err)=>{
+                    err => {
                         handleResult(err, res, isDevMode);
                     }
                 );
