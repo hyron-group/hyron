@@ -1,27 +1,37 @@
 const commentParser = require("./lib/commentParser");
 const stringToObject = require("../../lib/objectParser");
 const conditionReg = /(@param\s+([\w\d]+)\s*([\w\d\s:,\u002d\002b%^&*\[\]\{\}]*))/g;
-const cache = require("static-memory");
 const condition = {};
+var checkerStorage = {};
 
 function checkData(name, func, data) {
-    var checkerExecList = cache(
-        "check" + name,
-        getCheckerExecList(func.toString())
-    );
-    Object.keys(data).forEach(key => {
-        var value = data[key];
+    var checkerExecList = prepareChecker(name, func);
+    var keyset = Object.keys(data);
+    for (var i = 0; i < keyset.length; i++) {
+        var key = keyset[i];
         var checkerExec = checkerExecList[key];
         if (checkerExec != null) {
-            var testResult = checkerExec(value);
-            if (testResult == 0)
-                throw new Error(
+            var testResult = checkerExec(data[key]);
+            if (testResult == 0) {
+                // false
+                return new Error(
                     `406:Invalid param ${key}, check if param satisfying conditions ${
                         condition[key]
                     }`
-                ); // false
+                );
+            }
         }
-    });
+    }
+}
+
+function prepareChecker(name, func) {
+    var checker = checkerStorage[name];
+    if (checker == null) {
+        checker = getCheckerExecList(func.toString());
+        checkerStorage[name] = checker;
+    }
+
+    return checker;
 }
 
 function getCheckerExecList(raw) {

@@ -48,7 +48,7 @@ function indexOfHandle(name) {
     return -1;
 }
 
-function runFontWare(eventName, reqMidWare, thisArgs, args, onComplete) {
+function runFontWare(eventName, reqMidWare, thisArgs, args, onComplete, onFailed) {
     var handlersIndex = prepareHandler(reqMidWare, eventName, true);
 
     var i=-1;
@@ -62,7 +62,7 @@ function runFontWare(eventName, reqMidWare, thisArgs, args, onComplete) {
                     runNextMiddleware();
                 })
                 .catch(err => {
-                    throw err;
+                    onFailed(err)
                 });
         } else {
             args[2] = result;
@@ -87,7 +87,8 @@ async function runBackWare(
     reqMidWare,
     thisArgs,
     result,
-    onComplete
+    onComplete,
+    onFailed
 ) {
     var handlersIndex = prepareHandler(reqMidWare, eventName, false);
 
@@ -102,7 +103,7 @@ async function runBackWare(
                     runNextMiddleware();
                 })
                 .catch(err => {
-                    throw err;
+                    onFailed(err)
                 });
         }
     }
@@ -121,7 +122,7 @@ async function runBackWare(
 }
 
 function prepareHandler(reqMidWare, eventName, inFont) {
-    eventName = reqMidWare + (inFont ? "font" : "back");
+    eventName = reqMidWare + (inFont?"font":"back");
     var handlersIndex = executesMidWareIndex[eventName];
     if (handlersIndex != null) return handlersIndex;
 

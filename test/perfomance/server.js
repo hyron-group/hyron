@@ -8,7 +8,7 @@ var app = http.createServer((req, res) => {
 });
 
 app.listen(3001, () => {
-    console.log("Node Server started at http://localhost:3000");
+    console.log("Node Server started at http://localhost:3001");
 });
 
 // Express
@@ -22,5 +22,5 @@ express.get("/user/showMyName", (req, res) => {
 });
 
 express.listen(3002, () => {
-    console.log("Node Server started at http://localhost:3001");
+    console.log("Node Server started at http://localhost:3002");
 });

@@ -6,27 +6,37 @@ const writelog = require("writelog");
  */
 function handingResult(result, res, isDevMode = false) {
     if (result instanceof Promise) {
-        result.then(val => res.end(this.handingResult(val, res))).catch(err => {
+        result
+        .then(val => res.end(this.handingResult(val, res)))
+        .catch(err => {
             handingError(err, isDevMode);
         });
     } else if (result instanceof Error) {
         handingError(result, res, isDevMode);
-    } else if (result == null) res.end();
-    else if (typeof result == "object") {
+    } else if (typeof result == "object") {
         handingCustomResult(result, res);
     } else res.end(result);
 }
 
 function handingCustomResult(result, res) {
-    if (result.$data != null) response = result.$data;
-    res.end();
+    var data = result;
+    if (result.$data != null) data = result.$data;
+    if (result.$type != null) res.setHeader("Content-Type", result.$type);
+    if (result.$status != null) res.statusCode = res.$code;
+    if (result.$message != null) res.statusMessage = res.$message;
+    if (result.$headers != null) {
+        var header = result.$header;
+        Object.keys(header).forEach(key => {
+            res.setHeader(key, header[key]);
+        });
+    }
+    res.end(data);
 }
 
 function handingError(result, res, isDevMode) {
-    console.error(result);
     var message = result.message;
     var code = message.substr(0, 3);
-    if (!Number.isNaN(code)) {
+    if (!isNaN(code)) {
         message = message.substr(4, message.length);
     } else code = 403; // Forbidden
     res.statusCode = code;

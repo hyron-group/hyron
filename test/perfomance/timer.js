@@ -1,19 +1,27 @@
-const loop = 1000000;
-const data = ["a", "b", "c"];
+const loop = 10000000;
 
-function a(cb){
-    return new Promise(resolve=>{
-        cb();
-        resolve();
+function a (){
+    return new Promise(res=>{
+        res(true);
     })
 }
 
-var t1 = async () => {
-    await a(()=>{})
+var t1 = () => {
+    var res = a();
+    if(res instanceof Promise){
+        res.then(data=>{
+            res = data;
+        })
+    }
 };
 
 var t2 = () => {
-    a(()=>{})
+    res = a();
+    try{
+        res.then(data=>{
+            res = data;
+        })
+    } catch(e){}
 };
 
 

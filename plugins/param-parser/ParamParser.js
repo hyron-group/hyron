@@ -1,20 +1,29 @@
 const argumentParser = require('./lib/argumentParser');
 const paramChecker = require('./Checker');
-const cache = require('static-memory');
 const queryParser = require('../../lib/queryParser');
-const eventStorage = {}
+var argsStorage = {};
 
 module.exports = function (req, res, prev) {
-    return new Promise(resolve=>{
+    return new Promise((resolve, reject)=>{
         var rawExec = this.$rawExecuter;
-        var argList = cache(this.$eventName, argumentParser(rawExec));
+        var argList = prepareArgList(this.$eventName, rawExec);
         getDataFromRequest(req, (data)=>{
-            paramChecker(this.$eventName, rawExec, data);
+            var err = paramChecker(this.$eventName, rawExec, data);
+            if(err!=null) reject(err)
             var standardInput =  resortDataIndex(data, argList);
             resolve(standardInput)
         });
     })
 };
+
+function prepareArgList(name, rawExec){
+    var res = argsStorage[name];
+    if(res==null){
+        res = argumentParser(rawExec);
+        argsStorage[name] = res;
+    }
+    return res;
+}
 
 function getDataFromRequest(req, onComplete){
     var data = {};

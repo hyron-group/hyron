@@ -1,4 +1,3 @@
-const cache = require("static-memory");
 const getUriPath = require("../lib/queryParser").getUriPath;
 const { runFontWare, runBackWare } = require("./middleware");
 const http = require("http");
@@ -20,7 +19,7 @@ module.exports = class {
     constructor(config) {
         this.config = {
             isDevMode: true,
-            timeout: 10 * 60 * 60
+            timeout: 60000
         };
         this.listener = new Map();
 
@@ -83,35 +82,36 @@ module.exports = class {
                 console.log("-> backware : " + backWareReq);
 
             // store listener
-            this.listener.set(eventName, function executer(req, res) {
-                try {
-                    var thisArgs = {
-                        $executer: mainExecute,
-                        $rawExecuter: mainExecute.toString(),
-                        $eventName: eventName
-                    };
-                    runFontWare(
-                        eventName,
-                        fontWareReq,
-                        thisArgs,
-                        [req, res],
-                        (args)=>{
-                            var result = mainExecute.apply(thisArgs, args);
-                            runBackWare(
-                                eventName,
-                                backWareReq,
-                                thisArgs,
-                                result,
-                                (result)=>{
-                                    handleResult(result, res, isDevMode);
-                                }
-                            );
-                        }
-                    );
-                    
-                } catch (e) {
-                    handleResult(e, res, isDevMode);
-                }
+            this.listener.set(eventName, (req, res) => {
+                var thisArgs = {
+                    $executer: mainExecute,
+                    $rawExecuter: mainExecute.toString(),
+                    $eventName: eventName
+                };
+                runFontWare(
+                    eventName,
+                    fontWareReq,
+                    thisArgs,
+                    [req, res],
+                    args => {
+                        var result = mainExecute.apply(thisArgs, args);
+                        runBackWare(
+                            eventName,
+                            backWareReq,
+                            thisArgs,
+                            result,
+                            result => {
+                                handleResult(result, res, isDevMode);
+                            },
+                            (err)=>{
+                                handleResult(err, res, isDevMode);
+                            }
+                        );
+                    },
+                    (err)=>{
+                        handleResult(err, res, isDevMode);
+                    }
+                );
             });
         });
     }

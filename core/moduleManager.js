@@ -13,11 +13,11 @@ module.exports = class {
     constructor(port = 3000, host = "localhost", config = defaultConfig) {
         this.port = port;
         this.host = host;
-        this.loadSetting(config);
+        this.loadConfig(config);
         this.routerFactory = new RouterFactory(config);
     }
 
-    loadSetting(config = { inDevMode: true }) {
+    loadConfig(config = { inDevMode: true }) {
         this.config = Object.assign(defaultConfig, config);
         config = configLoaded();
         var fontwareList = config.fontware;
@@ -39,6 +39,21 @@ module.exports = class {
             };
         });
         this.enableBackware(config.backware);
+    }
+
+    setting(
+        cgf = {
+            viewEngine: null,
+            homeDir: "./",
+            allowCache: true,
+            enableRestful: false,
+            poweredBy: 'hyron',
+            hotReload: false,
+            timeout: 60000,
+
+        }
+    ) {
+        return null;
     }
 
     enableModule(moduleList) {
