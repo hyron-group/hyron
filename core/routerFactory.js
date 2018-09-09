@@ -3,7 +3,7 @@ const { runFontWare, runBackWare } = require("./middleware");
 const http = require("http");
 const handleResult = require("./responseHandler");
 
-module.exports = class {
+module.exports = class RouterFactory {
     /**
      *
      * @param {http.Server} app
@@ -19,17 +19,26 @@ module.exports = class {
     constructor(config) {
         this.config = {
             isDevMode: true,
-            timeout: 60000
+            timeout: 60000,
+            enableRestMode: false
         };
         this.listener = new Map();
 
         Object.assign(this.config, config);
     }
 
+    
+
     registerRouter(url, moduleName, moduleClass) {
         var path = url + moduleName;
         console.log("\nregister " + path);
         this.initHandler(path, moduleName, moduleClass);
+    }
+
+    getListener(method, url) {
+        var key = method + url;
+        if (!RouterFactory.isSupported(method)) return null;
+        return this.listener[key];
     }
 
     triggerRouter(req, res) {
@@ -46,6 +55,10 @@ module.exports = class {
             }
         }
         execute(req, res);
+    }
+
+    static isSupported(method) {
+        return ["GET", "POST", "HEAD", "DELETE", "PUT"].includes(method);
     }
 
     initHandler(url, moduleName, moduleClass) {
@@ -67,7 +80,7 @@ module.exports = class {
             }
 
             methodType = methodType.toUpperCase();
-            if (!["GET", "POST", "HEAD", "DELETE", "PUT"].includes(methodType))
+            if (!RouterFactory.isSupported(methodType))
                 throw new Error(
                     `Method ${methodType} in ${moduleName}/${methodName} do not support yet`
                 );

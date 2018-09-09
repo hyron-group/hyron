@@ -1,6 +1,6 @@
 const hyron = require('./moduleManager');
 
-var app = new hyron(3000);
+var app = hyron.getInstance(3000);
 app.enableModule({
     user : require('../test/users')
 })

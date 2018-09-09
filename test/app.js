@@ -1,6 +1,6 @@
 const ModuleManager = require("../index");
 
-var HyronApp = new ModuleManager(3000);
+var HyronApp = ModuleManager.getInstance(3000);
 HyronApp.enableModule({ user: require("./users") });
 HyronApp.enableFontWare({
   say: {

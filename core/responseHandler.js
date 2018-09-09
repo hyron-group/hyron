@@ -1,5 +1,3 @@
-const writelog = require("writelog");
-
 /**
  * @param {*} result
  * @param {http.ServerResponse} res
@@ -29,6 +27,12 @@ function handingCustomResult(result, res) {
         Object.keys(header).forEach(key => {
             res.setHeader(key, header[key]);
         });
+    }
+    if (result.$render !=null){
+
+    }
+    if (result.$redirect !=null){
+        res.setHeader("Location", result.$redirect);
     }
     res.end(data);
 }

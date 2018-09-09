@@ -1,27 +1,15 @@
-const loop = 10000000;
+const loop = 1;
 
 function a (){
-    return new Promise(res=>{
-        res(true);
-    })
+    return "hello"
 }
 
 var t1 = () => {
-    var res = a();
-    if(res instanceof Promise){
-        res.then(data=>{
-            res = data;
-        })
-    }
+    a();
 };
 
 var t2 = () => {
-    res = a();
-    try{
-        res.then(data=>{
-            res = data;
-        })
-    } catch(e){}
+    a();
 };
 
 

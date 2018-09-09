@@ -2,26 +2,44 @@ const http = require("http");
 const RouterFactory = require("./routerFactory");
 const { generalSecretKey } = require("../lib/token");
 const { addMiddleware } = require("./middleware");
-const configLoaded = require("../lib/configReader");
+const loadConfigFromFile = require("../lib/configReader");
 
 var defaultConfig = {
-    prefix: "",
-    inDevMode: true,
-    secret: generalSecretKey()
+    isDevMode: true,
+    secret: generalSecretKey(),
+    ...loadConfigFromFile()
 };
 
-module.exports = class {
-    constructor(port = 3000, host = "localhost", prefix = "") {
-        this.port = port;
-        this.host = host;
-        this.prefix = prefix;
-        this.loadConfigFile();
+var instanceStorage = {};
+
+module.exports = class ModuleManager {
+    static getInstance(port = 3000, host = "localhost", prefix = "") {
+        var newInstance = new ModuleManager();
+        newInstance.port = port;
+        newInstance.host = host;
+        newInstance.prefix = prefix;
+        newInstance.baseURI = host + ":" + port;
+        newInstance.enableMiddlewareByConfigFile();
+        newInstance.config = {
+            isDevMode: defaultConfig.isDevMode,
+            secret: defaultConfig.secret,
+            viewEngine: null,
+            homeDir: "./",
+            allowCache: true,
+            enableRestful: false,
+            poweredBy: "hyron",
+            hotReload: false,
+            timeout: 60000,
+            ...defaultConfig[newInstance.baseURI]
+        };
+        newInstance.routerFactory = new RouterFactory(newInstance.config);
+        instanceStorage[newInstance.baseURI] = newInstance;
+        
+        return instanceStorage[newInstance.baseURI];
     }
 
-    loadConfigFile() {
-        var config = configLoaded();
-        Object.assign(defaultConfig, config);
-        var fontwareList = config.fontware;
+    enableMiddlewareByConfigFile() {
+        var fontwareList = defaultConfig.fontware;
         Object.keys(fontwareList).forEach(key => {
             fontwareList[key] = {
                 global: true,
@@ -29,9 +47,9 @@ module.exports = class {
                 handle: require(fontwareList[key])
             };
         });
-        this.enableFontware(config.fontware);
+        this.enableFontware(fontwareList);
 
-        var backwareList = config.backware;
+        var backwareList = defaultConfig.backware;
         Object.keys(backwareList).forEach(key => {
             backwareList[key] = {
                 global: true,
@@ -39,26 +57,19 @@ module.exports = class {
                 handle: require(backwareList[key])
             };
         });
-        this.enableBackware(config.backware);
-        this.routerFactory = new RouterFactory(config);
+        this.enableBackware(backwareList);
     }
 
-    setting(
-        config = {
-            viewEngine: null,
-            homeDir: "./",
-            allowCache: true,
-            enableRestful: false,
-            poweredBy: "hyron",
-            hotReload: false,
-            timeout: 60000
-        }
-    ) {
+    setting(config = {}) {
         Object.assign(this.config, config);
     }
 
     static getConfig(name) {
         return defaultConfig[name];
+    }
+
+    static getInstanceManager() {
+        return instanceStorage;
     }
 
     enableModule(moduleList) {
