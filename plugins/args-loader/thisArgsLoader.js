@@ -10,6 +10,7 @@ var supportedArgs = {
     $statusCode:"req.status",
     $setTimeout:"req.setTimeout",
     $statusMessage: "req.statusMessage",
+    $cookie: "req.cookie"
     
 };
 var argsStorage = {};

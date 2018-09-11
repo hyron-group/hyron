@@ -1,15 +1,14 @@
-const loop = 1;
+const loop = 1000000;
 
-function a (){
-    return "hello"
-}
+var a={a:'b', c:'d', e:'f', g:'h', l:'m'}
+var b=new Map(Object.entries(a));
 
 var t1 = () => {
-    a();
+    var exist = a['l'] != null?true:false
 };
 
 var t2 = () => {
-    a();
+    var exist = b.has('l')
 };
 
 

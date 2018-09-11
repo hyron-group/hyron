@@ -22,7 +22,7 @@ module.exports = class {
     }
     upload(data, to){
         /**
-        * @param data {type:*, size:100}
+        * @param data {type:*, size:10000}
         * @param to {type: string}
         */
         return data;

@@ -17,14 +17,8 @@ module.exports = class RouterFactory {
      */
 
     constructor(config) {
-        this.config = {
-            isDevMode: true,
-            timeout: 60000,
-            enableRestMode: false
-        };
         this.listener = new Map();
-
-        Object.assign(this.config, config);
+        this.config = config;
     }
 
     

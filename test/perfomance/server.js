@@ -1,10 +1,8 @@
 // Raw node
 const http = require("http");
-const request = require("request");
-const crypto = require("crypto");
 
 var app = http.createServer((req, res) => {
-    res.end("hello node" + data);
+    res.end("hello node");
 });
 
 app.listen(3001, () => {

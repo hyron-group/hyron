@@ -1,0 +1,100 @@
+
+.api-place {
+    overflow: scroll;
+    flex-grow: 1;
+}
+
+.api-entry {
+    margin: 20px;
+    box-shadow: 0px 1px 4px #11111122;
+    border-radius: 4px;
+    overflow: hidden;
+    transition :0.1s;
+}
+
+.api-entry:hover {
+    box-shadow: 0px 1px 14px #11111140;
+    transition : 0.2s;
+}
+
+.api-label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 18px;
+    height: 50px;
+    width: 100%;
+}
+
+.api-label[tag='GET'] {
+    background-color: #6dff91;
+}
+
+.api-label[tag='POST'] {
+    background-color: #8296ff;
+}
+
+.api-label[tag='HEAD'] {
+    background-color: #fff572;
+}
+
+.api-label[tag='DELETE'] {
+    background-color: #ff7a7a;
+}
+
+.api-label[tag='PUT'] {
+    background-color: #84ffe2;
+}
+
+.api-label[tag='REST'] {
+    background-color: #cecece;
+}
+
+.tools-item {
+
+}
+
+.tool-item {
+    padding : 0 14px;
+}
+
+.method {
+    width: 90px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+    font-weight : bold;
+    color : #fff;
+    background-color: #00000011;
+}
+
+.detail {
+    display : flex;
+    flex-direction : row;
+    width : 100%;
+    justify-content : space-between;
+    background-color:#fff;
+}
+
+.label {
+    font-size : 18px;
+    font-weight : bold;
+}
+
+.editor-place {
+    padding : 14px;
+    flex-grow : 1;
+}
+
+.result-place {
+    width : 40%;
+    padding : 14px;
+    background-color : #fff9af44;
+}
+
+.api-tools {
+    display : flex;
+    flex-direction : row;
+}

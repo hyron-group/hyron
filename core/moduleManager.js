@@ -5,8 +5,6 @@ const { addMiddleware } = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
 
 var defaultConfig = {
-    isDevMode: true,
-    secret: generalSecretKey(),
     ...loadConfigFromFile()
 };
 
@@ -21,8 +19,9 @@ module.exports = class ModuleManager {
         newInstance.baseURI = host + ":" + port;
         newInstance.enableMiddlewareByConfigFile();
         newInstance.config = {
-            isDevMode: defaultConfig.isDevMode,
-            secret: defaultConfig.secret,
+            isDevMode: true,
+            enableREST: true,
+            secret: generalSecretKey(),
             viewEngine: null,
             homeDir: "./",
             allowCache: true,
@@ -114,9 +113,10 @@ module.exports = class ModuleManager {
     }
 
     startServer() {
-        var app = http.createServer((req, res) => {
+        var app = http.createServer((req, res)=>{
             this.routerFactory.triggerRouter(req, res);
         });
+
         app.listen(this.port, this.host, () => {
             console.log(
                 `\nServer started at : http://${this.host}:${this.port}`

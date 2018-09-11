@@ -1,0 +1,24 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: 'calibri';
+    color : #333;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    width : 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #f1f1f1;
+}

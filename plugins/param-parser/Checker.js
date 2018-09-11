@@ -1,40 +1,57 @@
 const commentParser = require("./lib/commentParser");
 const stringToObject = require("../../lib/objectParser");
 const conditionReg = /(@param\s+([\w\d]+)\s*([\w\d\s:,\u002d\002b%^&*\[\]\{\}]*))/g;
-const condition = {};
+const conditionStorage = {};
 var checkerStorage = {};
 
-function checkData(name, func, data) {
-    var checkerExecList = prepareChecker(name, func);
+function registerChecker(funcName, func) {
+    var checker = checkerStorage[funcName];
+    if (checker == null) {
+        checker = getCheckerExecList(funcName, func.toString());
+        checkerStorage[funcName] = checker;
+    }
+}
+
+function getInvalidTypeError(paramName, funcName) {
+    var condition = conditionStorage[funcName + paramName].replace(
+        /input/g,
+        `[${paramName}]`
+    );
+    return new Error(
+        `406:Invalid param '${paramName}', check if param satisfying conditions ${condition}`
+    );
+}
+
+function checkData(funcName, data) {
+    if (data == null) return;
+    var checkerExecList = checkerStorage[funcName];
+    if (checkerExecList == null) return;
     var keyset = Object.keys(data);
     for (var i = 0; i < keyset.length; i++) {
-        var key = keyset[i];
-        var checkerExec = checkerExecList[key];
-        if (checkerExec != null) {
-            var testResult = checkerExec(data[key]);
-            if (testResult == 0) {
-                // false
-                return new Error(
-                    `406:Invalid param ${key}, check if param satisfying conditions ${
-                        condition[key]
-                    }`
-                );
-            }
+        var paramName = keyset[i];
+        var checkerExec = checkerExecList[paramName];
+        if (checkerExec == null) continue;
+        var value = data[paramName];
+        var testResult = checkerExec(value);
+        if (testResult == 0) {
+            return getInvalidTypeError(paramName, funcName);
         }
     }
 }
 
-function prepareChecker(name, func) {
-    var checker = checkerStorage[name];
-    if (checker == null) {
-        checker = getCheckerExecList(func.toString());
-        checkerStorage[name] = checker;
+function testVar(funcName, paramName, val) {
+    var checkerExecList = checkerStorage[funcName];
+    console.log(checkerStorage);
+    if (checkerExecList == null) return;
+    var checkerExec = checkerExecList[paramName];
+    if (checkerExec == null) return;
+    var testResult = checkerExec(val);
+    if (testResult == 0) {
+        return getInvalidTypeError(paramName, funcName);
     }
-
-    return checker;
 }
 
-function getCheckerExecList(raw) {
+function getCheckerExecList(funcName, raw) {
     var execList = {};
     var inputCondition = getConditionFromComment(raw);
     Object.keys(inputCondition).forEach(key => {
@@ -46,8 +63,8 @@ function getCheckerExecList(raw) {
                     curCondition.type
                 )
             )
-                buf += `& (typeof input === '${curCondition.type}')`;
-            else buf += `& (input instanceof ${curCondition.type})`;
+                buf += ` & (typeof input === '${curCondition.type}')`;
+            else buf += ` & (input instanceof ${curCondition.type})`;
         }
         if (curCondition.size != null) {
             buf += ` & (input.length < ${curCondition.size})`;
@@ -60,8 +77,15 @@ function getCheckerExecList(raw) {
             buf += ` & (input >= ${curCondition.gte})`;
         if (curCondition.lte != null)
             buf += ` & (input <= ${curCondition.lte})`;
+        if (curCondition.reg != null)
+            buf += ` & (${curCondition.reg}.test(input))`;
+        if (curCondition.in != null)
+            buf += ` & (${curCondition.in}.includes(input))`;
+        if (curCondition.non != null)
+            buf += ` & (!${curCondition.non}.includes(input))`;
 
-        buf = buf.substr(1);
+        buf = buf.substr(3);
+        conditionStorage[funcName + key] = buf;
         var finalExec = eval(`(input)=>{return ${buf}}`);
         execList[key] = finalExec;
     });
@@ -80,4 +104,8 @@ function getConditionFromComment(raw) {
     return result;
 }
 
-module.exports = checkData;
+module.exports = {
+    checkData,
+    registerChecker,
+    testVar
+};
