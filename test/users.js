@@ -5,16 +5,14 @@ module.exports = class {
             showMyName:'get',
             upload:'post',
             sample:'get',
-            express:"get",
             
         }
     }
 
     showMyName(name){
         /**
-         * @param name {type:string, size: 10}
+         * @param name {type:string, size: 1000}
          */
-        var a = this.$requestHeaders;
         return "Nice to meet you, "+name;
     }
     showHeader(){
@@ -26,12 +24,6 @@ module.exports = class {
         * @param to {type: string}
         */
         return data;
-    }
-
-    express(req, res){
-        this.token.set("key", "val");
-        console.log(this.token.getToken());
-        return this.token;
     }
 
     sample() {

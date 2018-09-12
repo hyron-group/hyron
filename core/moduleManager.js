@@ -105,7 +105,7 @@ module.exports = class ModuleManager {
         }
         if (typeof handler != "function") {
             throw new Error(
-                `Fontware ${name} haven't declare handle properties`
+                `${inFont?"Fontware":"Backware"}} ${name} haven't declare handle properties`
             );
         }
 

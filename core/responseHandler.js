@@ -47,7 +47,7 @@ function handingError(result, res, isDevMode) {
     res.write(message);
     if (isDevMode) {
         // writelog('error', result.stack);
-        res.write("\n" + result.stack);
+        res.write("\n\n" + result.stack);
     }
     res.end();
 }
