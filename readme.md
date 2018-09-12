@@ -11,11 +11,13 @@
 - New Debug engine
 - Security
 - Auth plugins
+- Micro-service support
 - CLI tools for build & deploy app
 - Optimize performance & fix bug
 - APIDocs render for API viewer
 - Document & Guide
 - Hyron Plugin Hub
+- Cacher plugin for cache response
 
 # Processing
 - **Support for body-type** : includes POST, PUT
