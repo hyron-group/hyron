@@ -4,9 +4,7 @@
  */
 function handingResult(result, res, isDevMode = false) {
     if (result instanceof Promise) {
-        result
-        .then(val => res.end(this.handingResult(val, res)))
-        .catch(err => {
+        result.then(val => res.end(this.handingResult(val, res))).catch(err => {
             handingError(err, isDevMode);
         });
     } else if (result instanceof Error) {
@@ -28,10 +26,9 @@ function handingCustomResult(result, res) {
             res.setHeader(key, header[key]);
         });
     }
-    if (result.$render !=null){
-
+    if (result.$render != null) {
     }
-    if (result.$redirect !=null){
+    if (result.$redirect != null) {
         res.setHeader("Location", result.$redirect);
     }
     res.end(data);

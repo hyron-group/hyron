@@ -1,7 +1,7 @@
 const net = require('net');
 
 function parserMultiPart(req, chunk){
-    return null;
+    return chunk.toString();
 }
 
 module.exports = parserMultiPart;

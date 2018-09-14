@@ -102,13 +102,14 @@ module.exports = class RouterFactory {
                     [req, res],
                     args => {
                         var result = mainExecute.apply(thisArgs, args);
+
                         runBackWare(
-                            eventName,
+                            eventName, 
                             backWareReq,
                             thisArgs,
                             [req, res, result],
-                            result => {
-                                handleResult(result, res, isDevMode);
+                            data => {
+                                handleResult(data, res, isDevMode);
                             }
                         );
                     }

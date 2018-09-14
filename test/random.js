@@ -1,7 +1,9 @@
-const ini = require('ini');
-const fs = require('fs');
+var a = {
+    
+}
 
-var data = fs.readFileSync('./appcfg.ini').toString();
-data = ini.parse(data);
+var b = ['a','b','c'];
 
-console.log(data)
+a[b] = 'aohwefoi';
+
+console.log(a)

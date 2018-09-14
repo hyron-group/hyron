@@ -1,35 +1,28 @@
-const loop = 1;
+const loop = 100000;
 
-var src = 'ashdiahgfalrfbadkjvbagf';
-
-var crypto = require('crypto');
+var a = { "a,b,c": "aohwefoi" };
+var b = ['a','b','c'];
 
 var t1 = () => {
-    var res = crypto.createHash('sha1').digest(src).toString('hex');
-    console.log(res)
+    var res = a[b+''];
 };
 
 var t2 = () => {
-};
-
-
-
-
+    var res = a["a,b,c"]
+}
 
 // ------------------------------
-async function compare(){
-
+async function compare() {
     console.time("t1");
     for (var i = 0; i < loop; i++) {
         await t1();
     }
     console.timeEnd("t1");
-    
+
     console.time("t2");
     for (var i = 0; i < loop; i++) {
-        await 
-        t2();
+        await t2();
     }
     console.timeEnd("t2");
 }
-compare()
+compare();

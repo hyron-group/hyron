@@ -1,7 +1,8 @@
 const crypto = require("crypto");
 
 var handlerStorage = [];
-var customMidWareIndex = {};
+var customFontWareIndex = {};
+var customBackWareIndex = {};
 var globalFontWareIndex = {};
 var globalBackWareIndex = {};
 
@@ -22,7 +23,10 @@ function addMiddleware(name, handle, isGlobal, inFont) {
     if (isGlobal) {
         if (inFont) globalFontWareIndex[index] = name;
         else globalBackWareIndex[index] = name;
-    } else customMidWareIndex[name] = index;
+    } else {
+        if (inFont) customFontWareIndex[name] = index;
+        else customBackWareIndex[name] = index;
+    }
 }
 
 function indexOfHandle(name) {
@@ -35,7 +39,11 @@ function indexOfHandle(name) {
         if (val == name) return keyIndex;
     }
 
-    if ((keyIndex = customMidWareIndex[name]) != null) {
+    if ((keyIndex = customFontWareIndex[name]) != null) {
+        return keyIndex;
+    }
+
+    if ((keyIndex = customBackWareIndex[name]) != null) {
         return keyIndex;
     }
 
@@ -55,9 +63,9 @@ function runMiddleware(
     thisArgs,
     args,
     onComplete,
-    inFont,
-){
-    var handlersIndex = prepareHandler(reqMidWare, eventName, inFont);
+    inFont
+) {
+    var handlersIndex = prepareHandler(eventName, reqMidWare, inFont);
 
     var i = -1;
 
@@ -80,7 +88,7 @@ function runMiddleware(
 
     function runNextMiddleware() {
         var indexInStorage = handlersIndex[++i];
-        if(args[1].finished!=true){
+        if (args[1].finished != true) {
             if (indexInStorage != null) {
                 var execute = handlerStorage[indexInStorage];
                 runFunc(execute);
@@ -91,31 +99,18 @@ function runMiddleware(
     }
 
     runNextMiddleware();
-
 }
 
-function runFontWare(
-    eventName,
-    reqMidWare,
-    thisArgs,
-    args,
-    onComplete
-) {
+function runFontWare(eventName, reqMidWare, thisArgs, args, onComplete) {
     runMiddleware(eventName, reqMidWare, thisArgs, args, onComplete, true);
 }
 
-function runBackWare(
-    eventName,
-    reqMidWare,
-    thisArgs,
-    args,
-    onComplete
-) {
+function runBackWare(eventName, reqMidWare, thisArgs, args, onComplete) {
     runMiddleware(eventName, reqMidWare, thisArgs, args, onComplete, false);
 }
 
-function prepareHandler(reqMidWare, eventName, inFont) {
-    eventName = reqMidWare + (inFont ? "font" : "back");
+function prepareHandler(eventName, reqMidWare, inFont) {
+    eventName += inFont ? "-font" : "-back";
     var handlersIndex = executesMidWareIndex[eventName];
     if (handlersIndex != null) return handlersIndex;
 
@@ -158,10 +153,21 @@ function prepareHandler(reqMidWare, eventName, inFont) {
     }
 
     // enable some of middleware by config
-    for (var i in enableList) {
-        var enableMidWareName = enableList[i];
-        indexList.push(customMidWareIndex[enableMidWareName]);
+    if (inFont) {
+        for (var i in enableList) {
+            var enableMidWareName = enableList[i];
+            indexList.push(customFontWareIndex[enableMidWareName]);
+        }
+    } else {
+        for (var i in enableList) {
+            var enableMidWareName = enableList[i];
+            indexList.push(customFontWareIndex[enableMidWareName]);
+        }
     }
 
-    return inFont ? indexList : indexList.reverse();
+    if (!inFont) indexList = indexList.reverse();
+
+    executesMidWareIndex[eventName] = indexList;
+
+    return indexList;
 }
