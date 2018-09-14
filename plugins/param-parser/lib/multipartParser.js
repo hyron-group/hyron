@@ -1,7 +1,7 @@
-function parserMultiPart(chunk){
-    console.log(chunk.toString())
-    return chunk.toString();
+const net = require('net');
+
+function parserMultiPart(req, chunk){
+    return null;
 }
 
 module.exports = parserMultiPart;
-

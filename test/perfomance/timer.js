@@ -1,14 +1,15 @@
-const loop = 1000000;
+const loop = 1;
 
-var a={a:'b', c:'d', e:'f', g:'h', l:'m'}
-var b=new Map(Object.entries(a));
+var src = 'ashdiahgfalrfbadkjvbagf';
+
+var crypto = require('crypto');
 
 var t1 = () => {
-    var exist = a['l'] != null?true:false
+    var res = crypto.createHash('sha1').digest(src).toString('hex');
+    console.log(res)
 };
 
 var t2 = () => {
-    var exist = b.has('l')
 };
 
 

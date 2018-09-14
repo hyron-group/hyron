@@ -21,8 +21,6 @@ module.exports = class RouterFactory {
         this.config = config;
     }
 
-    
-
     registerRouter(url, moduleName, moduleClass) {
         var path = url + moduleName;
         console.log("\nregister " + path);
@@ -108,17 +106,11 @@ module.exports = class RouterFactory {
                             eventName,
                             backWareReq,
                             thisArgs,
-                            result,
+                            [req, res, result],
                             result => {
                                 handleResult(result, res, isDevMode);
-                            },
-                            err => {
-                                handleResult(err, res, isDevMode);
                             }
                         );
-                    },
-                    err => {
-                        handleResult(err, res, isDevMode);
                     }
                 );
             });

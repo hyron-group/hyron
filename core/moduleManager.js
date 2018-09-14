@@ -32,8 +32,11 @@ module.exports = class ModuleManager {
             ...defaultConfig[newInstance.baseURI]
         };
         newInstance.routerFactory = new RouterFactory(newInstance.config);
+
+        newInstance.app = http.createServer();
+
         instanceStorage[newInstance.baseURI] = newInstance;
-        
+
         return instanceStorage[newInstance.baseURI];
     }
 
@@ -105,7 +108,9 @@ module.exports = class ModuleManager {
         }
         if (typeof handler != "function") {
             throw new Error(
-                `${inFont?"Fontware":"Backware"}} ${name} haven't declare handle properties`
+                `${
+                    inFont ? "Fontware" : "Backware"
+                }} ${name} haven't declare handle properties`
             );
         }
 
@@ -113,11 +118,11 @@ module.exports = class ModuleManager {
     }
 
     startServer() {
-        var app = http.createServer((req, res)=>{
+        this.app.on("request", (req, res) => {
             this.routerFactory.triggerRouter(req, res);
         });
 
-        app.listen(this.port, this.host, () => {
+        this.app.listen(this.port, this.host, () => {
             console.log(
                 `\nServer started at : http://${this.host}:${this.port}`
             );

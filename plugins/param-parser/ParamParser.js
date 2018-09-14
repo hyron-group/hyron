@@ -48,16 +48,17 @@ function getQueryData(req, onComplete) {
 function getBodyData(argList, req, onComplete) {
     req.on("data", chunk => {
         var reqBodyType = req.headers["content-type"];
-        var data = handingDataType(argList, reqBodyType, chunk);
+        var data = handingDataType(req, argList, reqBodyType, chunk);
         onComplete(data);
     });
+
 }
 
-function handingDataType(argList, reqBodyType, chunk) {
+function handingDataType(req, argList, reqBodyType, chunk) {
     if (reqBodyType == "application/x-www-form-urlencoded") {
         return queryParser.getQuery('?'+chunk.toString());
     } else if (reqBodyType.startsWith("multipart/form-data")) {
-        return multiPartParser(chunk);
+        return multiPartParser(req, chunk);
     } else {
         var output = {};
         var paramName = argList[0];

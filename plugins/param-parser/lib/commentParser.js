@@ -1,4 +1,3 @@
-const ignoreComment = ["todo", "fixme", "bug"];
 
 module.exports = function parseComment(func) {
     var raw = func.toString();

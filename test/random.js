@@ -1,11 +1,7 @@
-function a(v1){
-    console.log('world')
-}
+const ini = require('ini');
+const fs = require('fs');
 
-function a(v1, v2){
-    console.log('hello')
-}
+var data = fs.readFileSync('./appcfg.ini').toString();
+data = ini.parse(data);
 
-
-
-a('h34', 'adf')
+console.log(data)
