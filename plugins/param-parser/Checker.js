@@ -1,7 +1,10 @@
 const commentParser = require("./lib/commentParser");
 const stringToObject = require("../../lib/objectParser");
 const conditionReg = /(@param\s+([\w\d]+)\s*([\w\d\s:,\u002d\002b%^&*\[\]\{\}]*))/g;
+
+const ClientFile = require("./type/ClientFile");
 const conditionStorage = {};
+
 var checkerStorage = {};
 
 function registerChecker(funcName, func) {
@@ -67,9 +70,13 @@ function getCheckerExecList(funcName, raw) {
             else buf += ` & (input instanceof ${curCondition.type})`;
         }
         if (curCondition.size != null) {
-            buf += ` & (input.length < ${curCondition.size})`;
             if (curCondition.type == "Buffer")
-                buf += ` & (Buffer.byteLength(input) < ${curCondition.type})`;
+                buf += ` & (Buffer.byteLength(input) < ${curCondition.size})`;
+            if (curCondition.type == "ClientFile")
+                buf += ` & (input !=null && Buffer.byteLength(input.content) < ${
+                    curCondition.size
+                })`;
+            else buf += ` & (input.length < ${curCondition.size})`;
         }
         if (curCondition.gt != null) buf += ` & (input > ${curCondition.gt})`;
         if (curCondition.lt != null) buf += ` & (input < ${curCondition.lt})`;
@@ -88,6 +95,7 @@ function getCheckerExecList(funcName, raw) {
         conditionStorage[funcName + key] = buf;
         var finalExec = eval(`(input)=>{return ${buf}}`);
         execList[key] = finalExec;
+        console.log(finalExec.toString());
     });
     return execList;
 }

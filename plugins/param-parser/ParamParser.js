@@ -11,8 +11,9 @@ module.exports = function(req) {
         var executer = this.$executer;
         Checker.registerChecker(this.$eventName, executer);
         var argList = prepareArgList(this.$eventName, executer);
-        getDataFromRequest(argList, req, data => {
-            var err = Checker.checkData(this.$eventName, data);
+        getDataFromRequest(argList, req, (data, err) => {
+            if (err != null) reject(err);
+            err = Checker.checkData(this.$eventName, data);
             if (err != null) reject(err);
             var standardInput = resortDataIndex(data, argList);
             resolve(standardInput);
@@ -46,24 +47,18 @@ function getQueryData(req, onComplete) {
 }
 
 function getBodyData(argList, req, onComplete) {
-    req.on("data", chunk => {
-        var reqBodyType = req.headers["content-type"];
-        var data = handingDataType(req, argList, reqBodyType, chunk);
-        onComplete(data);
-    });
-
-}
-
-function handingDataType(req, argList, reqBodyType, chunk) {
+    var reqBodyType = req.headers["content-type"];
     if (reqBodyType == "application/x-www-form-urlencoded") {
-        return queryParser.getQuery('?'+chunk.toString());
+        req.on("data", chunk => {
+            var data = queryParser.getQuery("?" + chunk.toString());
+            onComplete(data);
+        });
     } else if (reqBodyType.startsWith("multipart/form-data")) {
-        return multiPartParser(req, chunk);
+        multiPartParser(req, argList, onComplete);
     } else {
-        var output = {};
-        var paramName = argList[0];
-        output[paramName] = chunk;
-        return output;
+        req.on("data", chunk => {
+            onComplete(chunk);
+        });
     }
 }
 

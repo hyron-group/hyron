@@ -63,6 +63,7 @@ function runMiddleware(
     thisArgs,
     args,
     onComplete,
+    onFailed,
     inFont
 ) {
     var handlersIndex = prepareHandler(eventName, reqMidWare, inFont);
@@ -78,7 +79,7 @@ function runMiddleware(
                     runNextMiddleware();
                 })
                 .catch(err => {
-                    onComplete(err);
+                    onFailed(err);
                 });
         } else {
             args[2] = result;
@@ -101,12 +102,12 @@ function runMiddleware(
     runNextMiddleware();
 }
 
-function runFontWare(eventName, reqMidWare, thisArgs, args, onComplete) {
-    runMiddleware(eventName, reqMidWare, thisArgs, args, onComplete, true);
+function runFontWare(eventName, reqMidWare, thisArgs, args, onComplete, onFailed) {
+    runMiddleware(eventName, reqMidWare, thisArgs, args, onComplete, onFailed, true);
 }
 
-function runBackWare(eventName, reqMidWare, thisArgs, args, onComplete) {
-    runMiddleware(eventName, reqMidWare, thisArgs, args, onComplete, false);
+function runBackWare(eventName, reqMidWare, thisArgs, args, onComplete, onFailed) {
+    runMiddleware(eventName, reqMidWare, thisArgs, args, onComplete, onFailed, false);
 }
 
 function prepareHandler(eventName, reqMidWare, inFont) {

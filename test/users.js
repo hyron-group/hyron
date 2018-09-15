@@ -1,33 +1,32 @@
-const writelog = require('writelog');
+const writelog = require("writelog");
 module.exports = class {
-    static requestConfig(){
+    static requestConfig() {
         return {
-            showMyName:'get',
-            upload:'post',
-            sample:'get',
-            
-        }
+            showMyName: "get",
+            upload: "post",
+            sample: "get"
+        };
     }
 
-    showMyName(name){
+    showMyName(name) {
         /**
          * @param name {type:string, size: 1000}
          */
-        return "Nice to meet you, "+name;
+        return "Nice to meet you, " + name;
     }
 
-    showHeader(){
-        return "This is req heeader : "+this.$headers
+    showHeader() {
+        return "This is req heeader : " + this.$headers;
     }
-    upload(data, to){
+    upload(data, to) {
         /**
-        * @param data {type:*, size:10000}
-        * @param to {type: string}
-        */
-        return data;
+         * @param data {type:ClientFile, size:10000}
+         * @param to {type: string}
+         */
+        return data.content;
     }
 
     sample() {
         return "hello world";
     }
-}
+};

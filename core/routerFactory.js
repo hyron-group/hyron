@@ -95,6 +95,22 @@ module.exports = class RouterFactory {
                     $executer: mainExecute,
                     $eventName: eventName
                 };
+
+                var getBackWareArgs = result => {
+                    return [
+                        eventName,
+                        backWareReq,
+                        thisArgs,
+                        [req, res, result],
+                        data => {
+                            handleResult(data, res, isDevMode);
+                        },
+                        err => {
+                            handleResult(err, res, isDevMode);
+                        }
+                    ];
+                };
+
                 runFontWare(
                     eventName,
                     fontWareReq,
@@ -103,15 +119,10 @@ module.exports = class RouterFactory {
                     args => {
                         var result = mainExecute.apply(thisArgs, args);
 
-                        runBackWare(
-                            eventName, 
-                            backWareReq,
-                            thisArgs,
-                            [req, res, result],
-                            data => {
-                                handleResult(data, res, isDevMode);
-                            }
-                        );
+                        runBackWare.apply(null, getBackWareArgs(result));
+                    },
+                    err => {
+                        runBackWare.apply(null, getBackWareArgs(err));
                     }
                 );
             });
