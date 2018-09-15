@@ -95,7 +95,6 @@ function getCheckerExecList(funcName, raw) {
         conditionStorage[funcName + key] = buf;
         var finalExec = eval(`(input)=>{return ${buf}}`);
         execList[key] = finalExec;
-        console.log(finalExec.toString());
     });
     return execList;
 }
