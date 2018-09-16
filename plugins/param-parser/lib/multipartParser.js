@@ -1,7 +1,7 @@
 const Busboy = require("busboy");
 const ClientFile = require("../type/ClientFile");
 
-function parserMultiPart(req, argList, onComplete) {
+function parserMultiPart(req, onComplete) {
     var data = {};
     var busboy = new Busboy({ headers: req.headers });
     busboy.on(

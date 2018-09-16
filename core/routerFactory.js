@@ -2,6 +2,7 @@ const getUriPath = require("../lib/queryParser").getUriPath;
 const { runFontWare, runBackWare } = require("./middleware");
 const http = require("http");
 const handleResult = require("./responseHandler");
+const RestRouter = [];
 
 module.exports = class RouterFactory {
     /**
@@ -35,9 +36,18 @@ module.exports = class RouterFactory {
 
     triggerRouter(req, res) {
         var uriPath = getUriPath(req.url);
-        var execute = this.listener.get(req.method + uriPath);
+        var eventName = req.method + uriPath;
+        var execute = this.listener.get(eventName);
         if (execute == null) {
-            execute = this.listener.get("ALL" + uriPath); // support for all method
+            var restName = 'REST-'+eventName.substr(0, eventName.lastIndexOf("/"));
+            if (RestRouter.includes(restName)) {
+                eventName = restName; // support for REST API
+                req.isREST = true;
+            } else {
+                eventName = "ALL" + uriPath; // support for all method
+            }
+
+            execute = this.listener.get(eventName);
             if (execute == null) {
                 var err = new Error(
                     `${404}:Can't find router at path ${req.method + uriPath}`
@@ -64,11 +74,12 @@ module.exports = class RouterFactory {
             console.log("lookup : " + methodName);
             var config = requestConfig[methodName];
             var methodType = config; // Inline mode
-            var fontWareReq, backWareReq;
+            var fontWareReq, backWareReq, enableRESTFul;
             if (typeof config == "object") {
                 methodType = config.method;
                 fontWareReq = config.fontware;
                 backWareReq = config.backware;
+                enableRESTFul = config.enableREST;
             }
 
             methodType = methodType.toUpperCase();
@@ -82,6 +93,11 @@ module.exports = class RouterFactory {
             var eventName = methodType + url + "/" + methodName;
             // Executer will call each request
             var isDevMode = this.config.isDevMode;
+
+            if (enableRESTFul) {
+                eventName = 'REST-'+eventName.substr(0, eventName.lastIndexOf("/"));
+                RestRouter.push(eventName);
+            }
 
             if (methodType != null) console.log("-> method : " + methodType);
             if (fontWareReq != null)

@@ -20,12 +20,10 @@ module.exports = class ModuleManager {
         newInstance.enableMiddlewareByConfigFile();
         newInstance.config = {
             isDevMode: true,
-            enableREST: true,
             secret: generalSecretKey(),
             viewEngine: null,
             homeDir: "./",
             allowCache: true,
-            enableRestful: false,
             poweredBy: "hyron",
             hotReload: false,
             timeout: 60000,

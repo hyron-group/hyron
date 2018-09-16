@@ -32,12 +32,12 @@ function prepareArgList(name, func) {
 
 function getDataFromRequest(argList, req, onComplete) {
     var method = req.method;
-    if ((method == "GET") | (method == "HEAD") | (method == "DELETE")) {
+    if (req.isREST == true) {
+        getRestData(req, argList, onComplete);
+    } else if ((method == "GET") | (method == "HEAD") | (method == "DELETE")) {
         getQueryData(req, onComplete);
     } else if ((method == "POST") | (method == "PUT")) {
-        getBodyData(argList, req, onComplete);
-    } else if (ModuleManager.getConfig("enableRESTFul")) {
-        getRestData(req, argList[0], onComplete);
+        getBodyData(req, onComplete);
     }
 }
 
@@ -46,7 +46,7 @@ function getQueryData(req, onComplete) {
     onComplete(data);
 }
 
-function getBodyData(argList, req, onComplete) {
+function getBodyData(req, onComplete) {
     var reqBodyType = req.headers["content-type"];
     if (reqBodyType == "application/x-www-form-urlencoded") {
         req.on("data", chunk => {
@@ -54,7 +54,7 @@ function getBodyData(argList, req, onComplete) {
             onComplete(data);
         });
     } else if (reqBodyType.startsWith("multipart/form-data")) {
-        multiPartParser(req, argList, onComplete);
+        multiPartParser(req, onComplete);
     } else {
         req.on("data", chunk => {
             onComplete(chunk);
@@ -62,12 +62,21 @@ function getBodyData(argList, req, onComplete) {
     }
 }
 
-function getRestData(req, argName, onComplete) {
+function getRestData(req, argList, onComplete) {
     var url = req.url;
     var res = url.substr(url.lastIndexOf("/"));
     var output = {};
-    output[argName] = res;
-    onComplete(output);
+    output[argList[0]] = res;
+    var method = req.method;
+    var customOnComplete = (data)=>{
+        Object.assign(output, data);
+        onComplete(output);
+    }
+    if ((method == "POST") | (method == "PUT")) {
+        getBodyData(req, customOnComplete);
+    } else if ((method == "GET") | (method == "DELETE") | (method == "HEAD")) {
+        getQueryData(req, customOnComplete)
+    }
 }
 
 function resortDataIndex(data, argList) {
