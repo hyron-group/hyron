@@ -4,7 +4,11 @@ module.exports = class {
         return {
             showMyName: "get",
             upload: "post",
-            sample: "get"
+            sample: "get",
+            rs: {
+                method: "post",
+                enableREST: true
+            }
         };
     }
 
@@ -15,8 +19,8 @@ module.exports = class {
         return "Nice to meet you, " + name;
     }
 
-    showHeader() {
-        return "This is req heeader : " + this.$headers;
+    rs(name, data) {
+        return data;
     }
     upload(data, to) {
         /**

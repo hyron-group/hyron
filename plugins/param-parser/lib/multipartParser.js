@@ -12,7 +12,12 @@ function parserMultiPart(req, onComplete) {
     );
 
     busboy.on("file", (field, file, name, encoding, type) => {
-        file.on("data", content => {
+        var buf = [];
+        file.on("data", (chunk)=>{
+            buf.push(chunk);
+        });
+        file.on("data", () => {
+            var content = Buffer.concat(buf);
             data[field] = new ClientFile(name, content, encoding, type);
         });
     });

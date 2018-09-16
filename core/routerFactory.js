@@ -17,7 +17,7 @@ module.exports = class RouterFactory {
      *
      */
 
-    constructor(config) {
+    constructor(config = {}) {
         this.listener = new Map();
         this.config = config;
     }
@@ -74,12 +74,12 @@ module.exports = class RouterFactory {
             console.log("lookup : " + methodName);
             var config = requestConfig[methodName];
             var methodType = config; // Inline mode
-            var fontWareReq, backWareReq, enableRESTFul;
+            var fontWareReq, backWareReq, enableREST;
             if (typeof config == "object") {
                 methodType = config.method;
                 fontWareReq = config.fontware;
                 backWareReq = config.backware;
-                enableRESTFul = config.enableREST;
+                enableREST = config.enableREST;
             }
 
             methodType = methodType.toUpperCase();
@@ -94,8 +94,8 @@ module.exports = class RouterFactory {
             // Executer will call each request
             var isDevMode = this.config.isDevMode;
 
-            if (enableRESTFul) {
-                eventName = 'REST-'+eventName.substr(0, eventName.lastIndexOf("/"));
+            if (this.config.enableRESTFul==true & enableREST) {
+                eventName = 'REST-'+eventName;
                 RestRouter.push(eventName);
             }
 

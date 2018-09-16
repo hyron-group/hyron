@@ -37,7 +37,7 @@ function getDataFromRequest(argList, req, onComplete) {
     } else if ((method == "GET") | (method == "HEAD") | (method == "DELETE")) {
         getQueryData(req, onComplete);
     } else if ((method == "POST") | (method == "PUT")) {
-        getBodyData(req, onComplete);
+        getBodyData(req, argList, onComplete);
     }
 }
 
@@ -46,9 +46,11 @@ function getQueryData(req, onComplete) {
     onComplete(data);
 }
 
-function getBodyData(req, onComplete) {
+function getBodyData(req, argList, onComplete) {
     var reqBodyType = req.headers["content-type"];
-    if (reqBodyType == "application/x-www-form-urlencoded") {
+    if (reqBodyType == null) {
+        onComplete(null);
+    } else if (reqBodyType == "application/x-www-form-urlencoded") {
         req.on("data", chunk => {
             var data = queryParser.getQuery("?" + chunk.toString());
             onComplete(data);
@@ -56,26 +58,35 @@ function getBodyData(req, onComplete) {
     } else if (reqBodyType.startsWith("multipart/form-data")) {
         multiPartParser(req, onComplete);
     } else {
+        var buf = [];
         req.on("data", chunk => {
-            onComplete(chunk);
+            buf.push(chunk);
+        });
+        req.on("end", () => {
+            var output = {};
+            output[argList[0]] = Buffer.concat(buf);
+            onComplete(output);
+        });
+        req.on("error", err => {
+            onComplete(null, err);
         });
     }
 }
 
 function getRestData(req, argList, onComplete) {
     var url = req.url;
-    var res = url.substr(url.lastIndexOf("/"));
+    var param = url.substr(url.lastIndexOf("/")+1);
     var output = {};
-    output[argList[0]] = res;
+    output[argList[0]] = param;
     var method = req.method;
-    var customOnComplete = (data)=>{
+    var customOnComplete = data => {
         Object.assign(output, data);
         onComplete(output);
-    }
+    };
     if ((method == "POST") | (method == "PUT")) {
-        getBodyData(req, customOnComplete);
+        getBodyData(req, [argList[1]], customOnComplete);
     } else if ((method == "GET") | (method == "DELETE") | (method == "HEAD")) {
-        getQueryData(req, customOnComplete)
+        getQueryData(req, customOnComplete);
     }
 }
 
