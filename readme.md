@@ -7,7 +7,6 @@
 (update 12/8/2018)
 
 # Todo
-- Support for RESTFul
 - New Debug engine
 - Security
 - Auth plugins
@@ -17,10 +16,10 @@
 - APIDocs render for API viewer
 - Document & Guide
 - Hyron Plugin Hub
-- Cacher plugin for cache response
+- Cache plugin for cache response
 
 # Processing
-- **Support for body-type** : includes POST, PUT
+- Support View Engine (pug)
 
 # Done
 - **Support config-by-file** : config hyron app inside appcfg.ini declared in root. Support inheritance in their plugins
@@ -32,3 +31,5 @@
 - **args-loader** plugin : load needed param as 'this' inside handle function 
 - **Support query-type** : includes GET, HEAD, DELETE
 - **Register router** by function
+- - **Support for body-type** : includes POST, PUT
+- **Support for REST-API**
