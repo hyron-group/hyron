@@ -34,9 +34,9 @@ function getDataFromRequest(argList, req, onComplete) {
     var method = req.method;
     if (req.isREST == true) {
         getRestData(req, argList, onComplete);
-    } else if ((method == "GET") | (method == "HEAD") | (method == "DELETE")) {
+    } else if (isQueryParamType(method)) {
         getQueryData(req, onComplete);
-    } else if ((method == "POST") | (method == "PUT")) {
+    } else if (isBodyParamType(method)) {
         getBodyData(req, argList, onComplete);
     }
 }
@@ -83,11 +83,19 @@ function getRestData(req, argList, onComplete) {
         Object.assign(output, data);
         onComplete(output);
     };
-    if ((method == "POST") | (method == "PUT")) {
+    if (isBodyParamType(method)) {
         getBodyData(req, [argList[1]], customOnComplete);
-    } else if ((method == "GET") | (method == "DELETE") | (method == "HEAD")) {
+    } else if (isQueryParamType(method)) {
         getQueryData(req, customOnComplete);
     }
+}
+
+function isBodyParamType(method){
+    return (method == "POST") | (method == "PUT");
+}
+
+function isQueryParamType(method){
+    return (method == "GET") | (method == "DELETE") | (method == "HEAD")
 }
 
 function resortDataIndex(data, argList) {

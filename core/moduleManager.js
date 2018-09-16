@@ -119,12 +119,12 @@ module.exports = class ModuleManager {
     startServer() {
         this.app.on("request", (req, res) => {
             this.routerFactory.triggerRouter(req, res);
-            console.timeEnd('request time')
+            // console.timeEnd('request time')
         });
 
-        this.app.on("connection", ()=>{
-            console.time('request time')
-        })
+        // this.app.on("connection", ()=>{
+        //     console.time('request time')
+        // })
 
         this.app.listen(this.port, this.host, () => {
             console.log(
