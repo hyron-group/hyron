@@ -4,40 +4,53 @@ const queryParser = require("../../lib/queryParser");
 const ModuleManager = require("../../core/moduleManager");
 const multiPartParser = require("./lib/multipartParser");
 
-var argsStorage = {};
+var handleHolder = {};
 
 module.exports = function(req) {
     return new Promise((resolve, reject) => {
         var executer = this.$executer;
-        Checker.registerChecker(this.$eventName, executer);
-        var argList = prepareArgList(this.$eventName, executer);
+        var eventName = this.$eventName;
+        var handle = prepareHandle(eventName, executer);
+        handle(resolve, reject, req);
+    });
+};
+
+function prepareHandle(eventName, executer) {
+    var handle = handleHolder[eventName];
+    if (handle != null) {
+        return handle;
+    }
+
+    Checker.registerChecker(eventName, executer);
+    var argList = argumentParser(executer.toString());
+
+    var handle = `(resolve, reject, req)=>{
+        var argList = ${JSON.stringify(argList)};
         getDataFromRequest(argList, req, (data, err) => {
             if (err != null) reject(err);
-            err = Checker.checkData(this.$eventName, data);
+            err = Checker.checkData(eventName, data);
             if (err != null) reject(err);
             var standardInput = resortDataIndex(data, argList);
             resolve(standardInput);
         });
-    });
-};
+    }`;
 
-function prepareArgList(name, func) {
-    var res = argsStorage[name];
-    if (res == null) {
-        res = argumentParser(func.toString());
-        argsStorage[name] = res;
-    }
-    return res;
+    handle = eval(handle);
+    handleHolder[eventName] = handle;
+
+    return handle;
 }
 
 function getDataFromRequest(argList, req, onComplete) {
     var method = req.method;
-    if (req.isREST == true) {
+    if (!req.isREST) {
+        if (isQueryParamType(method)) {
+            getQueryData(req, onComplete);
+        } else if (isBodyParamType(method)) {
+            getBodyData(req, argList, onComplete);
+        }
+    } else {
         getRestData(req, argList, onComplete);
-    } else if (isQueryParamType(method)) {
-        getQueryData(req, onComplete);
-    } else if (isBodyParamType(method)) {
-        getBodyData(req, argList, onComplete);
     }
 }
 
@@ -75,7 +88,7 @@ function getBodyData(req, argList, onComplete) {
 
 function getRestData(req, argList, onComplete) {
     var url = req.url;
-    var param = url.substr(url.lastIndexOf("/")+1);
+    var param = url.substr(url.lastIndexOf("/") + 1);
     var output = {};
     output[argList[0]] = param;
     var method = req.method;
@@ -90,12 +103,12 @@ function getRestData(req, argList, onComplete) {
     }
 }
 
-function isBodyParamType(method){
+function isBodyParamType(method) {
     return (method == "POST") | (method == "PUT");
 }
 
-function isQueryParamType(method){
-    return (method == "GET") | (method == "DELETE") | (method == "HEAD")
+function isQueryParamType(method) {
+    return (method == "GET") | (method == "DELETE") | (method == "HEAD");
 }
 
 function resortDataIndex(data, argList) {

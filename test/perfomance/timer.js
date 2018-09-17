@@ -1,15 +1,14 @@
-const loop = 100000;
+const loop = 10000000;
 
-var a = { "a,b,c": "aohwefoi" };
-var b = ['a','b','c'];
+var a = ['1','3','6','4'];
 
 var t1 = () => {
-    var res = a[b+''];
+    var b= a[3];
 };
 
 var t2 = () => {
-    var res = a["a,b,c"]
-}
+    var b= a['3'];
+};
 
 // ------------------------------
 async function compare() {

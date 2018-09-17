@@ -8,7 +8,7 @@ var defaultConfig = {
     ...loadConfigFromFile()
 };
 
-var instanceStorage = {};
+var instanceContainer = {};
 
 module.exports = class ModuleManager {
     static getInstance(port = 3000, host = "localhost", prefix = "") {
@@ -22,6 +22,7 @@ module.exports = class ModuleManager {
             isDevMode: true,
             enableRESTFul: true,
             secret: generalSecretKey(),
+            baseURI: newInstance.baseURI,
             viewEngine: null,
             homeDir: "./",
             allowCache: true,
@@ -31,34 +32,24 @@ module.exports = class ModuleManager {
             ...defaultConfig[newInstance.baseURI]
         };
         newInstance.routerFactory = new RouterFactory(newInstance.config);
-
         newInstance.app = http.createServer();
 
-        instanceStorage[newInstance.baseURI] = newInstance;
-
-        return instanceStorage[newInstance.baseURI];
+        instanceContainer[newInstance.baseURI] = newInstance;
+        return instanceContainer[newInstance.baseURI];
     }
 
     enableMiddlewareByConfigFile() {
-        var fontwareList = defaultConfig.fontware;
-        Object.keys(fontwareList).forEach(key => {
-            fontwareList[key] = {
-                global: true,
-                name: key,
-                handle: require(fontwareList[key])
-            };
+        var fontWareList = defaultConfig.fontware;
+        Object.keys(fontWareList).forEach(name => {
+            var handle = require(fontWareList[name]);
+            addMiddleware(name, handle, true, true);
         });
-        this.enableFontware(fontwareList);
 
-        var backwareList = defaultConfig.backware;
-        Object.keys(backwareList).forEach(key => {
-            backwareList[key] = {
-                global: true,
-                name: key,
-                handle: require(backwareList[key])
-            };
+        var backWareList = defaultConfig.backware;
+        Object.keys(backWareList).forEach(name => {
+            var handle = require(fontWareList[name]);
+            addMiddleware(name, handle, true, false);
         });
-        this.enableBackware(backwareList);
     }
 
     setting(config = {}) {
@@ -70,13 +61,11 @@ module.exports = class ModuleManager {
     }
 
     static getInstanceManager() {
-        return instanceStorage;
+        return instanceContainer;
     }
 
     enableModule(moduleList) {
-        var url = this.prefix;
-        if (url != "") url = "/" + url;
-        url += "/";
+        var url = "/" + this.prefix;
         Object.keys(moduleList).forEach(moduleName => {
             this.routerFactory.registerRouter(
                 url,
@@ -86,15 +75,15 @@ module.exports = class ModuleManager {
         });
     }
 
-    enableFontware(fontwareList) {
-        Object.keys(fontwareList).forEach(name => {
-            this.addMiddleware(name, fontwareList[name], true);
+    enableFontWare(fontWareList) {
+        Object.keys(fontWareList).forEach(name => {
+            this.addMiddleware(name, fontWareList[name], true);
         });
     }
 
-    enableBackware(backwareList) {
-        Object.keys(backwareList).forEach(name => {
-            this.addMiddleware(name, backwareList[name], false);
+    enableBackWare(backWareList) {
+        Object.keys(backWareList).forEach(name => {
+            this.addMiddleware(name, backWareList[name], false);
         });
     }
 
@@ -104,8 +93,7 @@ module.exports = class ModuleManager {
         if (typeof handler == "object") {
             if (handler.global == true) isGlobal = true;
             handler = handler.handle;
-        }
-        if (typeof handler != "function") {
+        } else if (typeof handler != "function") {
             throw new Error(
                 `${
                     inFont ? "Fontware" : "Backware"
@@ -116,20 +104,19 @@ module.exports = class ModuleManager {
         addMiddleware(name, handler, isGlobal, inFont);
     }
 
-    startServer() {
+    startServer(callback) {
         this.app.on("request", (req, res) => {
             this.routerFactory.triggerRouter(req, res);
-            // console.timeEnd('request time')
         });
 
-        // this.app.on("connection", ()=>{
-        //     console.time('request time')
-        // })
+        if (typeof callback != "function") {
+            callback = () => {
+                console.log(
+                    `\nServer started at : http://${this.host}:${this.port}`
+                );
+            };
+        }
 
-        this.app.listen(this.port, this.host, () => {
-            console.log(
-                `\nServer started at : http://${this.host}:${this.port}`
-            );
-        });
+        this.app.listen(this.port, this.host, callback);
     }
 };

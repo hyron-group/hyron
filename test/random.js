@@ -1,9 +1,3 @@
-const ClientFile = require("../plugins/param-parser/type/ClientFile");
-var check = input => {
-    return (
-        (input instanceof ClientFile) &
-        (input != null && Buffer.byteLength(input.content) < 1000)
-    );
-};
+var a = ['1','3','6','4'];
 
-check();
+console.log(a.map(Number))

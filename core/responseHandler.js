@@ -1,10 +1,13 @@
+
 /**
  * @param {*} result
  * @param {http.ServerResponse} res
  */
 function handingResult(result, res, isDevMode = false) {
     if (result instanceof Promise) {
-        result.then(val => res.end(this.handingResult(val, res))).catch(err => {
+        result
+        .then(val => res.end(handingResult(val, res)))
+        .catch(err => {
             handingError(err, isDevMode);
         });
     } else if (result instanceof Error) {
@@ -34,17 +37,13 @@ function handingCustomResult(result, res) {
     res.end(data);
 }
 
-function handingError(result, res, isDevMode) {
-    var message = result.message;
-    var code = message.substr(0, 3);
-    if (!isNaN(code)) {
-        message = message.substr(4, message.length);
-    } else code = 403; // Forbidden
+function handingError(error, res, isDevMode) {
+    var message = error.message;
+    var code = error.code;
+    if (code == null) code = 403; // Forbidden
     res.statusCode = code;
-    res.write(message);
     if (isDevMode) {
-        // writelog('error', result.stack);
-        res.write("\n\n" + result.stack);
+        res.write(error.stack);
     }
     res.end();
 }

@@ -2,7 +2,7 @@ const getUriPath = require("../lib/queryParser").getUriPath;
 const { runFontWare, runBackWare } = require("./middleware");
 const http = require("http");
 const handleResult = require("./responseHandler");
-const RestRouter = [];
+const { StatusCode, HTTPMessage } = require("../type/HttpMessage");
 
 module.exports = class RouterFactory {
     /**
@@ -20,18 +20,19 @@ module.exports = class RouterFactory {
     constructor(config = {}) {
         this.listener = new Map();
         this.config = config;
+        this.restRouter = [];
     }
 
     registerRouter(url, moduleName, moduleClass) {
         var path = url + moduleName;
-        console.log("\nregister " + path);
+        console.log("\nModule : " + moduleName);
         this.initHandler(path, moduleName, moduleClass);
     }
 
     getListener(method, url) {
         var key = method + url;
         if (!RouterFactory.isSupported(method)) return null;
-        return this.listener[key];
+        return this.listener.get(key);
     }
 
     triggerRouter(req, res) {
@@ -39,8 +40,9 @@ module.exports = class RouterFactory {
         var eventName = req.method + uriPath;
         var execute = this.listener.get(eventName);
         if (execute == null) {
-            var restName = 'REST-'+eventName.substr(0, eventName.lastIndexOf("/"));
-            if (RestRouter.includes(restName)) {
+            var restName =
+                "REST-" + eventName.substr(0, eventName.lastIndexOf("/"));
+            if (this.restRouter.includes(restName)) {
                 eventName = restName; // support for REST API
                 req.isREST = true;
             } else {
@@ -49,9 +51,7 @@ module.exports = class RouterFactory {
 
             execute = this.listener.get(eventName);
             if (execute == null) {
-                var err = new Error(
-                    `${404}:Can't find router at path ${req.method + uriPath}`
-                );
+                var err = new HTTPMessage(StatusCode.NOT_FOUND, `Can't find router at ${uriPath}`);
                 handleResult(err, res, this.config.isDevMode);
                 return;
             }
@@ -71,10 +71,10 @@ module.exports = class RouterFactory {
                 `Module ${moduleName} do not contain requestConfig() method to config router`
             );
         Object.keys(requestConfig).forEach(methodName => {
-            console.log("lookup : " + methodName);
             var config = requestConfig[methodName];
             var methodType = config; // Inline mode
             var fontWareReq, backWareReq, enableREST;
+
             if (typeof config == "object") {
                 methodType = config.method;
                 fontWareReq = config.fontware;
@@ -91,20 +91,16 @@ module.exports = class RouterFactory {
             var mainExecute = instance[methodName];
 
             var eventName = methodType + url + "/" + methodName;
+            console.log(eventName);
             // Executer will call each request
             var isDevMode = this.config.isDevMode;
 
-            if (this.config.enableRESTFul==true & enableREST) {
-                eventName = 'REST-'+eventName;
-                RestRouter.push(eventName);
+            if (this.config.enableRESTFul & enableREST) {
+                eventName = "REST-" + eventName;
+                this.restRouter.push(eventName);
             }
 
-            if (methodType != null) console.log("-> method : " + methodType);
-            if (fontWareReq != null)
-                console.log("-> fontware : " + fontWareReq);
-            if (backWareReq != null)
-                console.log("-> backware : " + backWareReq);
-
+            console.log("-> event : " + eventName);
             // store listener
             this.listener.set(eventName, (req, res) => {
                 var thisArgs = {
@@ -112,8 +108,8 @@ module.exports = class RouterFactory {
                     $eventName: eventName
                 };
 
-                var getBackWareArgs = result => {
-                    return [
+                function callBackWare(result) {
+                    runBackWare(
                         eventName,
                         backWareReq,
                         thisArgs,
@@ -124,8 +120,8 @@ module.exports = class RouterFactory {
                         err => {
                             handleResult(err, res, isDevMode);
                         }
-                    ];
-                };
+                    );
+                }
 
                 runFontWare(
                     eventName,
@@ -135,10 +131,10 @@ module.exports = class RouterFactory {
                     args => {
                         var result = mainExecute.apply(thisArgs, args);
 
-                        runBackWare.apply(null, getBackWareArgs(result));
+                        callBackWare(result);
                     },
                     err => {
-                        runBackWare.apply(null, getBackWareArgs(err));
+                        callBackWare(err);
                     }
                 );
             });

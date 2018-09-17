@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 
-var handlerStorage = [];
+var handlerHolder = [];
 var customFontWareIndex = {};
 var customBackWareIndex = {};
 var globalFontWareIndex = {};
@@ -17,8 +17,8 @@ module.exports = {
 function addMiddleware(name, handle, isGlobal, inFont) {
     var index = indexOfHandle(name);
     if (index == -1) {
-        handlerStorage.push(handle);
-        index = handlerStorage.length - 1;
+        handlerHolder.push(handle);
+        index = handlerHolder.length - 1;
     }
     if (isGlobal) {
         if (inFont) globalFontWareIndex[index] = name;
@@ -64,9 +64,9 @@ function runMiddleware(
     args,
     onComplete,
     onFailed,
-    inFont
+    position
 ) {
-    var handlersIndex = prepareHandler(eventName, reqMidWare, inFont);
+    var handlersIndex = prepareHandler(eventName, reqMidWare, position);
 
     var i = -1;
 
@@ -89,9 +89,9 @@ function runMiddleware(
 
     function runNextMiddleware() {
         var indexInStorage = handlersIndex[++i];
-        if (args[1].finished != true) {
+        if (!args[1].finished) {
             if (indexInStorage != null) {
-                var execute = handlerStorage[indexInStorage];
+                var execute = handlerHolder[indexInStorage];
                 runFunc(execute);
             } else {
                 onComplete(args[2]);
@@ -102,23 +102,57 @@ function runMiddleware(
     runNextMiddleware();
 }
 
-function runFontWare(eventName, reqMidWare, thisArgs, args, onComplete, onFailed) {
-    runMiddleware(eventName, reqMidWare, thisArgs, args, onComplete, onFailed, true);
+function runFontWare(
+    eventName,
+    reqMidWare,
+    thisArgs,
+    args,
+    onComplete,
+    onFailed
+) {
+    runMiddleware(
+        eventName,
+        reqMidWare,
+        thisArgs,
+        args,
+        onComplete,
+        onFailed,
+        "font"
+    );
 }
 
-function runBackWare(eventName, reqMidWare, thisArgs, args, onComplete, onFailed) {
-    runMiddleware(eventName, reqMidWare, thisArgs, args, onComplete, onFailed, false);
+function runBackWare(
+    eventName,
+    reqMidWare,
+    thisArgs,
+    args,
+    onComplete,
+    onFailed
+) {
+    runMiddleware(
+        eventName,
+        reqMidWare,
+        thisArgs,
+        args,
+        onComplete,
+        onFailed,
+        "back"
+    );
 }
 
-function prepareHandler(eventName, reqMidWare, inFont) {
-    eventName += inFont ? "-font" : "-back";
+function prepareHandler(eventName, reqMidWare, position) {
+    eventName += position;
     var handlersIndex = executesMidWareIndex[eventName];
-    if (handlersIndex != null) return handlersIndex;
+    if (handlersIndex != null) {
+        return handlersIndex;
+    }
 
     var indexList = [];
     var disableList = [];
     var enableList = [];
     var disableAll = false;
+
+    var inFont = position == "font";
 
     for (var i in reqMidWare) {
         var middleware = reqMidWare[i];
@@ -133,7 +167,7 @@ function prepareHandler(eventName, reqMidWare, inFont) {
             // support embed middle handle in config
         } else if (typeof middleware == "function") {
             var newMiddlewareName = crypto
-                .createHash("sha1")
+                .createHash("md5")
                 .digest(middleware)
                 .toString("hex");
             addMiddleware(newMiddlewareName, middleware, false, inFont);
@@ -162,12 +196,13 @@ function prepareHandler(eventName, reqMidWare, inFont) {
     } else {
         for (var i in enableList) {
             var enableMidWareName = enableList[i];
-            indexList.push(customFontWareIndex[enableMidWareName]);
+            indexList.push(customBackWareIndex[enableMidWareName]);
         }
+
+        indexList = indexList.reverse();
     }
 
-    if (!inFont) indexList = indexList.reverse();
-
+    indexList = indexList.map(Number);
     executesMidWareIndex[eventName] = indexList;
 
     return indexList;
