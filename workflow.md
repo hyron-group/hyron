@@ -7,8 +7,8 @@
 (update 12/8/2018)
 
 # Todo
-- New Debug engine
 - Auth plugins
+- New Debug engine
 - Micro-service support
 - CLI tools for build & deploy app
 - Optimize performance & fix bug
