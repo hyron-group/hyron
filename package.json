@@ -1,16 +1,4 @@
 {
-  "_from": "hyron",
-  "_id": "hyron@1.2.6",
-  "_inBundle": false,
-  "_integrity": "sha512-1yBEpkueYoAy8esGPFUrwJs70eJVQS70d9uHymOddN+TXTobjrV9Yg4g/fiVRql8EUrNR8vN8T1fFwn9NwlaMQ==",
-  "_location": "/hyron",
-  "_phantomChildren": {},
-  "_shasum": "ee1f2545f2bd72156ca78f016f15d9ce1513c0c8",
-  "_spec": "hyron",
-  "_where": "D:\\Workspace\\Program\\Nodejs\\hyron.v2",
-  "author": {
-    "name": "thangphung"
-  },
   "bundleDependencies": false,
   "dependencies": {
     "busboy": "^0.2.14",
