@@ -47,7 +47,7 @@ module.exports = class ModuleManager {
 
         var backWareList = defaultConfig.backware;
         Object.keys(backWareList).forEach(name => {
-            var handle = require(fontWareList[name]);
+            var handle = require(backWareList[name]);
             addMiddleware(name, handle, true, false);
         });
     }

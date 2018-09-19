@@ -71,7 +71,9 @@ function runMiddleware(
     var i = -1;
 
     function runFunc(func) {
-        var result = func.apply(thisArgs, args);
+        var result;
+        result = func.apply(thisArgs, args);
+
         if (result instanceof Promise) {
             result
                 .then(data => {
@@ -98,8 +100,11 @@ function runMiddleware(
             }
         }
     }
-
-    runNextMiddleware();
+    try {
+        runNextMiddleware();
+    } catch (err) {
+        onFailed(err);
+    }
 }
 
 function runFontWare(

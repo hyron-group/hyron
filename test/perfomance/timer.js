@@ -1,13 +1,13 @@
-const loop = 10000000;
-
-var a = ['1','3','6','4'];
+const loop = 1000000;
+var pug = require("pug");
+var comp = pug.compileFile("./test/hello.pug", {cache:true, });
 
 var t1 = () => {
-    var b= a[3];
+    var res = comp({ name: "thang" });
 };
 
 var t2 = () => {
-    var b= a['3'];
+    // var res = comp({ name: "thang" });
 };
 
 // ------------------------------

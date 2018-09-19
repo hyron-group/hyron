@@ -51,7 +51,10 @@ module.exports = class RouterFactory {
 
             execute = this.listener.get(eventName);
             if (execute == null) {
-                var err = new HTTPMessage(StatusCode.NOT_FOUND, `Can't find router at ${uriPath}`);
+                var err = new HTTPMessage(
+                    StatusCode.NOT_FOUND,
+                    `Can't find router at ${uriPath}`
+                );
                 handleResult(err, res, this.config.isDevMode);
                 return;
             }
@@ -91,7 +94,6 @@ module.exports = class RouterFactory {
             var mainExecute = instance[methodName];
 
             var eventName = methodType + url + "/" + methodName;
-            console.log(eventName);
             // Executer will call each request
             var isDevMode = this.config.isDevMode;
 
@@ -122,7 +124,6 @@ module.exports = class RouterFactory {
                         }
                     );
                 }
-
                 runFontWare(
                     eventName,
                     fontWareReq,

@@ -8,7 +8,6 @@
 
 # Todo
 - New Debug engine
-- Security
 - Auth plugins
 - Micro-service support
 - CLI tools for build & deploy app
@@ -19,9 +18,10 @@
 - Cache plugin for cache response
 
 # Processing
-- Support View Engine (pug)
+- Security
 
 # Done
+- **Add view render module** : Support for Pug view engine
 - **Support config-by-file** : config hyron app inside appcfg.ini declared in root. Support inheritance in their plugins
 - **Plug-in mechanism** : make hyron become more flexible and convenient by install module with name @hyron/[plugin-name]
 - **Boot performance** : faster than ExpressJS ~40% (in rps)

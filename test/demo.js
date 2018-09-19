@@ -5,8 +5,8 @@ module.exports = class {
             showMyName: "get",
             upload: "post",
             sample: "get",
-            rs: {
-                method: "post",
+            view: {
+                method: "get",
                 enableREST: true
             }
         };
@@ -19,8 +19,15 @@ module.exports = class {
         return "Nice to meet you, " + name;
     }
 
-    rs(name, data) {
-        return data;
+    view(path) {
+        return {
+            $render:{
+                path,
+                data:{
+                    name:'thang'
+                }
+            }
+        };
     }
     upload(data, to) {
         /**
