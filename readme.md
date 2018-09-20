@@ -1,3 +1,6 @@
+<img src='https://i.imgur.com/mAjPWAu.png' width='240px'/>
+
+
 # Introduction (beta)
 
 hyron is an extremely powerful framework that helps you develop an extremely fast and easy server app.
