@@ -178,8 +178,8 @@ Description for Hyron framework to config router
         -   **string** : method type. hyron support for 6 type of basic http protocol : GET, POST, HEAD, DELETE, PUT, and ALL
         -   **object** { **method** , **fontware** , **backware**, **enableREST** } : router config
             -   **method** (string) : http protocol type like about
-            -   **fontware** ( array< string > ) : on / off fontware declared in enableFontWare() by name. to off global plugin, delare '!' before it name
-            -   **backware** ( array< string > ) : on / off fontware declared in enableBackWare() by name. to off global plugin, delare '!' before it name
+            -   **fontware** ( array< string | function > ) : on / off fontware declared in enableFontWare() by name. to off global plugin, delare '!' before it name
+            -   **backware** ( array< string | function > ) : on / off fontware declared in enableBackWare() by name. to off global plugin, delare '!' before it name
             -   **enableREST** ( boolean ) : true if you want to make this function become REST. Then, first argument of it will be load as router last path.
 
 ---
