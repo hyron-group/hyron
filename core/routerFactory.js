@@ -25,6 +25,7 @@ module.exports = class RouterFactory {
 
     registerRouter(url, moduleName, moduleClass) {
         var path = url + moduleName;
+        if (url == "/") path = "";
         console.log("\nModule : " + moduleName);
         this.initHandler(path, moduleName, moduleClass);
     }

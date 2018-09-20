@@ -24,20 +24,18 @@ function compile(homeDir = "./") {
 
 function scanPug(path) {
     var childPath = path;
-    try{
+    if (fs.existsSync(childPath) && fs.statSync(path).isDirectory) {
         var lsFile = fs.readdirSync(childPath);
         lsFile.forEach(name => {
-            try {
-                childPath = path + "/" + name;
+            childPath = path + "/" + name;
+            if (fs.existsSync(childPath) && fs.statSync(childPath).isDirectory) {
                 scanPug(childPath);
-            } catch (err) {
+            } else {
                 if (childPath.endsWith(fileExtension)) {
                     var compileResult = pug.compileFile(childPath);
                     viewCache[childPath] = compileResult;
                 }
             }
         });
-    } catch(err){
-        console.error('plugin view-loader disabled because '+err.message)
     }
 }
