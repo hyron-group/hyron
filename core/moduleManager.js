@@ -40,11 +40,12 @@ module.exports = class ModuleManager {
 
     enableMiddlewareByConfigFile() {
         var fontWareList = defaultConfig.fontware;
+        if(fontWareList!=null)
         Object.keys(fontWareList).forEach(name => {
             var handle = require(fontWareList[name]);
             addMiddleware(name, handle, true, true);
         });
-
+        if(backWareList!=null)
         var backWareList = defaultConfig.backware;
         Object.keys(backWareList).forEach(name => {
             var handle = require(backWareList[name]);
