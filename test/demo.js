@@ -13,9 +13,6 @@ module.exports = class {
     }
 
     showMyName(name) {
-        /**
-         * @param name {type:string, size: 1000}
-         */
         return "Nice to meet you, " + name;
     }
 
