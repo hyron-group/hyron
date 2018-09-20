@@ -11,6 +11,7 @@ module.exports = (req, res, result) => {
             ViewEngine(path, data, res);
         }
     }
+    return result;
 };
 
 function initEngine() {

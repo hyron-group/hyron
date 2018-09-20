@@ -132,7 +132,6 @@ module.exports = class RouterFactory {
                     [req, res],
                     args => {
                         var result = mainExecute.apply(thisArgs, args);
-
                         callBackWare(result);
                     },
                     err => {
