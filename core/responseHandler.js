@@ -40,7 +40,7 @@ function handingCustomResult(result, res) {
 function handingError(error, res, isDevMode) {
     var message = error.message;
     var code = error.code;
-    if (code == null) code = 403; // Forbidden
+    if (isNaN(code)) code = 403; // Forbidden
     res.statusCode = code;
     if (isDevMode) {
         res.write(error.stack);

@@ -96,6 +96,7 @@ module.exports = class ModuleManager {
     
     enableModule(moduleList) {
         var url = "/" + this.prefix;
+        if(this.prefix!="") url+='/';
         Object.keys(moduleList).forEach(moduleName => {
             this.routerFactory.registerRouter(
                 url,

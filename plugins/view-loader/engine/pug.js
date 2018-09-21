@@ -1,6 +1,8 @@
 const pug = require("pug");
 const fs = require("fs");
 const fileExtension = ".pug";
+const {HTTPMessage} = require('../../../type/HttpMessage');
+
 
 var viewCache = {};
 var viewDir = "";
@@ -13,6 +15,8 @@ function render(path, data, res) {
     if (compiledView != null) {
         var renderedView = compiledView(data);
         res.end(renderedView);
+    } else {
+        throw new HTTPMessage(404, `Not found page "${path}"`)
     }
 }
 
