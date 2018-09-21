@@ -24,11 +24,11 @@ function compile(homeDir = "./") {
 
 function scanPug(path) {
     var childPath = path;
-    if (fs.existsSync(childPath) && fs.statSync(path).isDirectory) {
+    if (fs.existsSync(childPath) && fs.statSync(path).isDirectory()==true) {
         var lsFile = fs.readdirSync(childPath);
         lsFile.forEach(name => {
             childPath = path + "/" + name;
-            if (fs.existsSync(childPath) && fs.statSync(childPath).isDirectory) {
+            if (fs.existsSync(childPath) && fs.statSync(childPath).isDirectory()==true) {
                 scanPug(childPath);
             } else {
                 if (childPath.endsWith(fileExtension)) {

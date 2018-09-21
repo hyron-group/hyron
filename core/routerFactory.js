@@ -64,7 +64,7 @@ module.exports = class RouterFactory {
     }
 
     static isSupported(method) {
-        return ["GET", "POST", "HEAD", "DELETE", "PUT"].includes(method);
+        return ["GET", "POST", "HEAD", "DELETE", "PUT", "ALL"].includes(method);
     }
 
     initHandler(url, moduleName, moduleClass) {
