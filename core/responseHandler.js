@@ -44,7 +44,7 @@ function handingError(error, res, isDevMode) {
     res.statusCode = code;
     if (isDevMode) {
         res.write(error.stack);
-    }
+    } else res.write(message);
     res.end();
 }
 
