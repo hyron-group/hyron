@@ -27,7 +27,7 @@
   "main": "index.js",
   "name": "hyron",
   "scripts": {
-    "start": "node ./test/app.js",
+    "start": "node ./core/test.js",
     "test": "nodemon ./core/test.js"
   },
   "version": "1.5.11"

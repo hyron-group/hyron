@@ -1,6 +1,5 @@
 <img src='https://i.imgur.com/mAjPWAu.png' width='240px'/>
 
-
 # Introduction (beta)
 
 hyron is an extremely powerful framework that helps you develop an extremely fast and easy server app.
@@ -74,7 +73,7 @@ Call this method by **require('hyron')**
 
 This method used to config app and installed plugins
 
-### **params : **
+### **params :**
 
 -   **config** ( object {key : value} ) : config of app or it plugins
 
@@ -127,7 +126,7 @@ This method used to register plugins will be executed after handler (declare in 
 
 Any predefined plugin will be run last
 
-### **param :**
+### **params :**
 
 -   **fontware** (object {**name** : **handle**} ): contain list of plugin and it config
     -   **name** ( string ) : name of plugins
@@ -158,7 +157,7 @@ Register main handle (logic of routers)
 
 Start this instance for listen client request
 
-### **param :**
+### **params :**
 
 -   **callback** ( function ) : event when server started
 
@@ -243,22 +242,23 @@ return this.$requestHeaders;
 }
 ```
 
---- 
+---
 
 > ### view-loader
 
 This is a backware plugin used to render view. Current just support for PUG engine
 
 **Setting supported :**
+
 ```ini
 [view-loader]
-engine='pug' 
+engine='pug'
 homeDir='www'
 ```
 
 to render a view. return object
 
-```js 
+```js
 {
     $render : {
         path : [viewPath],

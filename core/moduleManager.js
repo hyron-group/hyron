@@ -4,9 +4,12 @@ const { generalSecretKey } = require("../lib/token");
 const { addMiddleware } = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
 
+
 var defaultConfig = {
+    hotReload: false,
     ...loadConfigFromFile()
 };
+
 
 var instanceContainer = {};
 
@@ -32,7 +35,6 @@ module.exports = class ModuleManager {
             enableRESTFul: true,
             secret: generalSecretKey(),
             poweredBy: "hyron",
-            hotReload: false,
             timeout: 60000,
             ...defaultConfig[newInstance.baseURI]
         };
@@ -41,6 +43,10 @@ module.exports = class ModuleManager {
 
         instanceContainer[newInstance.baseURI] = newInstance;
         return instanceContainer[newInstance.baseURI];
+    }
+
+    static enablePlugins(pluginList){
+        
     }
 
     /**@deprecated This method automatic execute first time you require('hyron'). You don't need to call it again */
@@ -66,7 +72,7 @@ module.exports = class ModuleManager {
      * @param {boolean} [config.enableRESTFul=true] if true, app will support for REST-API. Enable REST method in requestConfig() method
      * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
      * @param {boolean} [config.hotReload=false]: if true, server will listen every change and reset if nesecc of source code
-     * 
+     *
      */
     setting(config) {
         Object.assign(this.config, config);
@@ -93,10 +99,9 @@ module.exports = class ModuleManager {
         return instanceContainer;
     }
 
-    
     enableModule(moduleList) {
         var url = "/" + this.prefix;
-        if(this.prefix!="") url+='/';
+        if (this.prefix != "") url += "/";
         Object.keys(moduleList).forEach(moduleName => {
             this.routerFactory.registerRouter(
                 url,
@@ -151,3 +156,5 @@ module.exports = class ModuleManager {
         this.app.listen(this.port, this.host, callback);
     }
 };
+
+require('./serverReloader');
