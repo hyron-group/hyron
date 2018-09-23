@@ -232,7 +232,7 @@ This is a fontware plugin to parser client request data to function input as pri
 It supported for
 
 -   GET, HEAD, DELETE : as query type.
--   POST, PUT : as body type
+-   POST, PUT, PATCH : as body type
 
 It also include feature help you validate input easier with comment :
 
@@ -243,6 +243,7 @@ It also include feature help you validate input easier with comment :
 **Supported condition :**
 
 -   type ( string ) : check if field match with type declared.
+-   mime ( string ) : check if upload is type of mime, if type=ClientFile 
 -   size ( number ) : check if field size small than or equal size
 -   gt (number) : check if field greater than gt
 -   gte (number) : check if field greater than or equal gte
