@@ -1,4 +1,6 @@
 var ViewEngine;
+const HTTPMessage = require("../../type/HttpMessage");
+const StatusCode = require("../../type/StatusCode");
 
 initEngine();
 
@@ -21,6 +23,21 @@ function initEngine() {
     if (viewConfig == null) return;
     var viewEngineName = viewConfig.engine;
     var homeDir = viewConfig.homeDir;
-    var compileView = require("./engine/" + viewEngineName);
-    ViewEngine = compileView(homeDir);
+    if (viewEngineName != null)
+        try {
+            var compileView = require("./engine/" + viewEngineName);
+            ViewEngine = compileView(homeDir);
+        } catch (err) {
+            ViewEngine = () => {
+                throw new HTTPMessage(
+                    StatusCode.INTERNAL_SERVER_ERROR,
+                    "Can't render this view"
+                );
+            };
+            console.log(
+                `[warning] Can't load engine ${viewEngineName} because ${
+                    err.message
+                }`
+            );
+        }
 }

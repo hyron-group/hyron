@@ -56,7 +56,7 @@ A router register on :
 
 ## Class : ModuleManager (hyron)
 
-> ### _static_ **getInstance** (port, host, prefix) : ModuleManager
+> ### _static_ **getInstance** ( port, host, prefix ) : ModuleManager
 
 This method used to create new app instance.
 Call this method by **require('hyron')**
@@ -69,21 +69,43 @@ Call this method by **require('hyron')**
 
 ---
 
-> ### **setting** ( {config} ) : void
+> ### **setting** ( config ) : void
 
 This method used to config app and installed plugins
 
 ### **params :**
 
--   **config** ( object {key : value} ) : config of app or it plugins
+-   **config** ( object ) : config of app or it plugins
 
 ---
 
-> ### _static_ **getConfig** (name) : string | object<?>
+> ### _static_ **getConfig** ( name ) : string | object<?>
 
 This method used to get config of app or installed plugins by name
 
 ---
+
+> ### **addons** ( addonsList ) : void
+
+This method used to register addons for more action, like work with socket, connect, config, or do something at runtime
+
+ **params :**
+
+ - **addonsList** ( array [ object { eventName, handle }] )
+    - **eventName** (string) : include node http event : checkContinue, checkExpectation, clientError, close, connect, connection, request, upgrade, and hyron event : config, runtime
+    - **handle** (function) : handle for event
+
+---
+
+> ### _static_ **getConfig** ( name ) : string | object<?>
+
+This method used to get config of app or installed plugins by name
+
+**params :**
+- **name** (string) : config item name or plugin name
+
+---
+
 
 > ### _static_ **getInstanceManager** () : Object<baseURI, ModuleManager>
 
@@ -99,7 +121,7 @@ This function used to load config from appcfg.ini file from root and their plugi
 
 ---
 
-> ### **enableFontWare** ( {fontware} ) : void
+> ### **enableFontWare** ( fontware ) : void
 
 This method used to register plugins will be executed before handler (declare in enableModule()) to handle client request for input
 
@@ -114,13 +136,13 @@ Any predefined plugin will be run first
         -   **object** { **global** , **handle** } : meta data for handle
             -   **global** ( boolean ) : true if you want auto execute this plugins before every main handle
             -   **handle** ( function(req, res, prev) ) : like below handle
-                -   req (IncomingMessage) : client request
-                -   res (ServerResponse) : server response
-                -   prev : preview data return by abort fontware
+                -   **req** (IncomingMessage) : client request
+                -   **res** (ServerResponse) : server response
+                -   **prev** : preview data return by abort fontware
 
 ---
 
-> ### **enableBackware** ( {backware} ) : void
+> ### **enableBackware** ( backware ) : void
 
 This method used to register plugins will be executed after handler (declare in enableModule()) to handle server response for output
 
@@ -141,7 +163,7 @@ Any predefined plugin will be run last
 
 ---
 
-> ### enableModule ( {module} ) : void
+> ### enableModule ( module ) : void
 
 Register main handle (logic of routers)
 
@@ -160,6 +182,25 @@ Start this instance for listen client request
 ### **params :**
 
 -   **callback** ( function ) : event when server started
+
+---
+
+## type/HTTPMessage
+
+HTTP Message is extend of Error. Used to break a task and notify to client in hyron class. Make your code more clear
+
+> ### constructor ( code, message ) : Error
+
+### **params :**
+
+- **code** (number) : status code
+- **message** (string) : status message
+
+---
+
+## type/StatusCode
+
+Is a list of common status code from 1XX to 5XX. This class used with type/HTTPMessage
 
 ---
 

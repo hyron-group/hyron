@@ -1,7 +1,7 @@
 const pug = require("pug");
 const fs = require("fs");
 const fileExtension = ".pug";
-const {HTTPMessage} = require('../../../type/HttpMessage');
+const HTTPMessage = require('../../../type/HttpMessage');
 
 
 var viewCache = {};

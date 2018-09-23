@@ -68,7 +68,7 @@ function getBodyData(req, argList, onComplete) {
             var data = queryParser.getQuery("?" + chunk.toString());
             onComplete(data);
         });
-    } else if (reqBodyType.startsWith("multipart/form-data")) {
+    } else if (reqBodyType.startsWith("multipart")) {
         multiPartParser(req, onComplete);
     } else {
         var buf = [];
@@ -104,7 +104,7 @@ function getRestData(req, argList, onComplete) {
 }
 
 function isBodyParamType(method) {
-    return (method == "POST") | (method == "PUT");
+    return (method == "POST") | (method == "PUT") | (method == "PATCH");
 }
 
 function isQueryParamType(method) {

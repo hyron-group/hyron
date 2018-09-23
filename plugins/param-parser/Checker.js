@@ -67,7 +67,9 @@ function getCheckerExecList(funcName, raw) {
                 )
             )
                 buf += ` & (typeof input === '${curCondition.type}')`;
-            else buf += ` & (input instanceof ${curCondition.type})`;
+            else {
+                buf += ` & (input instanceof ${curCondition.type})`;
+            }
         }
         if (curCondition.size != null) {
             if (curCondition.type == "Buffer")
@@ -77,6 +79,11 @@ function getCheckerExecList(funcName, raw) {
                     curCondition.size
                 })`;
             else buf += ` & (input.length < ${curCondition.size})`;
+        }
+        if (curCondition.mime != null) {
+            //TODO: support for mime type
+            if (curCondition.type == "ClientFile")
+                buf += ` & (input !=null && input.type == ${curCondition.mime})`;
         }
         if (curCondition.gt != null) buf += ` & (input > ${curCondition.gt})`;
         if (curCondition.lt != null) buf += ` & (input < ${curCondition.lt})`;

@@ -2,7 +2,8 @@ const getUriPath = require("../lib/queryParser").getUriPath;
 const { runFontWare, runBackWare } = require("./middleware");
 const http = require("http");
 const handleResult = require("./responseHandler");
-const { StatusCode, HTTPMessage } = require("../type/HttpMessage");
+const HTTPMessage = require("../type/HttpMessage");
+const StatusCode = require('../type/StatusCode');
 
 module.exports = class RouterFactory {
     /**
@@ -64,7 +65,15 @@ module.exports = class RouterFactory {
     }
 
     static isSupported(method) {
-        return ["GET", "POST", "HEAD", "DELETE", "PUT", "ALL"].includes(method);
+        return [
+            "GET",
+            "POST",
+            "HEAD",
+            "DELETE",
+            "PUT",
+            "PATCH",
+            "ALL"
+        ].includes(method);
     }
 
     initHandler(url, moduleName, moduleClass) {

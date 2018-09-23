@@ -4,18 +4,15 @@ const { generalSecretKey } = require("../lib/token");
 const { addMiddleware } = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
 
-
 var defaultConfig = {
-    hotReload: false,
     ...loadConfigFromFile()
 };
-
 
 var instanceContainer = {};
 
 module.exports = class ModuleManager {
     /**
-     * Get a instance of server app.
+     * @description Get a instance of server app.
      *
      * @static
      * @param {number} [port=3000] port number of server app listen in
@@ -45,8 +42,23 @@ module.exports = class ModuleManager {
         return instanceContainer[newInstance.baseURI];
     }
 
-    static enablePlugins(pluginList){
-        
+    /**
+     * @description add addons
+     * @param {{eventName:string,handle:function}[]} addonsList
+     */
+    addons(addonsList) {
+        if (addonsList != null) {
+            addonsList.forEach(item => {
+                Object.keys(item).forEach(eventName => {
+                    var handler = item[eventName];
+                    if (eventName == "config") {
+                        handler(this.config);
+                    } else if (eventName == "runtime") {
+                        handler();
+                    } else this.app.on(eventName, handler);
+                });
+            });
+        }
     }
 
     /**@deprecated This method automatic execute first time you require('hyron'). You don't need to call it again */
@@ -66,20 +78,18 @@ module.exports = class ModuleManager {
     }
 
     /**
-     *
-     * @param {object} config setup app or it plugins with config
+     *@description Setup app or it plugins with config
+     * @param {object} config
      * @param {boolean} [config.isDevMode=true] if true, app will collect bug, log for development. Else, app will optimized for performance
      * @param {boolean} [config.enableRESTFul=true] if true, app will support for REST-API. Enable REST method in requestConfig() method
      * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
-     * @param {boolean} [config.hotReload=false]: if true, server will listen every change and reset if nesecc of source code
-     *
      */
     setting(config) {
         Object.assign(this.config, config);
     }
 
     /**
-     * return config value of name
+     * @description Return config value of name
      *
      * @static
      * @param {*} name name of app setting field or a installed plugin
@@ -90,15 +100,19 @@ module.exports = class ModuleManager {
     }
 
     /**
-     * return set of instance created
+     * @description Return set of instance created
      *
      * @static
-     * @returns {Object.<string,ModuleManager>} instances created by getInstance()
+     * @returns {{baseURI:string,instance:ModuleManager}} instances created by getInstance()
      */
     static getInstanceManager() {
         return instanceContainer;
     }
 
+    /**
+     * @description Register router by function packages
+     * @param {{moduleName:string,hyronClass:function}} moduleList
+     */
     enableModule(moduleList) {
         var url = "/" + this.prefix;
         if (this.prefix != "") url += "/";
@@ -111,17 +125,26 @@ module.exports = class ModuleManager {
         });
     }
 
+     /**
+     * @description Register functions run before a router. Any predefined function will run first
+     * @param {{name:string,handle:function|{method:string,handle:function,global:boolean}}} fontWareList
+     */
     enableFontWare(fontWareList) {
         Object.keys(fontWareList).forEach(name => {
             this.addMiddleware(name, fontWareList[name], true);
         });
     }
 
+         /**
+     * @description Register functions run after a router. Any predefined function will run last
+     * @param {{name:string,handle:function|{method:string,handle:function,global:boolean}}} backWareList
+     */
     enableBackWare(backWareList) {
         Object.keys(backWareList).forEach(name => {
             this.addMiddleware(name, backWareList[name], false);
         });
     }
+
 
     addMiddleware(name, meta, inFont) {
         var handler = meta;
@@ -140,6 +163,10 @@ module.exports = class ModuleManager {
         addMiddleware(name, handler, isGlobal, inFont);
     }
 
+    /**
+     * @description start server
+     * @param {function} callback
+     */
     startServer(callback) {
         this.app.on("request", (req, res) => {
             this.routerFactory.triggerRouter(req, res);
@@ -156,5 +183,3 @@ module.exports = class ModuleManager {
         this.app.listen(this.port, this.host, callback);
     }
 };
-
-require('./serverReloader');

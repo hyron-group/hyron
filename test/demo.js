@@ -4,7 +4,7 @@ module.exports = class {
         return {
             showMyName: "get",
             upload: "post",
-            sample: "get",
+            sample: "patch",
             view: {
                 method: "get",
                 enableREST: true
