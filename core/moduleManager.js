@@ -125,7 +125,7 @@ module.exports = class ModuleManager {
         });
     }
 
-     /**
+    /**
      * @description Register functions run before a router. Any predefined function will run first
      * @param {{name:string,handle:function|{method:string,handle:function,global:boolean}}} fontWareList
      */
@@ -135,7 +135,7 @@ module.exports = class ModuleManager {
         });
     }
 
-         /**
+    /**
      * @description Register functions run after a router. Any predefined function will run last
      * @param {{name:string,handle:function|{method:string,handle:function,global:boolean}}} backWareList
      */
@@ -144,7 +144,6 @@ module.exports = class ModuleManager {
             this.addMiddleware(name, backWareList[name], false);
         });
     }
-
 
     addMiddleware(name, meta, inFont) {
         var handler = meta;

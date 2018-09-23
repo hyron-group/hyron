@@ -1,5 +1,7 @@
 const commentParser = require("./lib/commentParser");
 const stringToObject = require("../../lib/objectParser");
+const HTTPMessage = require("../../type/HttpMessage");
+const StatusCode = require("../../type/StatusCode");
 const conditionReg = /(@param\s+([\w\d]+)\s*([\w\d\s:,\u002d\002b%^&*\[\]\{\}]*))/g;
 
 const ClientFile = require("./type/ClientFile");
@@ -20,8 +22,9 @@ function getInvalidTypeError(paramName, funcName) {
         /input/g,
         `[${paramName}]`
     );
-    return new Error(
-        `406:Invalid param '${paramName}', check if param satisfying conditions ${condition}`
+    return new HTTPMessage(
+        StatusCode.NOT_ACCEPTABLE,
+        `Invalid param '${paramName}', check if param satisfying conditions ${condition}`
     );
 }
 
@@ -83,7 +86,9 @@ function getCheckerExecList(funcName, raw) {
         if (curCondition.mime != null) {
             //TODO: support for mime type
             if (curCondition.type == "ClientFile")
-                buf += ` & (input !=null && input.type == ${curCondition.mime})`;
+                buf += ` & (input !=null && input.type == ${
+                    curCondition.mime
+                })`;
         }
         if (curCondition.gt != null) buf += ` & (input > ${curCondition.gt})`;
         if (curCondition.lt != null) buf += ` & (input < ${curCondition.lt})`;
