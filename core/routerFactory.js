@@ -3,7 +3,7 @@ const { runFontWare, runBackWare } = require("./middleware");
 const http = require("http");
 const handleResult = require("./responseHandler");
 const HTTPMessage = require("../type/HttpMessage");
-const StatusCode = require('../type/StatusCode');
+const StatusCode = require("../type/StatusCode");
 
 module.exports = class RouterFactory {
     /**
@@ -103,7 +103,8 @@ module.exports = class RouterFactory {
 
             var mainExecute = instance[methodName];
 
-            var eventName = methodType + url + "/" + methodName;
+            var eventName =
+                methodType + url + "/" + moduleName + "/" + methodName;
             // Executer will call each request
             var isDevMode = this.config.isDevMode;
 
