@@ -5,13 +5,12 @@ var supportedArgs = {
     $httpVersion: "req.httpVersion",
     $connection: "req.connection",
     $socket: "req.socket",
-    $write: "req.write",
     $close:"req.close",
-    $statusCode:"req.status",
     $setTimeout:"req.setTimeout",
+    $timeout:"req.timeout",
     $statusMessage: "req.statusMessage",
-    $cookie: "req.cookie"
-    
+    $rawUrl: "req.url",
+    $trailers: "req.trailers",
 };
 var argsStorage = {};
 
