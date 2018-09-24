@@ -27,6 +27,7 @@ function addMiddleware(name, handle, isGlobal, inFont) {
         if (inFont) customFontWareIndex[name] = index;
         else customBackWareIndex[name] = index;
     }
+    console.log(`Registered ${inFont?"fontware":"backware"} ${name} ${isGlobal?"as global":""}`)
 }
 
 function indexOfHandle(name) {
