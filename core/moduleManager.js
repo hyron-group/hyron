@@ -66,14 +66,30 @@ module.exports = class ModuleManager {
         var fontWareList = defaultConfig.fontware;
         if (fontWareList != null)
             Object.keys(fontWareList).forEach(name => {
-                var handle = require(fontWareList[name]);
-                addMiddleware(name, handle, true, true);
+                try {
+                    var handle = require(fontWareList[name]);
+                    addMiddleware(name, handle, true, true, this.config);
+                } catch (err) {
+                    console.error(
+                        `[warning] can't setup fontware : '${name}' because ${
+                            err.message
+                        }`
+                    );
+                }
             });
         var backWareList = defaultConfig.backware;
         if (backWareList != null)
             Object.keys(backWareList).forEach(name => {
-                var handle = require(backWareList[name]);
-                addMiddleware(name, handle, true, false);
+                try {
+                    var handle = require(backWareList[name]);
+                    addMiddleware(name, handle, true, false, this.config);
+                } catch (err) {
+                    console.error(
+                        `[warning] can't setup backware : '${name}' because ${
+                            err.message
+                        }`
+                    );
+                }
             });
     }
 
@@ -158,7 +174,7 @@ module.exports = class ModuleManager {
             );
         }
 
-        addMiddleware(name, handler, isGlobal, inFont);
+        addMiddleware(name, handler, isGlobal, inFont, this.config);
     }
 
     /**

@@ -14,7 +14,8 @@ module.exports = {
     runBackWare
 };
 
-function addMiddleware(name, handle, isGlobal, inFont) {
+function addMiddleware(name, handle, isGlobal, inFont, config) {
+    // handle = handle.bind(config);
     var index = indexOfHandle(name);
     if (index == -1) {
         handlerHolder.push(handle);

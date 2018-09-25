@@ -1,13 +1,10 @@
-
 /**
  * @param {*} result
  * @param {http.ServerResponse} res
  */
 function handingResult(result, res, isDevMode = false) {
     if (result instanceof Promise) {
-        result
-        .then(val => res.end(handingResult(val, res)))
-        .catch(err => {
+        result.then(val => res.end(handingResult(val, res))).catch(err => {
             handingError(err, isDevMode);
         });
     } else if (result instanceof Error) {

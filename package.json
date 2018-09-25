@@ -29,7 +29,7 @@
   "name": "hyron",
   "scripts": {
     "start": "node ./core/test.js",
-    "test": "nodemon ./core/test.js"
+    "test": "nodemon ./test/test.js"
   },
   "version": "1.6.4"
 }

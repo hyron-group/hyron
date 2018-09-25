@@ -1,5 +1,10 @@
-var hyron = require('../core/moduleManager');
+function a() {
+    console.log(this.v);
+    console.log(this.c);
+}
 
-var app = hyron.getInstance();
+// a = a.bind({ v: 10 });
 
-hyron.g
+
+a()
+a.apply({ v: 12 });

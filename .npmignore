@@ -2,6 +2,7 @@ node_modules/
 .log/
 .history/
 .github/
+test/
 yarn.lock
 yarn.lock
 workflow.md
