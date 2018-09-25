@@ -25,10 +25,8 @@ module.exports = class RouterFactory {
     }
 
     registerRouter(url, moduleName, moduleClass) {
-        var path = url + moduleName;
-        if (url == "/") path = "";
         console.log("\nModule : " + moduleName);
-        this.initHandler(path, moduleName, moduleClass);
+        this.initHandler(url, moduleName, moduleClass);
     }
 
     getListener(method, url) {
@@ -103,8 +101,13 @@ module.exports = class RouterFactory {
 
             var mainExecute = instance[methodName];
 
-            var eventName =
-                methodType + url + "/" + moduleName + "/" + methodName;
+            var eventName = getEventName(
+                methodType,
+                url,
+                moduleName,
+                methodName
+            );
+
             // Executer will call each request
             var isDevMode = this.config.isDevMode;
 
@@ -152,3 +155,11 @@ module.exports = class RouterFactory {
         });
     }
 };
+
+function getEventName(method, baseurl, moduleName, methodName) {
+    var uri = method + "/";
+    if (baseurl != "") uri += baseurl + "/";
+    if (moduleName != "") uri += moduleName + "/";
+    if (methodName != "") uri += methodName;
+    return uri;
+}

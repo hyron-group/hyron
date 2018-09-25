@@ -1,7 +1,7 @@
 {
-  "name": "@hyron/args-loader",
-  "version": "1.0.0",
-  "description": "a simple fontware  plugins for load client request info into this scope",
+  "name": "@hyron/param-parser",
+  "version": "1.0.1",
+  "description": "A hyron fontware plugins to parser client data into main handle function",
   "main": "index.js",
   "directories": {
     "lib": "lib"

@@ -1,7 +1,6 @@
 const argumentParser = require("./lib/argumentParser");
 const Checker = require("./Checker");
-const queryParser = require("../../lib/queryParser");
-const ModuleManager = require("../../core/moduleManager");
+const queryParser = require("./lib/queryParser");
 const multiPartParser = require("./lib/multipartParser");
 
 var handleHolder = {};

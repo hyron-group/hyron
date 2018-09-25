@@ -1,7 +1,7 @@
 const commentParser = require("./lib/commentParser");
-const stringToObject = require("../../lib/objectParser");
-const HTTPMessage = require("../../type/HttpMessage");
-const StatusCode = require("../../type/StatusCode");
+const stringToObject = require("./lib/objectParser");
+const HTTPMessage = require("hyron/type/HTTPMessage");
+const StatusCode = require("hyron/type/StatusCode");
 const conditionReg = /(@param\s+([\w\d]+)\s*([\w\d\s:,\u002d\002b%^&*\[\]\{\}]*))/g;
 
 const ClientFile = require("./type/ClientFile");

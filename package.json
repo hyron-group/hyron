@@ -8,7 +8,11 @@
     "jsonwebtoken": "^8.3.0",
     "nodemon": "^1.18.4",
     "pug": "^2.0.3",
-    "writelog": "^1.1.3"
+    "string-to-jsobject":"^1.0.0",
+    "writelog": "^1.1.3",
+    "@hyron/param-parser":"^1.0.1",
+    "@hyron/args-loader":"^1.0.0",
+    "@hyron/view-loader":"^1.0.0"
   },
   "repository": {
     "type": "git",
