@@ -1,6 +1,6 @@
 const http = require("http");
 const RouterFactory = require("./routerFactory");
-const { generalSecretKey } = require("../lib/token");
+const generalSecretKey = require("../lib/generalKey");
 const { addMiddleware } = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
 
@@ -114,8 +114,7 @@ module.exports = class ModuleManager {
      * @param {{moduleName:string,hyronClass:function}} moduleList
      */
     enableModule(moduleList) {
-        var url = "/" + this.prefix;
-        if (this.prefix != "") url += "/";
+        var url = this.prefix;
         Object.keys(moduleList).forEach(moduleName => {
             this.routerFactory.registerRouter(
                 url,

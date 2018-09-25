@@ -1,3 +1,5 @@
+const stringToObject = require("./objectParser.js");
+
 function parseURI(path) {
     var httpReqReg = /(([\w\d]+):\/\/([\w\d._\-:]+))?([\w\d._\-/:]+)[?]?/;
     var match = httpReqReg.exec(path);
@@ -23,8 +25,27 @@ function getRouter(rawUrl) {
     return route;
 }
 
+function getQuery(rawUrl) {
+    var queryBuffer = [];
+    var separateIndex = rawUrl.indexOf("?");
+    if (separateIndex != -1) {
+        queryBuffer = decodeURI(rawUrl.substr(separateIndex + 1)).split("&");
+    }
+
+    var query = {};
+    queryBuffer.forEach(entry => {
+        var pairSeparate = entry.indexOf("=");
+        var key = entry.substr(0, pairSeparate);
+        var val = entry.substr(pairSeparate + 1);
+        query[key] = stringToObject(val);
+    });
+
+    return query;
+}
+
 module.exports = {
     parseURI,
     getRouter,
+    getQuery,
     getUriPath
 };

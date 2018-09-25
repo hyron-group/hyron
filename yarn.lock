@@ -2,6 +2,18 @@
 # yarn lockfile v1
 
 
+"@hyron/args-loader@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@hyron/args-loader/-/args-loader-1.0.0.tgz#b993f22ea06dff94ff3d1a951e38d912de564320"
+
+"@hyron/param-parser@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@hyron/param-parser/-/param-parser-1.0.1.tgz#190d4d1edf02e7f7dc2cab48c085b5523df7da6f"
+
+"@hyron/view-loader@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@hyron/view-loader/-/view-loader-1.0.0.tgz#a6a7d887c3af2dd1e896a93e025e735d5b5ab894"
+
 "@sellside/emitter@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@sellside/emitter/-/emitter-1.2.1.tgz#0dd839c30cdf01087f4dc63613503da6bcdf5f1e"
@@ -1753,6 +1765,10 @@ stream-combiner@~0.0.4:
 streamsearch@0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/streamsearch/-/streamsearch-0.1.2.tgz#808b9d0e56fc273d809ba57338e929919a1a9f1a"
+
+string-to-jsobject@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/string-to-jsobject/-/string-to-jsobject-1.0.0.tgz#fa3b3c11fa99ef061e04058cd4e1b2e6a47f3b09"
 
 string-width@^1.0.1:
   version "1.0.2"

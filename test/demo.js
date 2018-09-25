@@ -1,4 +1,3 @@
-const writelog = require("writelog");
 module.exports = class {
     static requestConfig() {
         return {
