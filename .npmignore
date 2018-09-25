@@ -1,3 +1,7 @@
 node_modules/
 .log/
 .history/
+.github/
+yarn.lock
+yarn.lock
+workflow.md
