@@ -32,5 +32,5 @@
     "start": "node ./core/test.js",
     "test": "nodemon ./test/test.js"
   },
-  "version": "1.6.5"
+  "version": "1.6.6"
 }
