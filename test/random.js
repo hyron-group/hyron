@@ -1,10 +1,9 @@
-function a() {
-    console.log(this.v);
-    console.log(this.c);
+function a(v, c, b) {
+    console.log(this.r);
+    console.log(this.y);
+    console.log(arguments);
 }
 
-// a = a.bind({ v: 10 });
+a = a.bind({r:10}, '32a', false)
 
-
-a()
-a.apply({ v: 12 });
+a.apply({y:32}, ['re']);

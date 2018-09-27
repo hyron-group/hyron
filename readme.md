@@ -13,6 +13,9 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 -   **High-Performance** : Hyron is 40% more efficient than ExpressJS (by rps with simple request)
 -   **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
 
+# Release Node
+- Support config for plugin as 4th args (req, res, prev, config). Config can declare in appcfg.ini file
+
 # Example
 
 This is simple example project to help you have interview about Hyron Framework
@@ -139,6 +142,7 @@ Any predefined plugin will be run first
                 -   **req** (IncomingMessage) : client request
                 -   **res** (ServerResponse) : server response
                 -   **prev** : preview data return by abort fontware
+                -   **config** : config of this fontware, declared in appcfg.ini
 
 ---
 
@@ -160,6 +164,8 @@ Any predefined plugin will be run last
                 -   **req** (IncomingMessage) : client request
                 -   **res** (ServerResponse) : server response
                 -   **prev** : preview data return by below backware
+                -   **config** : config of this backware, declared in appcfg.ini
+
 
 ---
 

@@ -2,18 +2,6 @@
 # yarn lockfile v1
 
 
-"@hyron/args-loader@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@hyron/args-loader/-/args-loader-1.0.0.tgz#b993f22ea06dff94ff3d1a951e38d912de564320"
-
-"@hyron/param-parser@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@hyron/param-parser/-/param-parser-1.0.1.tgz#190d4d1edf02e7f7dc2cab48c085b5523df7da6f"
-
-"@hyron/view-loader@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@hyron/view-loader/-/view-loader-1.0.0.tgz#a6a7d887c3af2dd1e896a93e025e735d5b5ab894"
-
 "@sellside/emitter@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@sellside/emitter/-/emitter-1.2.1.tgz#0dd839c30cdf01087f4dc63613503da6bcdf5f1e"
@@ -1074,6 +1062,10 @@ lodash.isstring@^4.0.1:
 lodash.once@^4.0.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
+
+lodash@^4.17.11:
+  version "4.17.11"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
 
 lodash@^4.17.4:
   version "4.17.10"

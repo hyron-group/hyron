@@ -15,7 +15,7 @@ module.exports = {
 };
 
 function addMiddleware(name, handle, isGlobal, inFont, config) {
-    // handle = handle.bind(config);
+    if (config != null) handle = wrapperConfig(handle, config);
     var index = indexOfHandle(name);
     if (index == -1) {
         handlerHolder.push(handle);
@@ -28,7 +28,17 @@ function addMiddleware(name, handle, isGlobal, inFont, config) {
         if (inFont) customFontWareIndex[name] = index;
         else customBackWareIndex[name] = index;
     }
-    console.log(`-> Registered ${inFont?"fontware":"backware"} ${name} ${isGlobal?"as global":""}`)
+    console.log(
+        `-> Registered ${inFont ? "fontware" : "backware"} ${name} ${
+            isGlobal ? "as global" : ""
+        }`
+    );
+}
+
+function wrapperConfig(handle, config) {
+    return function(req, res, prev) {
+        return handle(req, res, prev, config);
+    };
 }
 
 function indexOfHandle(name) {

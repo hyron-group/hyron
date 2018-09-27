@@ -68,7 +68,8 @@ module.exports = class ModuleManager {
             Object.keys(fontWareList).forEach(name => {
                 try {
                     var handle = require(fontWareList[name]);
-                    addMiddleware(name, handle, true, true, this.config);
+                    var pluginConfig =  ModuleManager.getConfig(name);
+                    addMiddleware(name, handle, true, true, pluginConfig);
                 } catch (err) {
                     console.error(
                         `[warning] can't setup fontware : '${name}' because ${
@@ -82,7 +83,8 @@ module.exports = class ModuleManager {
             Object.keys(backWareList).forEach(name => {
                 try {
                     var handle = require(backWareList[name]);
-                    addMiddleware(name, handle, true, false, this.config);
+                    var pluginConfig =  ModuleManager.getConfig(name);
+                    addMiddleware(name, handle, true, false, pluginConfig);
                 } catch (err) {
                     console.error(
                         `[warning] can't setup backware : '${name}' because ${
@@ -173,8 +175,9 @@ module.exports = class ModuleManager {
                 }} ${name} haven't declare handle properties`
             );
         }
+        var pluginConfig =  ModuleManager.getConfig(name);
 
-        addMiddleware(name, handler, isGlobal, inFont, this.config);
+        addMiddleware(name, handler, isGlobal, inFont, pluginConfig);
     }
 
     /**
