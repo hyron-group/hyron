@@ -15,7 +15,6 @@ var supportedArgs = {
 var argsStorage = {};
 
 module.exports = function(req, res, prev, config) {
-    console.log(config)
     var argLoaderExec = prepareArgs(this.$eventName, this.$executer);
     Object.assign(this, argLoaderExec(req, res));
     return prev;
