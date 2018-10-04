@@ -1,29 +1,4 @@
-const stringToObject = require("./objectParser.js");
-
-function parseURI(path) {
-    var httpReqReg = /(([\w\d]+):\/\/([\w\d._\-:]+))?([\w\d._\-/:]+)[?]?/;
-    var match = httpReqReg.exec(path);
-    var baseURI = match[3];
-    var router = match[4];
-    return { baseURI, router };
-}
-
-function getUriPath(rawUrl) {
-    var separateIndex = rawUrl.indexOf("?");
-    if (separateIndex == -1) return rawUrl;
-
-    var url = rawUrl.substr(0, separateIndex);
-    return url;
-}
-
-function getRouter(rawUrl) {
-    var separateIndex = rawUrl.indexOf("?");
-    if (separateIndex == -1) separateIndex = rawUrl.length;
-    var lastRouterIndex = url.lastIndexOf("/");
-
-    var route = rawUrl.substr(lastRouterIndex + 1, separateIndex);
-    return route;
-}
+const stringToObject = require("../../../lib/objectParser");
 
 function getQuery(rawUrl) {
     var queryBuffer = [];
@@ -43,9 +18,4 @@ function getQuery(rawUrl) {
     return query;
 }
 
-module.exports = {
-    parseURI,
-    getRouter,
-    getQuery,
-    getUriPath
-};
+module.exports = getQuery;

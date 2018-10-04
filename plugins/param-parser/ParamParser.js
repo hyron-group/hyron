@@ -54,7 +54,7 @@ function getDataFromRequest(argList, req, onComplete) {
 }
 
 function getQueryData(req, onComplete) {
-    var data = queryParser.getQuery(req.url);
+    var data = queryParser(req.url);
     onComplete(data);
 }
 
@@ -64,7 +64,7 @@ function getBodyData(req, argList, onComplete) {
         onComplete(null);
     } else if (reqBodyType == "application/x-www-form-urlencoded") {
         req.on("data", chunk => {
-            var data = queryParser.getQuery("?" + chunk.toString());
+            var data = queryParser("?" + chunk.toString());
             onComplete(data);
         });
     } else if (reqBodyType.startsWith("multipart")) {
