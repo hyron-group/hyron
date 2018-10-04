@@ -84,74 +84,98 @@ module.exports = class RouterFactory {
         Object.keys(requestConfig).forEach(methodName => {
             var config = requestConfig[methodName];
             var methodType = config; // Inline mode
-            var fontWareReq, backWareReq, enableREST;
+            var fontWareReq, backWareReq, enableREST, uriPath;
 
-            if (typeof config == "object") {
+            if (typeof config == "object" && !(config instanceof Array)) {
                 methodType = config.method;
                 fontWareReq = config.fontware;
                 backWareReq = config.backware;
                 enableREST = config.enableREST;
+                uriPath = config.uriPath;
             }
 
-            methodType = methodType.toUpperCase();
-            if (!RouterFactory.isSupported(methodType))
-                throw new Error(
-                    `Method ${methodType} in ${moduleName}/${methodName} do not support yet`
-                );
+            function registerRouterByMethod(methodType) {
+                methodType = methodType.toUpperCase();
 
-            var mainExecute = instance[methodName];
+                if (!RouterFactory.isSupported(methodType))
+                    throw new Error(
+                        `Method ${methodType} in ${moduleName}/${methodName} do not support yet`
+                    );
 
-            var eventName = getEventName(
-                methodType,
-                url,
-                moduleName,
-                methodName
-            );
+                var mainExecute = instance[methodName];
 
-            // Executer will call each request
-            var isDevMode = this.config.isDevMode;
+                var eventName;
+                if (uriPath == null) {
+                    eventName = getEventName(
+                        methodType,
+                        url,
+                        moduleName,
+                        methodName
+                    );
+                } else {
+                    eventName = getEventName(methodType, uriPath);
+                }
 
-            if (this.config.enableRESTFul & enableREST) {
-                eventName = "REST-" + eventName;
-                this.restRouter.push(eventName);
-            }
+                var isDevMode = this.config.isDevMode;
+                // Executer will call each request
 
-            console.log("-> event : " + eventName);
-            // store listener
-            this.listener.set(eventName, (req, res) => {
-                var thisArgs = {
-                    $executer: mainExecute,
-                    $eventName: eventName
-                };
+                if (this.config.enableRESTFul | enableREST) {
+                    eventName = "REST-" + eventName;
+                    this.restRouter.push(eventName);
+                }
 
-                function callBackWare(result) {
-                    runBackWare(
+                console.log("-> event : " + eventName);
+                // store listener
+                function event(req, res) {
+                    var thisArgs = {
+                        $executer: mainExecute,
+                        $eventName: eventName
+                    };
+
+                    function callBackWare(result) {
+                        runBackWare(
+                            eventName,
+                            backWareReq,
+                            thisArgs,
+                            [req, res, result],
+                            data => {
+                                handleResult(data, res, isDevMode);
+                            },
+                            err => {
+                                handleResult(err, res, isDevMode);
+                            }
+                        );
+                    }
+                    runFontWare(
                         eventName,
-                        backWareReq,
+                        fontWareReq,
                         thisArgs,
-                        [req, res, result],
-                        data => {
-                            handleResult(data, res, isDevMode);
+                        [req, res],
+                        args => {
+                            var result = mainExecute.apply(thisArgs, args);
+                            callBackWare(result);
                         },
                         err => {
-                            handleResult(err, res, isDevMode);
+                            callBackWare(err);
                         }
                     );
                 }
-                runFontWare(
-                    eventName,
-                    fontWareReq,
-                    thisArgs,
-                    [req, res],
-                    args => {
-                        var result = mainExecute.apply(thisArgs, args);
-                        callBackWare(result);
-                    },
-                    err => {
-                        callBackWare(err);
-                    }
+                this.listener.set(eventName, event);
+            }
+            registerRouterByMethod = registerRouterByMethod.bind(this);
+
+            if (typeof methodType == "string") {
+                registerRouterByMethod(methodType);
+            } else if (methodType instanceof Array) {
+                methodType.forEach(entryMethodType => {
+                    registerRouterByMethod(entryMethodType);
+                });
+            } else{
+                console.log(methodType)
+                throw new TypeError(
+                    `Method ${methodType} in ${moduleName}/${methodName} isn't string or array`
                 );
-            });
+            }
         });
     }
 };

@@ -29,7 +29,7 @@ module.exports = class ModuleManager {
         newInstance.enableMiddlewareByConfigFile();
         newInstance.config = {
             isDevMode: true,
-            enableRESTFul: true,
+            enableRESTFul: false,
             secret: generalSecretKey(),
             poweredBy: "hyron",
             timeout: 60000,

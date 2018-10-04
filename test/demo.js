@@ -1,11 +1,11 @@
 module.exports = class {
     static requestConfig() {
         return {
-            showMyName: "get",
+            showMyName: ["get","post"],
             upload: "post",
             sample: "patch",
             view: {
-                method: "get",
+                method: ["get", "head"],
                 enableREST: true
             }
         };

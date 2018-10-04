@@ -14,7 +14,8 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 -   **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
 
 # Release Node
-- Support config for plugin as 4th args (req, res, prev, config). Config can declare in appcfg.ini file
+- Support custom router path with uriPath option in requestConfig
+- Support multi router method type in requestConfig
 
 # Example
 
@@ -222,11 +223,12 @@ Description for Hyron framework to config router
     -   **function-name** ( string ) : name of function to register listener
     -   **meta** ( string | object ) : router config
         -   **string** : method type. hyron support for 6 type of basic http protocol : GET, POST, HEAD, DELETE, PUT, and ALL
-        -   **object** { **method** , **fontware** , **backware**, **enableREST** } : router config
+        -   **object** : router config
             -   **method** (string) : http protocol type like about
             -   **fontware** ( array< string | function > ) : on / off fontware declared in enableFontWare() by name. to off global plugin, delare '!' before it name
             -   **backware** ( array< string | function > ) : on / off fontware declared in enableBackWare() by name. to off global plugin, delare '!' before it name
             -   **enableREST** ( boolean ) : true if you want to make this function become REST. Then, first argument of it will be load as router last path.
+            -   uriPath ( string ) : custom uri path of this router
 
 ---
 
