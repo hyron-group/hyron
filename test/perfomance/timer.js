@@ -1,13 +1,21 @@
 const loop = 1000000;
-var pug = require("pug");
-var comp = pug.compileFile("./test/hello.pug", {cache:true, });
+const event = require('events');
+var eventListener = new event();
+var handle = ()=>{
+    var x=1;
+};
+eventListener.on('call',handle);
+
+var listenerHolder = {
+    call:handle
+};
 
 var t1 = () => {
-    var res = comp({ name: "thang" });
+    listenerHolder['call']();
 };
 
 var t2 = () => {
-    // var res = comp({ name: "thang" });
+    eventListener.emit(handle);
 };
 
 // ------------------------------

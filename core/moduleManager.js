@@ -103,6 +103,7 @@ module.exports = class ModuleManager {
      * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
      */
     setting(config) {
+        if(typeof config == 'object')
         Object.assign(this.config, config);
     }
 
@@ -133,6 +134,7 @@ module.exports = class ModuleManager {
      */
     enableModule(moduleList) {
         var url = this.prefix;
+        if(typeof moduleList == 'object')
         Object.keys(moduleList).forEach(moduleName => {
             this.routerFactory.registerRouter(
                 url,
@@ -147,6 +149,7 @@ module.exports = class ModuleManager {
      * @param {{name:string,handle:function|{method:string,handle:function,global:boolean}}} fontWareList
      */
     enableFontWare(fontWareList) {
+        if(typeof fontWareList == 'object')
         Object.keys(fontWareList).forEach(name => {
             this.addMiddleware(name, fontWareList[name], true);
         });
@@ -157,6 +160,7 @@ module.exports = class ModuleManager {
      * @param {{name:string,handle:function|{method:string,handle:function,global:boolean}}} backWareList
      */
     enableBackWare(backWareList) {
+        if(typeof backWareList == 'object')
         Object.keys(backWareList).forEach(name => {
             this.addMiddleware(name, backWareList[name], false);
         });
