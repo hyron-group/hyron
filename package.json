@@ -6,14 +6,10 @@
     "http2": "^3.3.7",
     "ini": "^1.3.5",
     "jsonwebtoken": "^8.3.0",
-    "lodash": "^4.17.11",
-    "nodemon": "^1.18.4",
-    "pug": "^2.0.3",
-    "string-to-jsobject": "^1.0.0",
-    "writelog": "^1.1.3"
+    "pug": "^2.0.3"
   },
   "repository": {
-    "type": "git",
+    "type": "github",
     "url": "https://github.com/thangdjw/hyron"
   },
   "deprecated": false,
@@ -29,7 +25,6 @@
   "main": "index.js",
   "name": "hyron",
   "scripts": {
-    "start": "node ./core/test.js",
     "test": "nodemon ./test/test.js"
   },
   "version": "1.6.10"

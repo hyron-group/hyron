@@ -3,6 +3,7 @@ const RouterFactory = require("./routerFactory");
 const generalSecretKey = require("../lib/generalKey");
 const { addMiddleware } = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
+const AbstractRouters = require('../type/AbstractRouters');
 
 var defaultConfig = {
     ...loadConfigFromFile()
