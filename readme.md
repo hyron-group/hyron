@@ -169,7 +169,7 @@ Any predefined plugin will be run last
 
 ---
 
-> ### enableModule ( module ) : void
+> ### enableService ( module ) : void
 
 Register main handle (logic of routers)
 
