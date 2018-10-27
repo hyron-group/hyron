@@ -1,8 +1,8 @@
-const hyron = require('../core/moduleManager');
+const hyron = require('../index');
 
 var app = hyron.getInstance(3000);
 
-app.enableModule({
+app.enableService({
     "" : require('./demo')
 })
 

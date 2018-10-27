@@ -82,17 +82,24 @@ module.exports = class RouterFactory {
                 `Module ${moduleName} do not contain requestConfig() method to config router`
             );
         Object.keys(requestConfig).forEach(methodName => {
-            var config = requestConfig[methodName];
-            var methodType = config; // Inline mode
-            var fontWareReq, backWareReq, enableREST, uriPath;
+            var methodType,
+                requestFontware,
+                requestBackware,
+                enableREST,
+                listener,
+                uriPath;
 
-            if (typeof config == "object" && !(config instanceof Array)) {
-                methodType = config.method;
-                fontWareReq = config.fontware;
-                backWareReq = config.backware;
-                enableREST = config.enableREST;
-                uriPath = config.uriPath;
-            }
+            (function prepareFromConfig() {
+                var config = requestConfig[methodName];
+                if (typeof config == "object" && !(config instanceof Array)) {
+                    methodType = config.method;
+                    requestFontware = config.fontware;
+                    requestBackware = config.backware;
+                    enableREST = config.enableREST;
+                    listener = config.listener;
+                    uriPath = config.uriPath;
+                } else methodType = config;
+            })();
 
             function registerRouterByMethod(methodType) {
                 methodType = methodType.toUpperCase();
@@ -105,16 +112,19 @@ module.exports = class RouterFactory {
                 var mainExecute = instance[methodName];
 
                 var eventName;
-                if (uriPath == null) {
-                    eventName = getEventName(
-                        methodType,
-                        url,
-                        moduleName,
-                        methodName
-                    );
-                } else {
-                    eventName = getEventName(methodType, uriPath);
-                }
+
+                (function prepareEventName() {
+                    if (uriPath == null) {
+                        eventName = getEventName(
+                            methodType,
+                            url,
+                            moduleName,
+                            methodName
+                        );
+                    } else {
+                        eventName = getEventName(methodType, uriPath);
+                    }
+                })();
 
                 var isDevMode = this.config.isDevMode;
                 // Executer will call each request
@@ -126,7 +136,7 @@ module.exports = class RouterFactory {
 
                 console.log("-> event : " + eventName);
                 // store listener
-                function event(req, res) {
+                function httpEvent(req, res) {
                     var thisArgs = {
                         $executer: mainExecute,
                         $eventName: eventName
@@ -135,7 +145,7 @@ module.exports = class RouterFactory {
                     function callBackWare(result) {
                         runBackWare(
                             eventName,
-                            backWareReq,
+                            requestBackware,
                             thisArgs,
                             [req, res, result],
                             data => {
@@ -148,7 +158,7 @@ module.exports = class RouterFactory {
                     }
                     runFontWare(
                         eventName,
-                        fontWareReq,
+                        requestFontware,
                         thisArgs,
                         [req, res],
                         args => {
@@ -160,22 +170,24 @@ module.exports = class RouterFactory {
                         }
                     );
                 }
-                this.listener.set(eventName, event);
+                this.listener.set(eventName, httpEvent);
             }
             registerRouterByMethod = registerRouterByMethod.bind(this);
 
-            if (typeof methodType == "string") {
-                registerRouterByMethod(methodType);
-            } else if (methodType instanceof Array) {
-                methodType.forEach(entryMethodType => {
-                    registerRouterByMethod(entryMethodType);
-                });
-            } else{
-                console.log(methodType)
-                throw new TypeError(
-                    `Method ${methodType} in ${moduleName}/${methodName} isn't string or array`
-                );
-            }
+            (function registerRouter() {
+                if (typeof methodType == "string") {
+                    registerRouterByMethod(methodType);
+                } else if (methodType instanceof Array) {
+                    methodType.forEach(entryMethodType => {
+                        registerRouterByMethod(entryMethodType);
+                    });
+                } else {
+                    console.log(methodType);
+                    throw new TypeError(
+                        `Method ${methodType} in ${moduleName}/${methodName} isn't string or array`
+                    );
+                }
+            })();
         });
     }
 };

@@ -13,9 +13,8 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 -   **High-Performance** : Hyron is 40% more efficient than ExpressJS (by rps with simple request)
 -   **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
 
-# Release Node
-- Support custom router path with uriPath option in requestConfig
-- Support multi router method type in requestConfig
+# Release 
+- Start app by hyron-app.json file
 
 # Example
 
@@ -28,7 +27,7 @@ const hyron = require("hyron");
 
 var myApp = hyron.getInstance(3000, "localhost");
 
-myApp.enableModule({
+myApp.enableService({
     demo: require("./SimpleApp")
 });
 

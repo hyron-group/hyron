@@ -1,0 +1,20 @@
+{
+    "http://localhost:3000": {
+        "fontware": {
+            "request-decode": "./plugins/request-decode",
+            "auth-validator": {
+                "handle": "./plugins/auth-validator",
+                "isGlobal": true
+            }
+        },
+        "backware": {
+            "response-encode": "./plugins/response-encode"
+        },
+        "service": {
+            "account" : {
+                "path" : "./account",
+                "version" : "1.0.1"
+            }
+        }
+    }
+}

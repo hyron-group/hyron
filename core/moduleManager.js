@@ -3,7 +3,7 @@ const RouterFactory = require("./routerFactory");
 const generalSecretKey = require("../lib/generalKey");
 const { addMiddleware } = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
-const AbstractRouters = require('../type/AbstractRouters');
+const AbstractRouters = require("../type/AbstractRouters");
 
 var defaultConfig = {
     ...loadConfigFromFile()
@@ -22,6 +22,7 @@ module.exports = class ModuleManager {
      * @returns {ModuleManager}
      */
     static getInstance(port = 3000, host = "localhost", prefix = "") {
+        
         var newInstance = new ModuleManager();
         newInstance.port = port;
         newInstance.host = host;
@@ -43,25 +44,6 @@ module.exports = class ModuleManager {
         return instanceContainer[newInstance.baseURI];
     }
 
-    /**
-     * @description add addons
-     * @param {{eventName:string,handle:function}[]} addonsList
-     */
-    addons(addonsList) {
-        if (addonsList != null) {
-            addonsList.forEach(item => {
-                Object.keys(item).forEach(eventName => {
-                    var handler = item[eventName];
-                    if (eventName == "config") {
-                        handler(this.config);
-                    } else if (eventName == "runtime") {
-                        handler();
-                    } else this.app.on(eventName, handler);
-                });
-            });
-        }
-    }
-
     /**@deprecated This method automatic execute first time you require('hyron'). You don't need to call it again */
     enableMiddlewareByConfigFile() {
         var fontWareList = defaultConfig.fontware;
@@ -69,7 +51,7 @@ module.exports = class ModuleManager {
             Object.keys(fontWareList).forEach(name => {
                 try {
                     var handle = require(fontWareList[name]);
-                    var pluginConfig =  ModuleManager.getConfig(name);
+                    var pluginConfig = ModuleManager.getConfig(name);
                     addMiddleware(name, handle, true, true, pluginConfig);
                 } catch (err) {
                     console.error(
@@ -84,7 +66,7 @@ module.exports = class ModuleManager {
             Object.keys(backWareList).forEach(name => {
                 try {
                     var handle = require(backWareList[name]);
-                    var pluginConfig =  ModuleManager.getConfig(name);
+                    var pluginConfig = ModuleManager.getConfig(name);
                     addMiddleware(name, handle, true, false, pluginConfig);
                 } catch (err) {
                     console.error(
@@ -104,8 +86,7 @@ module.exports = class ModuleManager {
      * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
      */
     setting(config) {
-        if(typeof config == 'object')
-        Object.assign(this.config, config);
+        if (typeof config == "object") Object.assign(this.config, config);
     }
 
     /**
@@ -131,40 +112,50 @@ module.exports = class ModuleManager {
 
     /**
      * @description Register router by function packages
-     * @param {{moduleName:string,hyronClass:function}} moduleList
+     * @param {{moduleName:string,AbstractRouters}} moduleList
      */
-    enableModule(moduleList) {
+    enableService(moduleList) {
         var url = this.prefix;
-        if(typeof moduleList == 'object')
-        Object.keys(moduleList).forEach(moduleName => {
-            this.routerFactory.registerRouter(
-                url,
-                moduleName,
-                moduleList[moduleName]
-            );
-        });
+        if (typeof moduleList == "object")
+            Object.keys(moduleList).forEach(moduleName => {
+                this.routerFactory.registerRouter(
+                    url,
+                    moduleName,
+                    moduleList[moduleName]
+                );
+            });
     }
 
     /**
+     * @typedef {object} CustomHandle
+     * @prop {function} handle
+     * @prop {boolean} global true if this handle is a global function
+     */
+
+    /**
+     * @typedef {function|CustomHandle} handle
+     */
+
+    /**
      * @description Register functions run before a router. Any predefined function will run first
-     * @param {{name:string,handle:function|{method:string,handle:function,global:boolean}}} fontWareList
+     * @param {{name:string,handle}} fontWareList
      */
     enableFontWare(fontWareList) {
-        if(typeof fontWareList == 'object')
-        Object.keys(fontWareList).forEach(name => {
-            this.addMiddleware(name, fontWareList[name], true);
-        });
+        if (typeof fontWareList == "object")
+            Object.keys(fontWareList).forEach(name => {
+                this.addMiddleware(name, fontWareList[name], true);
+            });
     }
 
     /**
      * @description Register functions run after a router. Any predefined function will run last
-     * @param {{name:string,handle:function|{method:string,handle:function,global:boolean}}} backWareList
+     * @param {{name:string,handle}} backWareList
      */
     enableBackWare(backWareList) {
-        if(typeof backWareList == 'object')
-        Object.keys(backWareList).forEach(name => {
-            this.addMiddleware(name, backWareList[name], false);
-        });
+        if (typeof backWareList == "object")
+            Object.keys(backWareList).forEach(name => {
+                this.addMiddleware(name, backWareList[name], false);
+            });
     }
 
     addMiddleware(name, meta, inFont) {
@@ -180,7 +171,7 @@ module.exports = class ModuleManager {
                 }} ${name} haven't declare handle properties`
             );
         }
-        var pluginConfig =  ModuleManager.getConfig(name);
+        var pluginConfig = ModuleManager.getConfig(name);
 
         addMiddleware(name, handler, isGlobal, inFont, pluginConfig);
     }
@@ -203,5 +194,6 @@ module.exports = class ModuleManager {
         }
 
         this.app.listen(this.port, this.host, callback);
+        return this.app;
     }
 };
