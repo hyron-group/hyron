@@ -88,18 +88,6 @@ This method used to get config of app or installed plugins by name
 
 ---
 
-> ### **addons** ( addonsList ) : void
-
-This method used to register addons for more action, like work with socket, connect, config, or do something at runtime
-
- **params :**
-
- - **addonsList** ( array [ object { eventName, handle }] )
-    - **eventName** (string) : include node http event : checkContinue, checkExpectation, clientError, close, connect, connection, request, upgrade, and hyron event : config, runtime
-    - **handle** (function) : handle for event
-
----
-
 > ### _static_ **getConfig** ( name ) : string | object<?>
 
 This method used to get config of app or installed plugins by name
