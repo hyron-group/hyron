@@ -20,7 +20,6 @@ function rebuildAppFromCfg() {
 }
 /* 
 {
-    module,
     fontware,
     backware,
     service,
