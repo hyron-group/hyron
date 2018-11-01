@@ -118,11 +118,24 @@ module.exports = class ModuleManager {
         var url = this.prefix;
         if (typeof moduleList == "object")
             Object.keys(moduleList).forEach(moduleName => {
-                this.routerFactory.registerRouter(
+                var handle = moduleList[moduleName];
+                if(typeof handle == 'string') handle = require(handle);
+                if(handle.requestConfig==null){
+                    // not is a hyron service
+                    var baseURI = this.baseURI;
+                    try {
+                        handle(baseURI);
+                    } catch(err){
+                        console.error(`hyron do not support for service define like '${moduleName}' yet`)
+                    }
+                } else {
+                    // is as normal hyron service
+                    this.routerFactory.registerRouter(
                     url,
                     moduleName,
-                    moduleList[moduleName]
-                );
+                        handle
+                    );
+                }
             });
     }
 
@@ -143,7 +156,8 @@ module.exports = class ModuleManager {
     enableFontWare(fontWareList) {
         if (typeof fontWareList == "object")
             Object.keys(fontWareList).forEach(name => {
-                this.addMiddleware(name, fontWareList[name], true);
+                var config = fontWareList[name];
+                this.addMiddleware(name, config, true);
             });
     }
 
@@ -161,9 +175,15 @@ module.exports = class ModuleManager {
     addMiddleware(name, meta, inFont) {
         var handler = meta;
         var isGlobal = false;
+        if(typeof handler =='string') {
+            handler = require(handler);
+        }
         if (typeof handler == "object") {
             if (handler.global == true) isGlobal = true;
             handler = handler.handle;
+            if(typeof handler =='string') {
+                handler = require(handler);
+            }
         } else if (typeof handler != "function") {
             throw new Error(
                 `${
