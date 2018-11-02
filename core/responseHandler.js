@@ -16,20 +16,22 @@ function handingResult(result, res, isDevMode = false) {
 
 function handingCustomResult(result, res) {
     var data = result;
-    if (result.$data != null) data = result.$data;
-    if (result.$type != null) res.setHeader("Content-Type", result.$type);
-    if (result.$status != null) res.statusCode = res.$code;
-    if (result.$message != null) res.statusMessage = res.$message;
-    if (result.$headers != null) {
-        var header = result.$header;
-        Object.keys(header).forEach(key => {
-            res.setHeader(key, header[key]);
-        });
-    }
-    if (result.$render != null) {
-    }
-    if (result.$redirect != null) {
-        res.setHeader("Location", result.$redirect);
+    if(result != null){
+        if (result.$data != null) data = result.$data;
+        if (result.$type != null) res.setHeader("Content-Type", result.$type);
+        if (result.$status != null) res.statusCode = res.$code;
+        if (result.$message != null) res.statusMessage = res.$message;
+        if (result.$headers != null) {
+            var header = result.$header;
+            Object.keys(header).forEach(key => {
+                res.setHeader(key, header[key]);
+            });
+        }
+        if (result.$render != null) {
+        }
+        if (result.$redirect != null) {
+            res.setHeader("Location", result.$redirect);
+        }
     }
     res.end(data);
 }

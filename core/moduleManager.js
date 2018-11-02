@@ -196,6 +196,17 @@ module.exports = class ModuleManager {
         addMiddleware(name, handler, isGlobal, inFont, pluginConfig);
     }
 
+    static findURL(handle){
+        var URIList = Object.keys(instanceContainer);
+        for(var i = 0; i<URIList.length; i++){
+            var curURL = URIList[i];
+            var instance = instanceContainer[curURL];
+            var path = instance.routerFactory.getPath(handle);
+            if(path!=null) return curURL+path;
+        }
+        return null;
+    }
+
     /**
      * @description start server
      * @param {function} callback

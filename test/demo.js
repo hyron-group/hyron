@@ -4,6 +4,7 @@ module.exports = class {
             showMyName: ["get","post"],
             upload: "post",
             sample: "patch",
+            showURL: "get",
             view: {
                 method: ["get", "head"],
                 enableREST: true
@@ -13,6 +14,11 @@ module.exports = class {
 
     showMyName(name) {
         return "Nice to meet you, " + name;
+    }
+
+    showURL(){
+        console.log('run')
+        return require('../core/moduleManager').findURL(this.upload);
     }
 
     view(path) {
