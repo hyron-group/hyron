@@ -114,10 +114,13 @@ module.exports = class RouterFactory {
                     enableREST = config.enableREST;
                     uriPath = config.uriPath;
                 } else methodType = config;
-                if(methodType==null) methodType = all.method;
-                requestFontware = [].concat(all.fontware, requestFontware);
-                requestBackware = [].concat(all.backware, requestBackware);
-                if(enableREST==null) enableREST = all.enableREST;
+                
+                if(all!=null){
+                    if(methodType==null) methodType = all.method;
+                    requestFontware = [].concat(all.fontware, requestFontware);
+                    requestBackware = [].concat(all.backware, requestBackware);
+                    if(enableREST==null) enableREST = all.enableREST;
+                }
             })();
 
             function registerRouterByMethod(methodType) {
