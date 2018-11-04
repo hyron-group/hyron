@@ -1,6 +1,9 @@
 module.exports = class {
     static requestConfig() {
         return {
+            $all:{
+                method:'get',
+            },
             showMyName: ["get","post"],
             upload: "post",
             sample: "patch",

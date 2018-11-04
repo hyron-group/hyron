@@ -95,24 +95,29 @@ module.exports = class RouterFactory {
             throw new Error(
                 `Module ${moduleName} do not contain requestConfig() method to config router`
             );
+            var all = requestConfig.$all;
+            delete requestConfig.$all;
         Object.keys(requestConfig).forEach(methodName => {
             var methodType,
                 requestFontware,
                 requestBackware,
                 enableREST,
-                listener,
                 uriPath;
 
             (function prepareFromConfig() {
                 var config = requestConfig[methodName];
                 if (typeof config == "object" && !(config instanceof Array)) {
+                    
                     methodType = config.method;
                     requestFontware = config.fontware;
                     requestBackware = config.backware;
                     enableREST = config.enableREST;
-                    listener = config.listener;
                     uriPath = config.uriPath;
                 } else methodType = config;
+                if(methodType==null) methodType = all.method;
+                requestFontware = [].concat(all.fontware, requestFontware);
+                requestBackware = [].concat(all.backware, requestBackware);
+                if(enableREST==null) enableREST = all.enableREST;
             })();
 
             function registerRouterByMethod(methodType) {
