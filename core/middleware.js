@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+const crc = require("crc");
 
 var handlerHolder = [];
 var customFontWareIndex = {};
@@ -183,10 +183,7 @@ function prepareHandler(eventName, reqMidWare, position) {
             else enableList.push(middleware);
             // support embed middle handle in config
         } else if (typeof middleware == "function") {
-            var newMiddlewareName = crypto
-                .createHash("md5")
-                .digest(middleware)
-                .toString("hex");
+            var newMiddlewareName = crc.crc32(middleware).toString(32);
             addMiddleware(newMiddlewareName, middleware, false, inFont);
             enableList.push(newMiddlewareName);
         }
