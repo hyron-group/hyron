@@ -183,7 +183,7 @@ function prepareHandler(eventName, reqMidWare, position) {
             else enableList.push(middleware);
             // support embed middle handle in config
         } else if (typeof middleware == "function") {
-            var newMiddlewareName = crc.crc32(middleware).toString(32);
+            var newMiddlewareName = crc.crc32(middleware.toString()).toString(32);
             addMiddleware(newMiddlewareName, middleware, false, inFont);
             enableList.push(newMiddlewareName);
         }
