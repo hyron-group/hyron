@@ -1,3 +1,28 @@
-var a = [];
+class a {
+    static requestConfig(){
+        return {
+            b:'get'
+        }
+    }
 
-console.log(a instanceof Array)
+    c(){
+        return 'c'
+    }
+}
+
+class d {
+    static requestConfig(){
+        return {
+            e:'post'
+        }
+    }
+    f(){
+        return 'f'
+    }
+}
+
+var route = require('../type/Route');
+
+var finalClass = route.merge(a, d);
+
+console.log(new finalClass().f())
