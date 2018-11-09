@@ -14,7 +14,7 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 -   **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
 
 # Release 
-- Start app by hyron-app.json file
+- support for private router with method private in requestConfig
 
 # Example
 
@@ -280,26 +280,3 @@ return this.$requestHeaders;
 ```
 
 ---
-
-> ### view-loader
-
-This is a backware plugin used to render view. Current just support for PUG engine
-
-**Setting supported :**
-
-```ini
-[view-loader]
-engine='pug'
-homeDir='www'
-```
-
-to render a view. return object
-
-```js
-{
-    $render : {
-        path : [viewPath],
-        data : {data}
-    }
-}
-```

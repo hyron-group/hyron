@@ -84,7 +84,8 @@ module.exports = class RouterFactory {
             "DELETE",
             "PUT",
             "PATCH",
-            "ALL"
+            "ALL",
+            "PRIVATE"
         ].includes(method);
     }
 
