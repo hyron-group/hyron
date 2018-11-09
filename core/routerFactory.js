@@ -152,7 +152,7 @@ module.exports = class RouterFactory {
                 var isDevMode = this.config.isDevMode;
                 // Executer will call each request
 
-                if (this.config.enableRESTFul & (enableREST | enableREST==null) {
+                if (this.config.enableRESTFul & (enableREST | enableREST==null)) {
                     eventName = "REST-" + eventName;
                     this.restRouter.push(eventName);
                 }
