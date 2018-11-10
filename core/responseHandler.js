@@ -5,7 +5,7 @@
 function handingResult(result, res, isDevMode = false) {
     if (result instanceof Promise) {
         result.then(val => res.end(handingResult(val, res))).catch(err => {
-            handingError(err, isDevMode);
+            handingError(err, res, isDevMode);
         });
     } else if (result instanceof Error) {
         handingError(result, res, isDevMode);
