@@ -27,5 +27,5 @@
   "scripts": {
     "test": "nodemon ./test/test.js"
   },
-  "version": "1.8.8"
+  "version": "1.8.9"
 }
