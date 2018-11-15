@@ -119,7 +119,6 @@ module.exports = class RouterFactory {
                     );
 
                 var mainExecute = instance[methodName];
-                mainExecute = mainExecute.bind(instance);
 
                 var eventName;
 
