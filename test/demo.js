@@ -3,6 +3,7 @@ module.exports = class {
         return {
             $all:{
                 method:'get',
+                fontware:[]
             },
             showMyName: ["get","post"],
             upload: "post",

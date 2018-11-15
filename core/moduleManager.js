@@ -116,7 +116,7 @@ module.exports = class ModuleManager {
      * @param {{moduleName:string,AbstractRouters}} moduleList
      */
     enableService(moduleList) {
-        var url = this.prefix;
+        var prefix = this.prefix;
         if (typeof moduleList == "object")
             Object.keys(moduleList).forEach(moduleName => {
                 var handle = moduleList[moduleName];
@@ -132,12 +132,12 @@ module.exports = class ModuleManager {
                 } else {
                     // is as normal hyron service
                     this.routerFactory.registerRouter(
-                    url,
+                    prefix,
                     moduleName,
                         handle
                     );
                 }
-                path.build(handle, "http://"+this.baseURI, url);
+                path.build(handle, "http://"+this.baseURI, prefix, moduleName);
             });
     }
 

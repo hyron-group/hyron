@@ -3,14 +3,14 @@ var crc = require("crc");
 var pathHolder = {};
 var cache = {};
 
-function build(hyronClass, baseURL, url) {
+function build(hyronClass, baseURL, prefix, moduleName) {
     var reqConfig = hyronClass.requestConfig();
     var instance = new hyronClass();
     uriPaths = {};
 
     Object.keys(reqConfig).forEach(methodName => {
         var config = reqConfig[methodName];
-        var path = url + "/" + methodName;
+        var path = `${prefix!=""?"/"+prefix:""}/${moduleName}`;
         if (config.uriPath != null) parh = config.uriPath;
         var handle = instance[methodName];
         if (handle != null) uriPaths[path] = handle;
