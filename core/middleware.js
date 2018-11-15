@@ -176,14 +176,19 @@ function prepareHandler(eventName, reqMidWare, position) {
         if (typeof middleware == "string") {
             // prepare disable global middleware by name
             if (middleware.charAt(0) == "!") {
-                if (middleware.substr(1) == "*") disableAll = true;
-                else disableList.push(middleware.substr(1));
+                var midwareName = middleware.substr(1);
+                if (midwareName == "*") disableAll = true;
+                else if (reqMidWare.indexOf(midwareName) < i){
+                    disableList.push(midwareName);
+                }
             }
             // prepare enable middleware by name
             else enableList.push(middleware);
             // support embed middle handle in config
         } else if (typeof middleware == "function") {
-            var newMiddlewareName = crc.crc32(middleware.toString()).toString(32);
+            var newMiddlewareName = crc
+                .crc32(middleware.toString())
+                .toString(32);
             addMiddleware(newMiddlewareName, middleware, false, inFont);
             enableList.push(newMiddlewareName);
         }
@@ -200,6 +205,7 @@ function prepareHandler(eventName, reqMidWare, position) {
         var disableMidWareIndex = disableList[i];
         indexList.splice(indexList.indexOf(disableMidWareIndex));
     }
+
 
     // enable some of middleware by config
     if (inFont) {
