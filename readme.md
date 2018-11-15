@@ -14,7 +14,7 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 -   **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
 
 # Release 
-- support for private router with method private in requestConfig
+- add path feature at ./type to get url path of a function
 
 # Example
 
