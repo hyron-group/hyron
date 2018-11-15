@@ -20,8 +20,7 @@ module.exports = class {
     }
 
     showURL(){
-        console.log('run')
-        return require('../core/moduleManager').findURL(this.upload);
+        return require('../type/path').findURL(this.upload);
     }
 
     view(path) {

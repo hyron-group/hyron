@@ -4,6 +4,7 @@ const generalSecretKey = require("../lib/generalKey");
 const { addMiddleware } = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
 const AbstractRouters = require("../type/AbstractRouters");
+const path = require('../type/path');
 
 var defaultConfig = {
     ...loadConfigFromFile()
@@ -136,6 +137,7 @@ module.exports = class ModuleManager {
                         handle
                     );
                 }
+                path.build(handle, "http://"+this.baseURI, url);
             });
     }
 
@@ -194,17 +196,6 @@ module.exports = class ModuleManager {
         var pluginConfig = ModuleManager.getConfig(name);
 
         addMiddleware(name, handler, isGlobal, inFont, pluginConfig);
-    }
-
-    static findURL(handle){
-        var URIList = Object.keys(instanceContainer);
-        for(var i = 0; i<URIList.length; i++){
-            var curURL = URIList[i];
-            var instance = instanceContainer[curURL];
-            var path = instance.routerFactory.getPath(handle);
-            if(path!=null) return curURL+path;
-        }
-        return null;
     }
 
     /**

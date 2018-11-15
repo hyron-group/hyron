@@ -5,8 +5,7 @@
     "crc": "^3.8.0",
     "date-format": "^1.2.0",
     "ini": "^1.3.5",
-    "jsonwebtoken": "^8.3.0",
-    "pug": "^2.0.3"
+    "jsonwebtoken": "^8.3.0"
   },
   "repository": {
     "type": "github",

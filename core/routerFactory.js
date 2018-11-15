@@ -35,20 +35,6 @@ module.exports = class RouterFactory {
         return this.listener.get(key);
     }
 
-    getPath(handle) {
-        var eventList = this.listener.keys();
-        var curEvent;
-        do {
-            curEvent = eventList.next();
-            var executer = this.listener[curEvent];
-            if (handle == executer) {
-                var path = curEvent.value;
-                path = path.substr(path.indexOf('/'))
-                return path;
-            }
-        } while (!curEvent.done);
-    }
-
     triggerRouter(req, res) {
         var uriPath = getUriPath(req.url);
         var eventName = req.method + uriPath;
@@ -133,6 +119,7 @@ module.exports = class RouterFactory {
                     );
 
                 var mainExecute = instance[methodName];
+                mainExecute = mainExecute.bind(instance);
 
                 var eventName;
 
