@@ -10,8 +10,8 @@ function build(hyronClass, baseURL, prefix, moduleName) {
 
     Object.keys(reqConfig).forEach(methodName => {
         var config = reqConfig[methodName];
-        var path = `${prefix!=""?"/"+prefix:""}/${moduleName}`;
-        if (config.uriPath != null) parh = config.uriPath;
+        var path = `${prefix!=""?"/"+prefix:""}/${moduleName}/${methodName}`;
+        if (config.uriPath != null) path = config.uriPath;
         var handle = instance[methodName];
         if (handle != null) uriPaths[path] = handle;
     });
