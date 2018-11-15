@@ -84,6 +84,7 @@ function runMiddleware(
 
     function runFunc(func) {
         var result;
+        if (func == null) runNextMiddleware();
         result = func.apply(thisArgs, args);
 
         if (result instanceof Promise) {
@@ -178,7 +179,7 @@ function prepareHandler(eventName, reqMidWare, position) {
             if (middleware.charAt(0) == "!") {
                 var midwareName = middleware.substr(1);
                 if (midwareName == "*") disableAll = true;
-                else if (reqMidWare.indexOf(midwareName) < i){
+                else if (reqMidWare.indexOf(midwareName) > i) {
                     disableList.push(midwareName);
                 }
             }
@@ -205,7 +206,6 @@ function prepareHandler(eventName, reqMidWare, position) {
         var disableMidWareIndex = disableList[i];
         indexList.splice(indexList.indexOf(disableMidWareIndex));
     }
-
 
     // enable some of middleware by config
     if (inFont) {

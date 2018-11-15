@@ -82,8 +82,8 @@ module.exports = class RouterFactory {
             throw new Error(
                 `Module ${moduleName} do not contain requestConfig() method to config router`
             );
-            var all = requestConfig.$all;
-            delete requestConfig.$all;
+        var all = requestConfig.$all;
+        delete requestConfig.$all;
         Object.keys(requestConfig).forEach(methodName => {
             var methodType,
                 requestFontware,
@@ -94,20 +94,22 @@ module.exports = class RouterFactory {
             (function prepareFromConfig() {
                 var config = requestConfig[methodName];
                 if (typeof config == "object" && !(config instanceof Array)) {
-                    
                     methodType = config.method;
                     requestFontware = config.fontware;
                     requestBackware = config.backware;
                     enableREST = config.enableREST;
                     uriPath = config.uriPath;
                 } else methodType = config;
-                
-                if(all!=null){
-                    if(methodType==null) methodType = all.method;
-                    requestFontware = [].concat(all.fontware, requestFontware);
-                    requestBackware = [].concat(all.backware, requestBackware);
-                    if(enableREST==null) enableREST = all.enableREST;
+
+                if (all != null) {
+                    if (methodType == null) methodType = all.method;
+                    if(all.fontware!=null & requestFontware instanceof Array)
+                    requestFontware = requestFontware.concat(all.fontware);
+                    if(all.backware!=null & requestBackware instanceof Array)
+                    requestBackware = requestBackware.concat(all.backware);
+                    if (enableREST == null) enableREST = all.enableREST;
                 }
+
             })();
 
             function registerRouterByMethod(methodType) {
@@ -119,7 +121,6 @@ module.exports = class RouterFactory {
                     );
 
                 var mainExecute = instance[methodName];
-
                 var eventName;
 
                 (function prepareEventName() {
@@ -138,7 +139,10 @@ module.exports = class RouterFactory {
                 var isDevMode = this.config.isDevMode;
                 // Executer will call each request
 
-                if (this.config.enableRESTFul & (enableREST | enableREST==null)) {
+                if (
+                    this.config.enableRESTFul &
+                    (enableREST | (enableREST == null))
+                ) {
                     eventName = "REST-" + eventName;
                     this.restRouter.push(eventName);
                 }
