@@ -15,7 +15,6 @@ var instanceContainer = {};
 module.exports = class ModuleManager {
     /**
      * @description Get a instance of server app.
-     *x
      * @static
      * @param {number} [port=3000] port number of server app listen in
      * @param {string} [host="localhost"] host name of server app listen in
