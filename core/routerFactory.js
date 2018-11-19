@@ -101,11 +101,14 @@ module.exports = class RouterFactory {
                     uriPath = config.uriPath;
                 } else methodType = config;
 
+                if(requestFontware==null)requestFontware = [];
+                if(requestBackware==null)requestBackware = [];
+
                 if (all != null) {
                     if (methodType == null) methodType = all.method;
-                    if(all.fontware!=null & requestFontware instanceof Array)
+                    if(all.fontware!=null)
                     requestFontware = requestFontware.concat(all.fontware);
-                    if(all.backware!=null & requestBackware instanceof Array)
+                    if(all.backware!=null)
                     requestBackware = requestBackware.concat(all.backware);
                     if (enableREST == null) enableREST = all.enableREST;
                 }
