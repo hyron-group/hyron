@@ -95,25 +95,26 @@ module.exports = class RouterFactory {
                 var config = requestConfig[methodName];
                 if (typeof config == "object" && !(config instanceof Array)) {
                     methodType = config.method;
-                    requestFontware = all.fontware;
-                    requestBackware = all.backware;
                     enableREST = config.enableREST;
                     uriPath = config.uriPath;
                 } else methodType = config;
-
                 
-                if(requestFontware==null)requestFontware = [];
-                if(requestBackware==null)requestBackware = [];
-
+                requestFontware = all.fontware;
+                requestBackware = all.backware;
+                
                 if (all != null) {
                     if (methodType == null) methodType = all.method;
-                    if(all.fontware!=null)
-                    requestFontware = requestFontware.concat(config.fontware);
-                    if(all.backware!=null)
-                    requestBackware = requestBackware.concat(config.backware);
                     if (enableREST == null) enableREST = all.enableREST;
                 }
+                
+                if (requestFontware == null) requestFontware = [];
+                if (requestBackware == null) requestBackware = [];
 
+
+                if (config.fontware != null)
+                    requestFontware = requestFontware.concat(config.fontware);
+                if (config.backware != null)
+                    requestBackware = requestBackware.concat(config.backware);
 
             })();
 
