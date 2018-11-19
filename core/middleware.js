@@ -165,6 +165,7 @@ function prepareHandler(eventName, reqMidWare, position) {
         return handlersIndex;
     }
 
+    // console.log(reqMidWare);
     var indexList = [];
     var disableList = [];
     var enableList = [];
@@ -172,14 +173,15 @@ function prepareHandler(eventName, reqMidWare, position) {
 
     var inFont = position == "font";
 
-    for (var i in reqMidWare) {
-        var middleware = reqMidWare[i];
+    for (var indexOfCurMiddleware in reqMidWare) {
+        var middleware = reqMidWare[indexOfCurMiddleware];
         if (typeof middleware == "string") {
             // prepare disable global middleware by name
             if (middleware.charAt(0) == "!") {
                 var midwareName = middleware.substr(1);
+                var indexOfEnableMiddleware = reqMidWare.indexOf(midwareName);
                 if (midwareName == "*") disableAll = true;
-                else if (reqMidWare.indexOf(midwareName) > i) {
+                else if (indexOfEnableMiddleware < indexOfCurMiddleware) {
                     disableList.push(midwareName);
                 }
             }
@@ -202,20 +204,20 @@ function prepareHandler(eventName, reqMidWare, position) {
     }
 
     // disable global some of middleware by config
-    for (var i in disableList) {
-        var disableMidWareIndex = disableList[i];
+    for (var indexOfCurMiddleware in disableList) {
+        var disableMidWareIndex = disableList[indexOfCurMiddleware];
         indexList.splice(indexList.indexOf(disableMidWareIndex));
     }
 
     // enable some of middleware by config
     if (inFont) {
-        for (var i in enableList) {
-            var enableMidWareName = enableList[i];
+        for (var indexOfCurMiddleware in enableList) {
+            var enableMidWareName = enableList[indexOfCurMiddleware];
             indexList.push(customFontWareIndex[enableMidWareName]);
         }
     } else {
-        for (var i in enableList) {
-            var enableMidWareName = enableList[i];
+        for (var indexOfCurMiddleware in enableList) {
+            var enableMidWareName = enableList[indexOfCurMiddleware];
             indexList.push(customBackWareIndex[enableMidWareName]);
         }
 

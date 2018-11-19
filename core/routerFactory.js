@@ -95,23 +95,25 @@ module.exports = class RouterFactory {
                 var config = requestConfig[methodName];
                 if (typeof config == "object" && !(config instanceof Array)) {
                     methodType = config.method;
-                    requestFontware = config.fontware;
-                    requestBackware = config.backware;
+                    requestFontware = all.fontware;
+                    requestBackware = all.backware;
                     enableREST = config.enableREST;
                     uriPath = config.uriPath;
                 } else methodType = config;
 
+                
                 if(requestFontware==null)requestFontware = [];
                 if(requestBackware==null)requestBackware = [];
 
                 if (all != null) {
                     if (methodType == null) methodType = all.method;
                     if(all.fontware!=null)
-                    requestFontware = requestFontware.concat(all.fontware);
+                    requestFontware = requestFontware.concat(config.fontware);
                     if(all.backware!=null)
-                    requestBackware = requestBackware.concat(all.backware);
+                    requestBackware = requestBackware.concat(config.backware);
                     if (enableREST == null) enableREST = all.enableREST;
                 }
+
 
             })();
 
@@ -144,7 +146,7 @@ module.exports = class RouterFactory {
 
                 if (
                     this.config.enableRESTFul &
-                    (enableREST | (enableREST != null))
+                    (enableREST | (enableREST == null))
                 ) {
                     eventName = "REST-" + eventName;
                     this.restRouter.push(eventName);
