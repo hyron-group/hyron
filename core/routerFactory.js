@@ -141,7 +141,7 @@ module.exports = class RouterFactory {
 
                 if (
                     this.config.enableRESTFul &
-                    (enableREST | (enableREST == null))
+                    (enableREST | (enableREST != null))
                 ) {
                     eventName = "REST-" + eventName;
                     this.restRouter.push(eventName);
