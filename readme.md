@@ -280,3 +280,8 @@ return this.$requestHeaders;
 ```
 
 ---
+
+
+## Contributing to Hyron
+
+Check out [contributing guide](https://github.com/thangdjw/hyron/blob/master/CONTRIBUTING.MD) to get an overview of how to contribute to Hyron.
