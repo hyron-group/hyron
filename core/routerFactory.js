@@ -99,23 +99,23 @@ module.exports = class RouterFactory {
                     uriPath = config.uriPath;
                 } else methodType = config;
                 
-                requestFontware = all.fontware;
-                requestBackware = all.backware;
                 
                 if (all != null) {
+                    requestFontware = all.fontware;
+                    requestBackware = all.backware;
                     if (methodType == null) methodType = all.method;
                     if (enableREST == null) enableREST = all.enableREST;
                 }
                 
                 if (requestFontware == null) requestFontware = [];
                 if (requestBackware == null) requestBackware = [];
-
-
+                
+                
                 if (config.fontware != null)
-                    requestFontware = requestFontware.concat(config.fontware);
+                requestFontware = requestFontware.concat(config.fontware);
                 if (config.backware != null)
-                    requestBackware = requestBackware.concat(config.backware);
-
+                requestBackware = requestBackware.concat(config.backware);
+                
             })();
 
             function registerRouterByMethod(methodType) {
