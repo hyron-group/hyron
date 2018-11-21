@@ -1,7 +1,7 @@
 const varReader = require("./lib/variableParser");
 var supportedArgs = {
-    $requestHeaders: "req.headers",
-    $requestMethod: "req.method",
+    $headers: "req.headers",
+    $method: "req.method",
     $httpVersion: "req.httpVersion",
     $connection: "req.connection",
     $socket: "req.socket",

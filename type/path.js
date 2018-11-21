@@ -3,9 +3,16 @@ var crc = require("crc");
 var pathHolder = {};
 var cache = {};
 
-function build(hyronClass, baseURL, prefix, moduleName) {
-    var reqConfig = hyronClass.requestConfig();
-    var instance = new hyronClass();
+/**
+ * @description Used to cache url path from a service
+ * @param {function} routerPackage
+ * @param {string} baseURL
+ * @param {string} prefix
+ * @param {string} moduleName
+ */
+function build(routerPackage, baseURL, prefix, moduleName) {
+    var reqConfig = routerPackage.requestConfig();
+    var instance = new routerPackage();
     uriPaths = {};
 
     Object.keys(reqConfig).forEach(methodName => {

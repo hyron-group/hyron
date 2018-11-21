@@ -1,49 +1,36 @@
 /**
- * @param {*} result
- * @param {http.ServerResponse} res
+ * @description This function used to handle basic result for response
+ * @param {*} result result after handle success
+ * @param {http.ServerResponse} res http response
  */
 function handingResult(result, res, isDevMode = false) {
     if (result instanceof Promise) {
-        result.then(val => res.end(handingResult(val, res))).catch(err => {
-            handingError(err, res, isDevMode);
-        });
+        result
+            .then(val => res.end(handingResult(val, res)))
+            .catch(err => {
+                handingError(err, res, isDevMode);
+            });
+    } else if (typeof result == "boolean") {
+        res.end(result ? 1 : 0);
     } else if (result instanceof Error) {
         handingError(result, res, isDevMode);
-    } else if (typeof result == "object") {
-        handingCustomResult(result, res);
     } else res.end(result);
 }
 
-function handingCustomResult(result, res) {
-    var data = result;
-    if(result != null){
-        if (result.$data != null) data = result.$data;
-        if (result.$type != null) res.setHeader("Content-Type", result.$type);
-        if (result.$status != null) res.statusCode = res.$code;
-        if (result.$message != null) res.statusMessage = res.$message;
-        if (result.$headers != null) {
-            var header = result.$header;
-            Object.keys(header).forEach(key => {
-                res.setHeader(key, header[key]);
-            });
-        }
-        if (result.$render != null) {
-        }
-        if (result.$redirect != null) {
-            res.setHeader("Location", result.$redirect);
-        }
-    }
-    res.end(data);
-}
-
-function handingError(error, res, isDevMode) {
+/**
+ * @description Used to handle error
+ * @param {Error} error http error message 
+ * @param {http.ServerResponse} res http response
+ * @param {boolean} isDevMode true if enable develop mode for log error
+ */
+async function handingError(error, res, isDevMode) {
     var message = error.message;
     var code = error.code;
     if (isNaN(code)) code = 403; // Forbidden
     res.statusCode = code;
     if (isDevMode) {
-        res.write(error.stack);
-    } else res.write(message);
+        await res.write(error.stack);
+    } else await res.write(message);
     res.end();
 }
 

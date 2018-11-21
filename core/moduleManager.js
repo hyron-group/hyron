@@ -4,7 +4,7 @@ const generalSecretKey = require("../lib/generalKey");
 const { addMiddleware } = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
 const AbstractRouters = require("../type/AbstractRouters");
-const path = require('../type/path');
+const path = require("../type/path");
 
 var defaultConfig = {
     ...loadConfigFromFile()
@@ -12,9 +12,12 @@ var defaultConfig = {
 
 var instanceContainer = {};
 
+/**
+ * This class used to setup & run a hyron server app
+ */
 module.exports = class ModuleManager {
     /**
-     * @description Get a instance of server app.
+     * @description Get a instance of server app. It can used to listen client request at sepecial host and post
      * @static
      * @param {number} [port=3000] port number of server app listen in
      * @param {string} [host="localhost"] host name of server app listen in
@@ -22,7 +25,6 @@ module.exports = class ModuleManager {
      * @returns {ModuleManager}
      */
     static getInstance(port = 3000, host = "localhost", prefix = "") {
-        
         var newInstance = new ModuleManager();
         newInstance.port = port;
         newInstance.host = host;
@@ -82,7 +84,7 @@ module.exports = class ModuleManager {
      *@description Setup app or it plugins with config
      * @param {object} config
      * @param {boolean} [config.isDevMode=true] if true, app will collect bug, log for development. Else, app will optimized for performance
-     * @param {boolean} [config.enableRESTFul=true] if true, app will support for REST-API. Enable REST method in requestConfig() method
+     * @param {boolean} [config.enableRESTFul=false] if true, app will support for REST-API. Enable REST method in requestConfig() method
      * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
      */
     setting(config) {
@@ -90,18 +92,18 @@ module.exports = class ModuleManager {
     }
 
     /**
-     * @description Return config value of name
+     * @description Return config of app or it plugins
      *
      * @static
-     * @param {*} name name of app setting field or a installed plugin
-     * @returns {*} config value
+     * @param {string} name name of app setting field or a installed plugin
+     * @returns {string|object} config value
      */
     static getConfig(name) {
         return defaultConfig[name];
     }
 
     /**
-     * @description Return set of instance created
+     * @description Return set of instance created. It can be used by 3rth addons
      *
      * @static
      * @returns {{baseURI:string,instance:ModuleManager}} instances created by getInstance()
@@ -112,47 +114,53 @@ module.exports = class ModuleManager {
 
     /**
      * @description Register router by function packages
-     * @param {{moduleName:string,AbstractRouters}} moduleList
+     * @param {{moduleName:string,AbstractRouters}} moduleList a package of main handle contain business logic
      */
     enableService(moduleList) {
-        var prefix = this.prefix;
         if (typeof moduleList == "object")
             Object.keys(moduleList).forEach(moduleName => {
-                var handle = moduleList[moduleName];
-                if(typeof handle == 'string') handle = require(handle);
-                if(handle.requestConfig==null){
+                var routePackage = moduleList[moduleName];
+                if (typeof routePackage == "string")
+                    routePackage = require('../../'+routePackage);
+                if (routePackage.requestConfig == null) {
                     // not is a hyron service
-                    var baseURI = this.baseURI;
                     try {
-                        handle(baseURI);
-                    } catch(err){
-                        console.error(`hyron do not support for service define like '${moduleName}' yet`)
+                        routePackage(this.baseURI, moduleName);
+                    } catch (err) {
+                        console.error(
+                            `hyron do not support for service define like '${moduleName}' yet`
+                        );
                     }
                 } else {
                     // is as normal hyron service
-                    this.routerFactory.registerRouter(
-                    prefix,
-                    moduleName,
-                        handle
+                    this.routerFactory.registerRoutesGroup(
+                        this.prefix,
+                        moduleName,
+                        routePackage
                     );
                 }
-                path.build(handle, "http://"+this.baseURI, prefix, moduleName);
+                path.build(
+                    routePackage,
+                    "http://" + this.baseURI,
+                    this.prefix,
+                    moduleName
+                );
             });
     }
 
     /**
      * @typedef {object} CustomHandle
-     * @prop {function} handle
-     * @prop {boolean} global true if this handle is a global function
+     * @prop {function} handle a function to handle with data
+     * @prop {boolean} global true if this handle is a global function, and can be run by most of routers
      */
 
     /**
-     * @typedef {function|CustomHandle} handle
+     * @typedef {function|CustomHandle} MidwareMeta
      */
 
     /**
      * @description Register functions run before a router. Any predefined function will run first
-     * @param {{name:string,handle}} fontWareList
+     * @param {{name:string,MidwareMeta}} fontWareList
      */
     enableFontWare(fontWareList) {
         if (typeof fontWareList == "object")
@@ -164,7 +172,7 @@ module.exports = class ModuleManager {
 
     /**
      * @description Register functions run after a router. Any predefined function will run last
-     * @param {{name:string,handle}} backWareList
+     * @param {{name:string,MidwareMeta}} backWareList
      */
     enableBackWare(backWareList) {
         if (typeof backWareList == "object")
@@ -173,16 +181,22 @@ module.exports = class ModuleManager {
             });
     }
 
+    /**
+     * @description Register a single middleware as fontware or backware
+     * @param {String} name name of this middleware
+     * @param {MidwareMeta} meta contain config of this middware
+     * @param {boolean} inFont true if it is a fontware or false if it is a backware
+     */
     addMiddleware(name, meta, inFont) {
         var handler = meta;
         var isGlobal = false;
-        if(typeof handler =='string') {
+        if (typeof handler == "string") {
             handler = require(handler);
         }
         if (typeof handler == "object") {
             if (handler.global == true) isGlobal = true;
             handler = handler.handle;
-            if(typeof handler =='string') {
+            if (typeof handler == "string") {
                 handler = require(handler);
             }
         } else if (typeof handler != "function") {
@@ -199,7 +213,7 @@ module.exports = class ModuleManager {
 
     /**
      * @description start server
-     * @param {function} callback
+     * @param {function} callback a function will be call when server started
      */
     startServer(callback) {
         this.app.on("request", (req, res) => {

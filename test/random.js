@@ -1,28 +1,7 @@
-class a {
-    static requestConfig(){
-        return {
-            b:'get'
-        }
-    }
-
-    c(){
-        return 'c'
-    }
+async function a(){
+    setTimeout(()=>{
+        
+    }, 2000)
 }
 
-class d {
-    static requestConfig(){
-        return {
-            e:'post'
-        }
-    }
-    f(){
-        return 'f'
-    }
-}
-
-var route = require('../type/Route');
-
-var finalClass = route.merge(a, d);
-
-console.log(new finalClass().f())
+console.log(a.constructor.name == 'AsyncFunction')

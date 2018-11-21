@@ -1,4 +1,4 @@
-var StatusCode = {
+module.exports = {
     // 1XX : Informational response
     CONTINUE: 100,
     SWITCHING_PROTOCOLS: 101,
@@ -71,5 +71,3 @@ var StatusCode = {
     NOT_EXTENDED: 510,
     NETWORK_AUTHENTICATION_REQUESTED: 511
 };
-
-module.exports = StatusCode;

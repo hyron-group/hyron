@@ -3,7 +3,7 @@ module.exports = class {
         return {
             $all:{
                 method:'get',
-                fontware:[]
+                fontware:['!args-loader']
             },
             showMyName: ["get","post"],
             upload: "post",
@@ -16,7 +16,7 @@ module.exports = class {
         };
     }
 
-    showMyName(name) {
+    async showMyName(name) {
         return "Nice to meet you, " + name;
     }
 
