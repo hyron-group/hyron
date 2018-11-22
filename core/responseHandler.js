@@ -10,8 +10,8 @@ function handingResult(result, res, isDevMode = false) {
             .catch(err => {
                 handingError(err, res, isDevMode);
             });
-    } else if (typeof result == "boolean") {
-        res.end(result ? 1 : 0);
+    } else if (typeof result == "boolean" | typeof result == 'number') {
+        res.end(result.toString());
     } else if (result instanceof Error) {
         handingError(result, res, isDevMode);
     } else res.end(result);
