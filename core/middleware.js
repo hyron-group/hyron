@@ -109,7 +109,7 @@ function runMiddleware(
 
     var i = -1;
 
-    async function runFunc(func) {
+    function runFunc(func) {
         var result;
         if (func == null) {
             console.error(
@@ -131,9 +131,7 @@ function runMiddleware(
                     .catch(err => {
                         onFailed(err);
                     });
-            } else if(result.constructor.name == "AsyncFunction"){
-                args[2] = await result;
-            }else {
+            } else {
                 args[2] = result;
                 runNextMiddleware();
             }
