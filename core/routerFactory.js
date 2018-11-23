@@ -104,6 +104,7 @@ class RouterFactory {
      * @memberof RouterFactory
      */
     registerRoutesGroup(prefix, moduleName, handlePackage) {
+        console.log('\n\nLockup service : '+moduleName)
         var requestConfig = handlePackage.requestConfig();
 
         var instance = new handlePackage();
@@ -239,7 +240,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
     var method = [],
         fontware = [],
         backware = [],
-        enableREST = false,
+        enableREST,
         path;
 
     function prepareMethod(type) {
@@ -268,7 +269,9 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
             fontware = fontware.concat(generalConfig.fontware);
         if (generalConfig.backware != null)
             backware = backware.concat(generalConfig.backware);
+    }
 
+    function iheritanceFromAppConfig(){
         if (enableREST == null) enableREST = appConfig.enableRESTFul;
     }
 
@@ -283,6 +286,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
 
     loadFromRouteConfig();
     inheritanceFromGeneralConfig();
+    iheritanceFromAppConfig();
 
     return {
         method,
