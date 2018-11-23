@@ -7,7 +7,7 @@ module.exports = async function(req, res, prev) {
     if (prev.$status != null) res.statusCode = prev.$code;
     if (prev.$message != null) res.statusMessage = prev.$message;
     if (prev.$headers != null) {
-        var header = prev.$header;
+        var header = prev.$headers;
         Object.keys(header).forEach(key => {
             res.setHeader(key, header[key]);
         });
