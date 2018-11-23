@@ -31,4 +31,4 @@ Before you submit a pull request, check that it meets these guidelines:
 * If you are fixing a bug or adding a new feature, please create a branch for it.
 * Make Pull requests as descriptive as possible.
 * Every other best practice recommended when contributing to a project.
-* Select or add new card in project board as the same format with other to report to other what i will do
+* Select or add new card in [project board](https://github.com/hyron-group/hyron/projects) as the same format with other to report to other what i will do at
