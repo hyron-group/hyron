@@ -54,6 +54,7 @@ class RouterFactory {
         var execute = this.listener.get(eventName);
         if (execute == null) {
             var restName = buildRouteName(true, req.method, uriPath);
+            restName = restName.substr(0, restName.lastIndexOf('/'));
             if (this.restRouter.includes(restName)) {
                 eventName = restName; // support for REST API
                 req.isREST = true;
@@ -160,7 +161,9 @@ function registerRouterByMethod(methodPath, eventName, mainExecute, routeConfig)
     var isDevMode = this.config.isDevMode;
     // Executer will call each request
 
-    if (routeConfig.enableREST) this.restRouter.push(eventName);
+    if (routeConfig.enableREST) {
+        this.restRouter.push(eventName);
+    }
 
     console.log("-> event : " + eventName);
     // store listener
