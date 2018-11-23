@@ -6,7 +6,7 @@ Contributions are welcome, and they are greatly appreciated! Every littlebit hel
 
 ### Report Bugs
 
-Report bugs at https://github.com/thangdjw/hyron/issues.
+Report bugs at https://github.com/hyron-group/hyron/issues.
 
 If you are reporting a bug, please include:
 
@@ -16,7 +16,7 @@ If you are reporting a bug, please include:
 
 ## Submit Feedback
 
-The best way to send feedback is to file an issue at https://github.com/thangdjw/hyron/issues.
+The best way to send feedback is to file an issue at https://github.com/hyron-group/hyron/issues.
 
 If you are proposing a feature:
 
@@ -31,3 +31,4 @@ Before you submit a pull request, check that it meets these guidelines:
 * If you are fixing a bug or adding a new feature, please create a branch for it.
 * Make Pull requests as descriptive as possible.
 * Every other best practice recommended when contributing to a project.
+* Select or add new card in project board as the same format with other to report to other what i will do
