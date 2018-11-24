@@ -121,20 +121,22 @@ function runMiddleware(
             result = func.apply(thisArgs, args);
         }
 
-        if (result != null)
-            if (result instanceof Promise) {
-                result
-                    .then(data => {
-                        args[2] = data;
-                        runNextMiddleware();
-                    })
-                    .catch(err => {
-                        onFailed(err);
-                    });
-            } else {
-                args[2] = result;
-                runNextMiddleware();
-            }
+        if (
+            result instanceof Promise ||
+            result.constructor.name == "AsyncFunction"
+        ) {
+            result
+                .then(data => {
+                    args[2] = data;
+                    runNextMiddleware();
+                })
+                .catch(err => {
+                    onFailed(err);
+                });
+        } else {
+            args[2] = result;
+            runNextMiddleware();
+        }
     }
 
     function runNextMiddleware() {

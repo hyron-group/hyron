@@ -4,33 +4,34 @@
  * @param {http.ServerResponse} res http response
  */
 function handingResult(result, res, isDevMode = false) {
-    if (result instanceof Promise) {
+    if (typeof result == "string" || result instanceof Buffer) {
+        res.end(result);
+    } else if (result instanceof Promise) {
         result
             .then(val => res.end(handingResult(val, res)))
             .catch(err => {
                 handingError(err, res, isDevMode);
             });
-    } else if (typeof result == "boolean" | typeof result == 'number') {
-        res.end(result.toString());
     } else if (result instanceof Error) {
         handingError(result, res, isDevMode);
-    } else res.end(result);
+    } else res.end(result.toString());
 }
 
 /**
  * @description Used to handle error
- * @param {Error} error http error message 
+ * @param {Error} error http error message
  * @param {http.ServerResponse} res http response
  * @param {boolean} isDevMode true if enable develop mode for log error
  */
-async function handingError(error, res, isDevMode) {
+function handingError(error, res, isDevMode) {
     var message = error.message;
     var code = error.code;
     if (isNaN(code)) code = 403; // Forbidden
     res.statusCode = code;
     if (isDevMode) {
-        await res.write(error.stack);
-    } else await res.write(message);
+        res.write(`<h3>${message}</h3>`);
+        res.write(error.stack);
+    } else res.write(message);
     res.end();
 }
 

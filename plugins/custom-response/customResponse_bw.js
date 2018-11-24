@@ -1,20 +1,11 @@
-module.exports = async function(req, res, prev) {
-    prev = await prev;
-    if (typeof prev != "object" | !prev instanceof Array) return prev;
+const handleMapping = require("./responseMapping");
 
-    var data = prev.$data;
-    if (prev.$type != null) res.setHeader("Content-Type", prev.$type);
-    if (prev.$status != null) res.statusCode = prev.$code;
-    if (prev.$message != null) res.statusMessage = prev.$message;
-    if (prev.$headers != null) {
-        var header = prev.$headers;
-        Object.keys(header).forEach(key => {
-            res.setHeader(key, header[key]);
+module.exports = function(req, res, prev) {
+    if (typeof prev == "object" && !prev instanceof Array) {
+        Object.keys(prev).forEach(field => {
+            var handle = handleMapping[field];
+            if (handle != null) handle(prev[field], res);
         });
-    }
-    if (prev.$redirect != null) {
-        res.setHeader("Location", prev.$redirect);
-    }
-
-    res.end(data);
+        res.end();
+    } else return prev;
 };

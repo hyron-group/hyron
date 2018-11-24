@@ -61,20 +61,20 @@ A router register on :
 
 > ### _static_ **getInstance** ( port, host, prefix ) : ModuleManager
 
-This method used to create new app instance.
+Used to create new app instance.
 Call this method by **require('hyron')**
 
 ### **params :**
 
 -   **port** ( number ) : port number this for instance. default is **3000**
 -   **host** ( string ) : host name for this instance. default is **localhost**
--   **prefix** ( string ) : name of app instance. It used when you have multi app instance, make listener hold on : http://host:port/[prefix]
+-   **prefix** ( string ) : name of app instance. It used when you have multi app instance, make listener hold on : http://host:port/prefix
 
 ---
 
 > ### **setting** ( config ) : void
 
-This method used to config app and installed plugins
+Used to config app and installed plugins
 
 ### **params :**
 
@@ -84,13 +84,7 @@ This method used to config app and installed plugins
 
 > ### _static_ **getConfig** ( name ) : string | object<?>
 
-This method used to get config of app or installed plugins by name
-
----
-
-> ### _static_ **getConfig** ( name ) : string | object<?>
-
-This method used to get config of app or installed plugins by name
+Used to get config of app or installed plugins by name
 
 **params :**
 - **name** (string) : config item name or plugin name
@@ -100,7 +94,7 @@ This method used to get config of app or installed plugins by name
 
 > ### _static_ **getInstanceManager** () : Object<baseURI, ModuleManager>
 
-This method used to get all app instance created
+Used to get all app instance created
 
 ---
 
@@ -130,7 +124,7 @@ Any predefined plugin will be run first
                 -   **req** (IncomingMessage) : client request
                 -   **res** (ServerResponse) : server response
                 -   **prev** : preview data return by abort fontware
-                -   **config** : config of this fontware, declared in appcfg.ini
+
 
 ---
 
@@ -152,7 +146,7 @@ Any predefined plugin will be run last
                 -   **req** (IncomingMessage) : client request
                 -   **res** (ServerResponse) : server response
                 -   **prev** : preview data return by below backware
-                -   **config** : config of this backware, declared in appcfg.ini
+
 
 
 ---
@@ -165,7 +159,7 @@ Register main handle (logic of routers)
 
 -   **module** ( object {**name** : **module**} ) : The set of functions is encapsulated to handle specific functions. Which will become the router
     -   name ( **string** ) : name o module
-    -   module ( **HyronClass** ) : a packet of functions
+    -   module ( **HyronClass** ) : a packet of functions and it config
 
 ---
 
@@ -206,16 +200,16 @@ Description for Hyron framework to config router
 
 ### **result :**
 
--   **HyronClass** ( object { **function-name** : **meta** } ) : router meta
-    -   **function-name** ( string ) : name of function to register listener
+-   **HyronClass** ( object { **func_name** : **meta** } ) : router meta
+    -   **func_name** ( string ) : name of function to register listener. Or $all to apply for whole method
     -   **meta** ( string | object ) : router config
-        -   **string** : method type. hyron support for 6 type of basic http protocol : GET, POST, HEAD, DELETE, PUT, and ALL
+        -   **string** : method type. hyron support for 8 type : GET, POST, HEAD, DELETE, PUT, PATCH, PRIVATE and ALL
         -   **object** : router config
             -   **method** (string) : http protocol type like about
             -   **fontware** ( array< string | function > ) : on / off fontware declared in enableFontWare() by name. to off global plugin, delare '!' before it name
             -   **backware** ( array< string | function > ) : on / off fontware declared in enableBackWare() by name. to off global plugin, delare '!' before it name
             -   **enableREST** ( boolean ) : true if you want to make this function become REST. Then, first argument of it will be load as router last path.
-            -   uriPath ( string ) : custom uri path of this router
+            -   **path** ( string ) : custom uri path of this router
 
 ---
 
@@ -246,7 +240,7 @@ It also include feature help you validate input easier with comment :
 -   lte (number) : check if field small than or equal lte
 -   reg (number) : check if field match input with regex
 -   in (array<?>) : check if field inside array of value
--   non (array<?>) : check if field not inside array of value
+-   nin (array<?>) : check if field not inside array of value
 
 ### **note :**
 
@@ -262,8 +256,8 @@ This plugin will load request info into "**this**" of router function in hyron c
 
 **Supported request params**
 
--   $requestHeaders: eval "req.headers
--   $requestMethod: eval "req.method"
+-   $headers: eval "req.headers
+-   $method: eval "req.method"
 -   $httpVersion: eval "req.httpVersion"
 -   $connection: eval "req.connection"
 -   $socket: eval "req.socket"
@@ -278,6 +272,19 @@ showHeader(){
 return this.$requestHeaders;
 }
 ```
+
+---
+
+> ### custom-response
+
+This plugin used to custom http response that is node http support, include
+
+- $type : set data response type
+- $data : set data for response
+- $headers : set response header
+- $status : set response status code
+- $message : set response status message
+- $redirect : redirect to new url
 
 ---
 
