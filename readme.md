@@ -291,4 +291,4 @@ This plugin used to custom http response that is node http support, include
 
 ## Contributing to Hyron
 
-Check out [contributing guide](https://github.com/thangdjw/hyron/blob/master/CONTRIBUTING.MD) to get an overview of how to contribute to Hyron.
+Check out [contributing guide](https://github.com/hyron-group/hyron/blob/master/CONTRIBUTING.md) to get an overview of how to contribute to Hyron.
