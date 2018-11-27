@@ -56,6 +56,10 @@ var CONDITION_HANDLE = {
     },
     reg: (condition, type) => {
         return ` & (${JSON.stringify(condition)}.test(input))`;
+    },
+    nullable: (condition, type) => {
+        if (!condition) return ` & (input != null)`;
+        else return "";
     }
 };
 
@@ -70,7 +74,6 @@ function parseConditionCase(conditionList) {
     });
 
     buf = buf.substr(3);
-    // console.log(buf);
     return buf;
 }
 

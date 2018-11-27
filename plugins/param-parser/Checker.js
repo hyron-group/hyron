@@ -20,7 +20,6 @@ function registerChecker(funcName, func) {
 }
 
 function getInvalidTypeError(paramName, funcName) {
-    console.log('errror input type ')
     var condition = conditionStorage[funcName + paramName];
     condition = getPrettyCondition(paramName);
 
@@ -34,7 +33,7 @@ function checkData(funcName, data) {
     if (data == null) return;
     var checkerExecList = checkerStorage[funcName];
     if (checkerExecList == null) return;
-    var keyset = Object.keys(data);
+    var keyset = Object.keys(checkerExecList);
     for (var i = 0; i < keyset.length; i++) {
         var paramName = keyset[i];
         var checkerExec = checkerExecList[paramName];
@@ -92,6 +91,7 @@ function getConditionFromComment(raw) {
     var comment = commentParser(raw);
     var result = {};
     var match;
+    if(comment!=null);
     comment.forEach(curComment=>{
         while ((match = CONDITION_REG.exec(curComment)) != null) {
             var key = match[2];

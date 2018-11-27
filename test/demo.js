@@ -37,9 +37,9 @@ module.exports = class {
     upload(data, to) {
         /**
          * @param data {type:ClientFile, size:10MB}
-         * @param to {type: string}
+         * @param to {nullable: false, type: string}
          */
-        return data.content;
+        return to;
     }
 
     sample() {

@@ -1,7 +1,7 @@
 
 module.exports = function parseComment(func) {
     var raw = func.toString();
-    var commentList;
+    var commentList = [];
     var isComment = false;
     var isMultilineCmt = false;
     var buf = "";
@@ -10,7 +10,7 @@ module.exports = function parseComment(func) {
         var data = buf;
         data = data.replace(/\n\s*[*]\s*/g, "\n");
         data = data.trim();
-        commentList=data;
+        commentList.push(data);
     }
 
     // retrieve comment

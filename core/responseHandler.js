@@ -4,7 +4,7 @@
  * @param {http.ServerResponse} res http response
  */
 function handingResult(result, res, isDevMode = false) {
-    if (typeof result == "string" || result instanceof Buffer) {
+    if (typeof result == "string" || result instanceof Buffer || result == null) {
         res.end(result);
     } else if (result instanceof Promise) {
         result
@@ -14,7 +14,8 @@ function handingResult(result, res, isDevMode = false) {
             });
     } else if (result instanceof Error) {
         handingError(result, res, isDevMode);
-    } else res.end(result.toString());
+    } 
+    else res.end(result.toString());
 }
 
 /**
