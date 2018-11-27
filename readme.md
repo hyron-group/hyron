@@ -241,6 +241,7 @@ It also include feature help you validate input easier with comment :
 -   reg (number) : check if field match input with regex
 -   in (array<?>) : check if field inside array of value
 -   nin (array<?>) : check if field not inside array of value
+-   nullable (boolean) : allow input data null or
 
 ### **note :**
 
