@@ -49,13 +49,13 @@ var CONDITION_HANDLE = {
         return ` & (input != ${condition})`;
     },
     in: condition => {
-        return ` & (${condition}.includes(input))`;
+        return ` & (${JSON.stringify(condition)}.includes(input))`;
     },
     nin: condition => {
-        return ` & (!${condition}.includes(input))`;
+        return ` & (!${JSON.stringify(condition)}.includes(input))`;
     },
     reg: (condition, type) => {
-        return ` & (${condition}.test(input))`;
+        return ` & (${JSON.stringify(condition)}.test(input))`;
     }
 };
 
@@ -70,7 +70,7 @@ function parseConditionCase(conditionList) {
     });
 
     buf = buf.substr(3);
-    console.log(buf);
+    // console.log(buf);
     return buf;
 }
 

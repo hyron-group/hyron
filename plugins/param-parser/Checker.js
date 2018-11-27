@@ -3,7 +3,7 @@ const stringToObject = require("../../lib/objectParser");
 const HTTPMessage = require("../../type/HttpMessage");
 const StatusCode = require("../../type/StatusCode");
 const conditionParser = require("./lib/conditionParser");
-const CONDITION_REG = /(@param\s+([\w\d]+)\s*([\w\d\s.:,\u002d\002b%^&*\[\]\{\}]*))/g;
+const CONDITION_REG = /(@param\s+([\w\d]+)\s*([\w\d\s.:,\u002d\002b%^&'"*\[\]\{\}]*))/g;
 
 const ClientFile = require("./type/ClientFile");
 const conditionStorage = {};
@@ -20,6 +20,7 @@ function registerChecker(funcName, func) {
 }
 
 function getInvalidTypeError(paramName, funcName) {
+    console.log('errror input type ')
     var condition = conditionStorage[funcName + paramName];
     condition = getPrettyCondition(paramName);
 
@@ -91,11 +92,13 @@ function getConditionFromComment(raw) {
     var comment = commentParser(raw);
     var result = {};
     var match;
-    while ((match = CONDITION_REG.exec(comment)) != null) {
-        var key = match[2];
-        var condition = stringToObject(match[3]);
-        result[key] = condition;
-    }
+    comment.forEach(curComment=>{
+        while ((match = CONDITION_REG.exec(curComment)) != null) {
+            var key = match[2];
+            var condition = stringToObject(match[3]);
+            result[key] = condition;
+        }
+    })
     return result;
 }
 

@@ -121,10 +121,7 @@ function runMiddleware(
             result = func.apply(thisArgs, args);
         }
 
-        if (
-            result instanceof Promise ||
-            result.constructor.name == "AsyncFunction"
-        ) {
+        if (result instanceof Promise) {
             result
                 .then(data => {
                     args[2] = data;
