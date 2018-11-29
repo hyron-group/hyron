@@ -40,7 +40,7 @@ function checkData(funcName, data) {
         if (checkerExec == null) continue;
         var value = data[paramName];
         var testResult = checkerExec(value);
-        if (testResult === 0) {
+        if (!testResult) {
             return getInvalidTypeError(paramName, funcName);
         }
     }

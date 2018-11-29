@@ -13,49 +13,49 @@ var CONDITION_HANDLE = {
         }
         if (type == "Buffer") return ` & (Buffer.byteLength(input) < ${size})`;
         if (type == "ClientFile") {
-            return ` & (input !=null && Buffer.byteLength(input.content) < ${size})`;
-        } else return ` & (input.length < ${size})`;
+            return ` && (input !=null && Buffer.byteLength(input.content) < ${size})`;
+        } else return ` && (input.length < ${size})`;
     },
     type: condition => {
         if (["string", "number", "boolean", "object"].includes(condition))
-            return ` & (typeof input === '${condition}')`;
+            return ` && (typeof input === '${condition}')`;
         else {
-            return ` & (input instanceof ${condition})`;
+            return ` && (input instanceof ${condition})`;
         }
     },
     mime: (condition, type) => {
         //TODO: support for mime type
 
         if (type == "ClientFile")
-            return ` & (input !=null && input.type == ${condition})`;
+            return ` && (input !=null && input.type == ${condition})`;
         else return "";
     },
     lt: condition => {
-        return ` & (input < ${condition})`;
+        return ` && (input < ${condition})`;
     },
     lte: condition => {
-        return ` & (input <= ${condition})`;
+        return ` && (input <= ${condition})`;
     },
     gt: condition => {
-        return ` & (input > ${condition})`;
+        return ` && (input > ${condition})`;
     },
     gte: condition => {
-        return ` & (input >= ${condition})`;
+        return ` && (input >= ${condition})`;
     },
     eq: condition => {
-        return ` & (input == ${condition})`;
+        return ` && (input == ${condition})`;
     },
     ne: condition => {
-        return ` & (input != ${condition})`;
+        return ` && (input != ${condition})`;
     },
     in: condition => {
-        return ` & (${JSON.stringify(condition)}.includes(input))`;
+        return ` && (${JSON.stringify(condition)}.includes(input))`;
     },
     nin: condition => {
-        return ` & (!${JSON.stringify(condition)}.includes(input))`;
+        return ` && (!${JSON.stringify(condition)}.includes(input))`;
     },
     reg: (condition, type) => {
-        return ` & (${JSON.stringify(condition)}.test(input))`;
+        return ` && (${JSON.stringify(condition)}.test(input))`;
     },
     nullable: (condition, type) => {
         if (!condition) return ` & (input != null)`;
