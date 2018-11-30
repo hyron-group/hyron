@@ -19,12 +19,12 @@ module.exports = class ModuleManager {
     /**
      * @description Get a instance of server app. It can used to listen client request at sepecial host and post
      * @static
-     * @param {number} [port=3000] port number of server app listen in
-     * @param {string} [host="localhost"] host name of server app listen in
-     * @param {string} [prefix=""] name of app instance. It used when you have multi app instance, make listener hold on : http://host:port/[prefix]
+     * @param {number} port number of server app listen in
+     * @param {string} host name of server app listen in
+     * @param {string} name of app instance. It used when you have multi app instance, make listener hold on : http://host:port/[prefix]
      * @returns {ModuleManager}
      */
-    static getInstance(port = 3000, host = "localhost", prefix = "") {
+    static getInstance(port, host, prefix = "") {
         var newInstance = new ModuleManager();
         newInstance.port = port;
         newInstance.host = host;

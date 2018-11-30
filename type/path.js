@@ -17,7 +17,9 @@ function build(routerPackage, baseURL, prefix, moduleName) {
 
     Object.keys(reqConfig).forEach(methodName => {
         var config = reqConfig[methodName];
-        var path = `${prefix!=""?"/"+prefix:""}/${moduleName}/${methodName}`;
+        var path = `${
+            prefix != "" ? "/" + prefix : ""
+        }/${moduleName}/${methodName}`;
         if (config.uriPath != null) path = config.uriPath;
         var handle = instance[methodName];
         if (handle != null) uriPaths[path] = handle;
@@ -36,12 +38,14 @@ function getURL(path) {
     } else {
         var baseURLs = Object.keys(pathHolder);
         for (var i = 0; i < baseURLs.length; i++) {
-            var registeredPaths = Object.keys(pathHolder[baseURLs[i]]);
+            var curBaseUrl = baseURLs[i];
+            var registeredPaths = Object.keys(pathHolder[curBaseUrl]);
             for (var j = 0; j < registeredPaths.length; j++) {
-                var currentPath = registeredPaths[j];
-                if (currentPath.endsWith(path)) {
-                    completePath[path] = baseURL + "/" + currentPath;
-                    return currentPath;
+                var curPath = registeredPaths[j];
+                if (curPath.endsWith(path)) {
+                    completePath = curBaseUrl + "/" + curPath;
+                    cache[path] = completePath;
+                    return completePath;
                 }
             }
         }
@@ -63,8 +67,8 @@ function findURL(func) {
                 var curPath = registeredPaths[j];
                 var curHandle = pathHolder[curBaseUrl][curPath];
                 if (curHandle.toString() == func) {
-                    var completePath = curBaseUrl + curPath;
-                    completePath[identityKey] = completePath;
+                    completePath = curBaseUrl + "/" + curPath;
+                    cache[identityKey] = completePath;
                     return completePath;
                 }
             }
