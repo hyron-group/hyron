@@ -1,7 +1,7 @@
 const http = require("http");
 const RouterFactory = require("./routerFactory");
 const generalSecretKey = require("../lib/generalKey");
-const { addMiddleware } = require("./middleware");
+const { addMiddleware, getMiddleware } = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
 const AbstractRouters = require("../type/AbstractRouters");
 const path = require("../type/path");
@@ -168,6 +168,24 @@ module.exports = class ModuleManager {
                 var config = fontWareList[name];
                 this.addMiddleware(name, config, true);
             });
+    }
+
+    /**
+     * @description retrieve a fontware by name
+     * @param {string} name
+     * @returns function handle
+     */
+    getFontWare(name){
+        return getMiddleware(name)
+    }
+
+     /**
+     * @description retrieve a backware by name
+     * @param {string} name
+     * @returns function handle
+     */
+    getBackWare(name){
+        return getMiddleware(name);
     }
 
     /**

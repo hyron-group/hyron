@@ -11,8 +11,13 @@ var executesMidWareIndex = {};
 module.exports = {
     addMiddleware,
     runFontWare,
-    runBackWare
+    runBackWare,
+    getMiddleware
 };
+
+function getMiddleware(name){
+    return handlerHolder[indexOfHandle(name)];
+}
 
 /**
  * @description Used to register a middleware to scope
