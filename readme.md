@@ -14,7 +14,8 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 -   **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
 
 # Release 
-- add path feature at ./type to get url path of a function
+- support setup handle inside request config for route
+
 
 # Example
 
@@ -210,6 +211,7 @@ Description for Hyron framework to config router
             -   **backware** ( array< string | function > ) : on / off fontware declared in enableBackWare() by name. to off global plugin, delare '!' before it name
             -   **enableREST** ( boolean ) : true if you want to make this function become REST. Then, first argument of it will be load as router last path.
             -   **path** ( string ) : custom uri path of this router
+            -   handle ( function ) : handle function to register listener, if build-in method don't exist
 
 ---
 

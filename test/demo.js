@@ -9,6 +9,7 @@ module.exports = class Demo {
             upload: "post",
             sample: "patch",
             showURL: "get",
+            showArgs: "get",
             view: {
                 method: ["get", "head"],
                 enableREST: true
@@ -18,6 +19,11 @@ module.exports = class Demo {
 
     async showMyName(name) {
         return "Nice to meet you, " + name;
+    }
+
+    showArgs(args=[{pm:["world"]}], key1){
+        console.log(args);
+        return JSON.stringify(arguments)
     }
 
     showURL(){

@@ -127,7 +127,7 @@ class RouterFactory {
                 generalConfig,
                 this.config
             );
-            var mainHandle = instance[methodName];
+            var mainHandle = instance[methodName] || configModel.handle;
 
             configModel.method.forEach(entryMethodType => {
                 var tempModel = configModel;
@@ -246,6 +246,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
         fontware = [],
         backware = [],
         enableREST,
+        handle,
         path;
 
     function prepareMethod(type) {
@@ -276,7 +277,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
             backware = backware.concat(generalConfig.backware);
     }
 
-    function iheritanceFromAppConfig(){
+    function inheritanceFromAppConfig(){
         if (enableREST == null) enableREST = appConfig.enableRESTFul;
     }
 
@@ -287,17 +288,19 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
         fontware = fontware.concat(routeConfig.fontware);
         backware = backware.concat(routeConfig.backware);
         path = routeConfig.path;
+        handle = routeConfig.handle;
     }
 
     loadFromRouteConfig();
     inheritanceFromGeneralConfig();
-    iheritanceFromAppConfig();
+    inheritanceFromAppConfig();
 
     return {
         method,
         enableREST,
         fontware,
         backware,
+        handle,
         path
     };
 }
