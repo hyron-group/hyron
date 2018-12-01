@@ -4,7 +4,6 @@ const generalSecretKey = require("../lib/generalKey");
 const { addMiddleware, getMiddleware } = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
 const AbstractRouters = require("../type/AbstractRouters");
-const path = require("../type/path");
 
 var defaultConfig = {
     ...loadConfigFromFile()
@@ -35,10 +34,11 @@ module.exports = class ModuleManager {
         newInstance.config = {
             isDevMode: true,
             enableRESTFul: false,
+            baseURI: newInstance.baseURI,
             secret: generalSecretKey(),
             poweredBy: "hyron",
             timeout: 60000,
-            ...defaultConfig[newInstance.baseURI]
+            ...defaultConfig[host+":"+port]
         };
         newInstance.routerFactory = new RouterFactory(newInstance.config);
         newInstance.app = http.createServer();
@@ -140,7 +140,6 @@ module.exports = class ModuleManager {
                         routePackage
                     );
                 }
-                path.build(routePackage, this.baseURI, this.prefix, moduleName);
             });
     }
 

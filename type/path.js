@@ -10,25 +10,13 @@ var cache = {};
  * @param {string} prefix
  * @param {string} moduleName
  */
-function build(routerPackage, baseURL, prefix, moduleName) {
-    var reqConfig = routerPackage.requestConfig();
-    var instance = new routerPackage();
-    uriPaths = {};
-
-    Object.keys(reqConfig).forEach(methodName => {
-        var config = reqConfig[methodName];
-        var path = `${
-            prefix != "" ? "/" + prefix : ""
-        }/${moduleName}/${methodName}`;
-        if (config.uriPath != null) path = config.uriPath;
-        var handle = instance[methodName];
-        if (handle != null) uriPaths[path] = handle;
-    });
-
-    if (pathHolder[baseURL] == null) pathHolder[baseURL] = uriPaths;
-    else {
-        Object.assign(pathHolder[baseURL], uriPaths);
-    }
+function build(baseURL, eventName, executer) {
+    var path = eventName.substr(eventName.indexOf("/"));
+    var routerData = {};
+    routerData[path] = executer;
+    if (pathHolder[baseURL] == null) {
+        pathHolder[baseURL] = routerData;
+    } else Object.assign(pathHolder[baseURL], routerData);
 }
 
 function getURL(path) {
@@ -43,7 +31,7 @@ function getURL(path) {
             for (var j = 0; j < registeredPaths.length; j++) {
                 var curPath = registeredPaths[j];
                 if (curPath.endsWith(path)) {
-                    completePath = curBaseUrl + "/" + curPath;
+                    completePath = curBaseUrl + curPath;
                     cache[path] = completePath;
                     return completePath;
                 }
@@ -53,6 +41,8 @@ function getURL(path) {
 }
 
 function findURL(func) {
+    if (func == null) return;
+    if (typeof func == "string") return getURL(func);
     func = func.toString();
     var identityKey = crc.crc16(func).toString(16);
     var completePath = cache[identityKey];
@@ -67,7 +57,7 @@ function findURL(func) {
                 var curPath = registeredPaths[j];
                 var curHandle = pathHolder[curBaseUrl][curPath];
                 if (curHandle.toString() == func) {
-                    completePath = curBaseUrl + "/" + curPath;
+                    completePath = curBaseUrl + curPath;
                     cache[identityKey] = completePath;
                     return completePath;
                 }
@@ -78,6 +68,5 @@ function findURL(func) {
 
 module.exports = {
     build,
-    findURL,
-    getURL
+    findURL
 };

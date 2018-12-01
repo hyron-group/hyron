@@ -15,7 +15,7 @@ module.exports = {
     getMiddleware
 };
 
-function getMiddleware(name){
+function getMiddleware(name) {
     return handlerHolder[indexOfHandle(name)];
 }
 

@@ -2,6 +2,7 @@ const getUriPath = require("../lib/queryParser").getUriPath;
 const { runFontWare, runBackWare } = require("./middleware");
 const http = require("http");
 const handleResult = require("./responseHandler");
+const path = require('../type/path');
 const HTTPMessage = require("../type/HttpMessage");
 
 /**
@@ -138,6 +139,7 @@ class RouterFactory {
                     methodName,
                     configModel.path
                 );
+                path.build(this.config.baseURI, eventName, mainHandle);
                 tempModel.method = entryMethodType;
                 registerRouterByMethod.apply(this, [methodPath, eventName, mainHandle, tempModel]);
             });

@@ -1,4 +1,4 @@
-module.exports = class {
+module.exports = class Demo {
     static requestConfig() {
         return {
             $all:{
@@ -21,7 +21,13 @@ module.exports = class {
     }
 
     showURL(){
-        return require('../type/path').findURL(this.upload);
+        var data = [
+            require('../type/path').findURL(new Demo().upload),
+            require('../type/path').findURL(this.upload),
+            require('../type/path').findURL('upload'),
+            
+        ]
+        return data;
     }
 
     view(path) {
