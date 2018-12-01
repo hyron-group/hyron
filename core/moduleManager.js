@@ -24,12 +24,13 @@ module.exports = class ModuleManager {
      * @param {string} name of app instance. It used when you have multi app instance, make listener hold on : http://host:port/[prefix]
      * @returns {ModuleManager}
      */
-    static getInstance(port=3000, host='localhost', prefix = "") {
+    static getInstance(port = 3000, host = "localhost", prefix = "") {
         var newInstance = new ModuleManager();
         newInstance.port = port;
         newInstance.host = host;
         newInstance.prefix = prefix;
-        newInstance.baseURI = host + ":" + port;
+        newInstance.baseURI =
+            defaultConfig.base_url || "http://" + host + ":" + port;
         newInstance.enableMiddlewareByConfigFile();
         newInstance.config = {
             isDevMode: true,
@@ -121,7 +122,7 @@ module.exports = class ModuleManager {
             Object.keys(moduleList).forEach(moduleName => {
                 var routePackage = moduleList[moduleName];
                 if (typeof routePackage == "string")
-                    routePackage = require('../../'+routePackage);
+                    routePackage = require("../../" + routePackage);
                 if (routePackage.requestConfig == null) {
                     // not is a hyron service
                     try {
@@ -139,12 +140,7 @@ module.exports = class ModuleManager {
                         routePackage
                     );
                 }
-                path.build(
-                    routePackage,
-                    "http://" + this.baseURI,
-                    this.prefix,
-                    moduleName
-                );
+                path.build(routePackage, this.baseURI, this.prefix, moduleName);
             });
     }
 
@@ -175,16 +171,16 @@ module.exports = class ModuleManager {
      * @param {string} name
      * @returns function handle
      */
-    getFontWare(name){
-        return getMiddleware(name)
+    getFontWare(name) {
+        return getMiddleware(name);
     }
 
-     /**
+    /**
      * @description retrieve a backware by name
      * @param {string} name
      * @returns function handle
      */
-    getBackWare(name){
+    getBackWare(name) {
         return getMiddleware(name);
     }
 
