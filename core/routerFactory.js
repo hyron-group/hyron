@@ -316,20 +316,20 @@ function prepareEventName(
     if (customPath == null) {
         return buildRouteName(
             isREST,
-            methodType+'/',
+            methodType,
             prefix,
             moduleName,
             methodName
         );
     } else {
-        return buildRouteName(isREST, methodType+'/', customPath);
+        return buildRouteName(isREST, methodType, customPath);
     }
 }
 
 function buildRouteName(isREST, methodType, ...childRoute) {
     var uri = "";
     if (isREST) uri = "REST-";
-    uri += methodType;
+    uri += methodType+'/';
     childRoute.forEach(routeName => {
         if (routeName != null & routeName!= '') uri += routeName + "/";
     });

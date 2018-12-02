@@ -8,7 +8,7 @@ const RESPONSE_HANDLE = {
     $status : (data, res)=>{
         res.statusCode = data;
     },
-    $header : (data, res)=>{
+    $headers : (data, res)=>{
             Object.keys(data).forEach(key => {
                 res.setHeader(key, data[key]);
             });

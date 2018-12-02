@@ -1,11 +1,12 @@
 module.exports = class Demo {
     static requestConfig() {
         return {
-            $all:{
-                method:'get',
-                fontware:['!args-loader']
+            $all: {
+                method: 'get',
+                fontware: ['!args-loader']
             },
-            showMyName: ["get","post"],
+            "/": "all",
+            showMyName: ["get", "post"],
             upload: "post",
             sample: "patch",
             showURL: "get",
@@ -17,38 +18,44 @@ module.exports = class Demo {
         };
     }
 
+    "/"() {
+        return "hello world";
+    }
+
     async showMyName(name) {
         return "Nice to meet you, " + name;
     }
 
-    showArgs(args=[{pm:["world"]}], key1){
+    showArgs(args = [{
+        pm: ["world"]
+    }], key1) {
         console.log(args);
         return JSON.stringify(arguments)
     }
 
-    showURL(){
+    showURL() {
         var data = [
             require('../type/path').findURL(new Demo().upload),
             require('../type/path').findURL(this.upload),
             require('../type/path').findURL('upload'),
-            
+
         ]
         return data;
     }
 
     view(path) {
         return {
-            $render:{
+            $render: {
                 path,
-                data:{
-                    name:'thang'
+                data: {
+                    name: 'thang'
                 }
             }
         };
     }
     upload(data, to) {
-         // @param data {type:ClientFile, size:10MB}
-         // @param to {nullable: false, type: string}
+        // @param data {type:ClientFile, size:10MB}
+        // @param to {nullable: false, type: string}
         return to;
     }
 
