@@ -29,7 +29,6 @@ module.exports = class Demo {
     showArgs(args = {
         pm: ["world"]
     }, key1) {
-        console.log(arguments);
         return JSON.stringify(arguments)
     }
 

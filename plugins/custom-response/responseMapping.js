@@ -17,7 +17,8 @@ const RESPONSE_HANDLE = {
         res.statusMessage = data;
     },
     $redirect : (data, res)=>{
-        res.setHeader("Location", prev.$redirect);
+        res.statusCode = 302;
+        res.setHeader("Location", data);
     }
 }
 

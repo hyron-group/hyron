@@ -56,7 +56,6 @@ class RouterFactory {
         var url = getUriPath(req.url);
         var method = req.method;
 
-        // console.log(this.listener)
         var listener = this.listener;
         var execute;
         if (
