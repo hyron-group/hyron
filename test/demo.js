@@ -9,7 +9,10 @@ module.exports = class Demo {
             showMyName: ["get", "post"],
             upload: "post",
             sample: "patch",
-            showURL: "get",
+            showURL: {
+                method: ["get", "head"],
+                enableREST: false
+            },
             showArgs: "all",
             view: {
                 method: ["get", "head"],
