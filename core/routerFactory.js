@@ -1,5 +1,8 @@
 const getUriPath = require("../lib/queryParser").getUriPath;
-const { runFontWare, runBackWare } = require("./middleware");
+const {
+    runFontWare,
+    runBackWare
+} = require("./middleware");
 const http = require("http");
 const handleResult = require("./responseHandler");
 const path = require('../type/path');
@@ -50,32 +53,28 @@ class RouterFactory {
      * @memberof RouterFactory
      */
     triggerRouter(req, res) {
-        var uriPath = getUriPath(req.url);
-        var eventName = buildRouteName(false, req.method, uriPath);
-        var execute = this.listener.get(eventName);
-        if (execute == null) {
-            var restName = buildRouteName(true, req.method, uriPath);
-            restName = restName.substr(0, restName.lastIndexOf('/'));
-            if (this.restRouter.includes(restName)) {
-                eventName = restName; // support for REST API
-                req.isREST = true;
-            } else {
-                eventName = buildRouteName(false, "ALL", uriPath); // support for all method
-            }
+        var url = getUriPath(req.url);
+        var method = req.method;
 
-            execute = this.listener.get(eventName);
-
-            if (execute == null) {
-                var err = new HTTPMessage(
-                    404, // not found
-                    `Can't find router at ${uriPath}`
-                );
-                handleResult(err, res, this.config.isDevMode);
-                return;
-            }
+        // console.log(this.listener)
+        var listener = this.listener;
+        var execute;
+        if (
+            (url == "/" && (url = "")) ||
+            (execute = listener.get(method + url)) != null ||
+            (execute = listener.get("REST" + method + url)) != null ||
+            (execute = listener.get("ALL" + url)) != null
+        ) {
+            execute(req, res);
+        } else {
+            var err = new HTTPMessage(
+                404, // not found
+                `Can't find router at ${url}`
+            );
+            handleResult(err, res, this.config.isDevMode);
+            return;
         }
 
-        execute(req, res);
     }
 
     /**
@@ -106,7 +105,7 @@ class RouterFactory {
      * @memberof RouterFactory
      */
     registerRoutesGroup(prefix, moduleName, handlePackage) {
-        console.log('\n\nLockup service : '+moduleName)
+        console.log('\n\nLockup service : ' + moduleName)
         var requestConfig = handlePackage.requestConfig();
 
         var instance = new handlePackage();
@@ -162,10 +161,6 @@ function registerRouterByMethod(methodPath, eventName, mainExecute, routeConfig)
 
     var isDevMode = this.config.isDevMode;
     // Executer will call each request
-
-    if (routeConfig.enableREST) {
-        this.restRouter.push(eventName);
-    }
 
     console.log("-> event : " + eventName);
     // store listener
@@ -277,7 +272,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
             backware = backware.concat(generalConfig.backware);
     }
 
-    function inheritanceFromAppConfig(){
+    function inheritanceFromAppConfig() {
         if (enableREST == null) enableREST = appConfig.enableRESTFul;
     }
 
@@ -316,24 +311,24 @@ function prepareEventName(
     if (customPath == null) {
         return buildRouteName(
             isREST,
-            methodType,
+            methodType + '/',
             prefix,
             moduleName,
             methodName
         );
     } else {
-        return buildRouteName(isREST, methodType, customPath);
+        return buildRouteName(isREST, methodType + '/', customPath);
     }
 }
 
 function buildRouteName(isREST, methodType, ...childRoute) {
     var uri = "";
     if (isREST) uri = "REST-";
-    uri += methodType+'/';
+    uri += methodType;
     childRoute.forEach(routeName => {
-        if (routeName != null & routeName!= '') uri += routeName + "/";
+        if (routeName != null & routeName != '') uri += routeName + "/";
     });
-    uri = uri.substr(0, uri.length-1);
+    uri = uri.substr(0, uri.length - 1);
     return uri;
 }
 

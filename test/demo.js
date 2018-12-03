@@ -5,12 +5,12 @@ module.exports = class Demo {
                 method: 'get',
                 fontware: ['!args-loader']
             },
-            "/": "all",
+            "": "all",
             showMyName: ["get", "post"],
             upload: "post",
             sample: "patch",
             showURL: "get",
-            showArgs: "get",
+            showArgs: "all",
             view: {
                 method: ["get", "head"],
                 enableREST: true
@@ -18,7 +18,7 @@ module.exports = class Demo {
         };
     }
 
-    "/"() {
+    ""() {
         return "hello world";
     }
 
@@ -26,10 +26,10 @@ module.exports = class Demo {
         return "Nice to meet you, " + name;
     }
 
-    showArgs(args = [{
+    showArgs(args = {
         pm: ["world"]
-    }], key1) {
-        console.log(args);
+    }, key1) {
+        console.log(arguments);
         return JSON.stringify(arguments)
     }
 
