@@ -1,5 +1,3 @@
-var a;
-
-if((a="c")=="b"|(a="c")=="c"|(a="d")=="c"){
-    console.log(a)
-}
+var a = "/asdasd/grhtasdas/23asdsde";
+var i = a.lastIndexOf('/');
+console.log(a.substring(0, i))

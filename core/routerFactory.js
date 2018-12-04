@@ -1,9 +1,22 @@
 const getUriPath = require("../lib/queryParser").getUriPath;
-const { runFontWare, runBackWare } = require("./middleware");
+const {
+    runFontWare,
+    runBackWare
+} = require("./middleware");
 const http = require("http");
 const handleResult = require("./responseHandler");
 const path = require('../type/path');
 const HTTPMessage = require("../type/HttpMessage");
+const SUPPORTED_METHOD = [
+    "GET",
+    "POST",
+    "HEAD",
+    "DELETE",
+    "PUT",
+    "PATCH",
+    "ALL",
+    "PRIVATE"
+];
 
 /**
  * This class used to register event for http connection
@@ -29,7 +42,6 @@ class RouterFactory {
     ) {
         this.listener = new Map();
         this.config = config;
-        this.restRouter = [];
     }
 
     /**
@@ -51,32 +63,33 @@ class RouterFactory {
      */
     triggerRouter(req, res) {
         var uriPath = getUriPath(req.url);
-        if(uriPath=="/") uriPath="";
-        var eventName = buildRouteName(false, req.method, uriPath);
-        var execute = this.listener.get(eventName);
-        if (execute == null) {
-            var restName = buildRouteName(true, req.method, uriPath);
-            restName = restName.substr(0, restName.lastIndexOf('/'));
-            if (this.restRouter.includes(restName)) {
-                eventName = restName; // support for REST API
-                req.isREST = true;
-            } else {
-                eventName = buildRouteName(false, "ALL", uriPath); // support for all method
-            }
+        var method = req.method;
 
-            execute = this.listener.get(eventName);
+        var eventName, execute, index;
 
-            if (execute == null) {
-                var err = new HTTPMessage(
-                    404, // not found
-                    `Can't find router at ${uriPath}`
-                );
-                handleResult(err, res, this.config.isDevMode);
-                return;
-            }
+        if (
+            (eventName = method + uriPath) &&
+            (execute = this.listener.get(eventName)) != null ||
+
+            (eventName = "REST-" + eventName) &&
+            (index = eventName.lastIndexOf('/')) &&
+            (index = index == -1 ? eventName.length : index) &&
+            (eventName = eventName.substr(0, index)) &&
+            (execute = this.listener.get(eventName)) != null &&
+            (req.isREST = true) ||
+
+            (uriPath == "/") &&
+            (eventName = method) &&
+            (execute = this.listener.get(eventName)) != null
+        ) {
+            execute(req, res);
+        } else {
+            var err = new HTTPMessage(
+                404, // not found
+                `Can't find router at ${uriPath}`
+            );
+            handleResult(err, res, this.config.isDevMode);
         }
-
-        execute(req, res);
     }
 
     /**
@@ -87,16 +100,7 @@ class RouterFactory {
      * @memberof RouterFactory
      */
     static isSupported(method) {
-        return [
-            "GET",
-            "POST",
-            "HEAD",
-            "DELETE",
-            "PUT",
-            "PATCH",
-            "ALL",
-            "PRIVATE"
-        ].includes(method);
+        return SUPPORTED_METHOD.includes(method);
     }
 
     /**
@@ -107,7 +111,7 @@ class RouterFactory {
      * @memberof RouterFactory
      */
     registerRoutesGroup(prefix, moduleName, handlePackage) {
-        console.log('\n\nLockup service : '+moduleName)
+        console.log('\n\nLockup service : ' + moduleName)
         var requestConfig = handlePackage.requestConfig();
 
         var instance = new handlePackage();
@@ -163,10 +167,6 @@ function registerRouterByMethod(methodPath, eventName, mainExecute, routeConfig)
 
     var isDevMode = this.config.isDevMode;
     // Executer will call each request
-
-    if (routeConfig.enableREST) {
-        this.restRouter.push(eventName);
-    }
 
     console.log("-> event : " + eventName);
     // store listener
@@ -251,8 +251,14 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
         path;
 
     function prepareMethod(type) {
-        if (typeof type == "string") method.push(type.toUpperCase());
-        else if (type instanceof Array) {
+        if (typeof type == "string") {
+            type = type.toUpperCase();
+            if (type == "ALL") {
+                prepareMethod(SUPPORTED_METHOD);
+                return;
+            } else
+                method.push(type);
+        } else if (type instanceof Array) {
             type.forEach(curType => {
                 method.push(curType.toUpperCase());
             });
@@ -261,6 +267,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
             throw new TypeError(
                 `Method ${method} in ${methodPath} isn't string or array`
             );
+
     }
 
     function inheritanceFromGeneralConfig() {
@@ -278,7 +285,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
             backware = backware.concat(generalConfig.backware);
     }
 
-    function inheritanceFromAppConfig(){
+    function inheritanceFromAppConfig() {
         if (enableREST == null) enableREST = appConfig.enableRESTFul;
     }
 
@@ -317,13 +324,13 @@ function prepareEventName(
     if (customPath == null) {
         return buildRouteName(
             isREST,
-            methodType+'/',
+            methodType + '/',
             prefix,
             moduleName,
             methodName
         );
     } else {
-        return buildRouteName(isREST, methodType+'/', customPath);
+        return buildRouteName(isREST, methodType + '/', customPath);
     }
 }
 
@@ -332,9 +339,9 @@ function buildRouteName(isREST, methodType, ...childRoute) {
     if (isREST) uri = "REST-";
     uri += methodType;
     childRoute.forEach(routeName => {
-        if (routeName != null & routeName!= '') uri += routeName + "/";
+        if (routeName != null & routeName != '') uri += routeName + "/";
     });
-    uri = uri.substr(0, uri.length-1);
+    uri = uri.substr(0, uri.length - 1);
     return uri;
 }
 

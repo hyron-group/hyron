@@ -11,7 +11,7 @@ module.exports = class Demo {
             sample: "patch",
             showURL: {
                 method: ["get", "head"],
-                enableREST: false
+                enableREST: true
             },
             showArgs: "all",
             view: {
@@ -25,8 +25,8 @@ module.exports = class Demo {
         return "hello world";
     }
 
-    async showMyName(name) {
-        return "Nice to meet you, " + name;
+    async showMyName(name, pass) {
+        return "Nice to meet you, " + name+pass;
     }
 
     showArgs(args = {

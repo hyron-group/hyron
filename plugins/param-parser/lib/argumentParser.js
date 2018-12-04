@@ -19,6 +19,8 @@ module.exports = function parseArgument(rawFunc) {
   var listArgName = rawParam.replace(DEFAULT_VAL_REG, "");
 
   params = listArgName.split(",");
+  params.every((val, i)=>params[i]=val.trim())
+
 
   return params;
 };
