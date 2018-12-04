@@ -30,7 +30,7 @@ function handingError(error, res, isDevMode) {
     if (isNaN(code)) code = 403; // Forbidden
     res.statusCode = code;
     if (isDevMode) {
-        res.setHeader("Content-Type", "html");
+        res.setHeader("Content-Type", "text/html");
         res.write(`<h3>${message}</h3>`);
         res.write(error.stack);
     } else res.write(message);

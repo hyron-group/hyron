@@ -6,7 +6,7 @@ test/
 yarn.lock
 yarn.lock
 workflow.md
-CONTRIBUTIBG.md
+CONTRIBUTING.md
 docs/
 CODE_OF_CONDUCT.md
 package-lock.json
