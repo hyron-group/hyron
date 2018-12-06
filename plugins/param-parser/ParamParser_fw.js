@@ -2,14 +2,17 @@ const argumentParser = require("./lib/argumentParser");
 const Checker = require("./Checker");
 const queryParser = require("./lib/queryParser");
 const multiPartParser = require("./lib/multipartParser");
-
+const rawBodyParser = require("./lib/rawBodyParser");
+const urlEncodedParser = require("./lib/urlEncodedParser");
+const argsHolder = {};
 var handleHolder = {};
 
-module.exports = function(req) {
+module.exports = function(req, res, prev) {
     return new Promise((resolve, reject) => {
         var executer = this.$executer;
         var eventName = this.$eventName;
         var handle = prepareHandle(eventName, executer);
+        this.$args = argsHolder[eventName];
         handle(resolve, reject, req);
     });
 };
@@ -22,7 +25,7 @@ function prepareHandle(eventName, executer) {
 
     Checker.registerChecker(eventName, executer);
     var argList = argumentParser(executer.toString());
-
+    argsHolder[eventName] = argList;
     var handle = `(resolve, reject, req)=>{
         var argList = ${JSON.stringify(argList)};
         getDataFromRequest(argList, req, (data, err) => {
@@ -46,7 +49,7 @@ function getDataFromRequest(argList, req, onComplete) {
         if (isQueryParamType(method)) {
             getQueryData(req, onComplete);
         } else if (isBodyParamType(method)) {
-            getBodyData(req, argList, onComplete);
+            getBodyData(req, onComplete);
         }
     } else {
         getRestData(req, argList, onComplete);
@@ -58,30 +61,16 @@ function getQueryData(req, onComplete) {
     onComplete(data);
 }
 
-function getBodyData(req, argList, onComplete) {
+function getBodyData(req, onComplete) {
     var reqBodyType = req.headers["content-type"];
     if (reqBodyType == null) {
         onComplete(null);
     } else if (reqBodyType == "application/x-www-form-urlencoded") {
-        req.on("data", chunk => {
-            var data = queryParser("?" + chunk.toString());
-            onComplete(data);
-        });
+        urlEncodedParser(req, onComplete)
     } else if (reqBodyType.startsWith("multipart")) {
         multiPartParser(req, onComplete);
     } else {
-        var buf = [];
-        req.on("data", chunk => {
-            buf.push(chunk);
-        });
-        req.on("end", () => {
-            var output = {};
-            output[argList[0]] = Buffer.concat(buf);
-            onComplete(output);
-        });
-        req.on("error", err => {
-            onComplete(null, err);
-        });
+        rawBodyParser(req, onComplete)
     }
 }
 
@@ -96,7 +85,7 @@ function getRestData(req, argList, onComplete) {
         onComplete(output);
     };
     if (isBodyParamType(method)) {
-        getBodyData(req, [argList[1]], customOnComplete);
+        getBodyData(req, customOnComplete);
     } else if (isQueryParamType(method)) {
         getQueryData(req, customOnComplete);
     }

@@ -1,16 +1,21 @@
 var compare = require('./comparator');
 
-var a = "";
+var a = class {
+    constructor(){
+        this.b = "c"
+    }
+
+    t(){
+        delete this.b;
+        return this;
+    }
+}
 
 compare({
     type_case1: () => {
-        var a;
-
-        if ((a = "c") == "b" || (a = "c") == "c" || (a = "d") == "c") {
-            console.log(a)
-        }
+        new a().t();
     },
     type_case2: () => {
         
     },
-}, 100000000)
+}, 100000)

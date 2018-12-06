@@ -14,7 +14,8 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 -   **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
 
 # Release 
-- support setup handle inside request config for route
+- support for **url-encoded** data
+- support for **raw data** type with $body
 
 
 # Example

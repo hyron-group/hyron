@@ -55,10 +55,10 @@ module.exports = class Demo {
             }
         };
     }
-    upload(data, to) {
-        // @param data {type:ClientFile, size:10MB}
-        // @param to {nullable: false, type: string}
-        return to;
+    upload(id, $body, to) {
+        console.log(JSON.parse($body));
+        console.log(typeof $body);
+        return arguments;
     }
 
     sample() {
