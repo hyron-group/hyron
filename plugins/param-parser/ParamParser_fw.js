@@ -76,7 +76,9 @@ function getBodyData(req, onComplete) {
 
 function getRestData(req, argList, onComplete) {
     var url = req.url;
-    var param = url.substr(url.lastIndexOf("/") + 1);
+    var eor = url.indexOf("?");
+    if(eor==-1)eor = url.length;
+    var param = url.substring(url.lastIndexOf("/") + 1, eor);
     var output = {};
     output[argList[0]] = param;
     var method = req.method;

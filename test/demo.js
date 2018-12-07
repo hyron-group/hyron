@@ -13,7 +13,10 @@ module.exports = class Demo {
                 method: ["get", "head"],
                 enableREST: true
             },
-            showArgs: "all",
+            showArgs: {
+                method: "get",
+                enableREST: true
+            },
             view: {
                 method: ["get", "head"],
                 enableREST: true
