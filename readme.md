@@ -10,7 +10,7 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 -   **Easy to development** : With Hyron, you can keep your code more cleaner. Easy to management. A beginner can easy to start with it
 -   **Plugins-able** : Hyron is plugins system. So, you can install a plugins from another 3rth, management and reuse very easy
 -   **Support for RESTFul** : You can create a RestAPI with few of word
--   **High-Performance** : Hyron is > 40% more efficient than ExpressJS (by rps with simple request)
+-   **High-Performance** : Hyron is 50% more efficient than ExpressJS (by rps with simple request)
 -   **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
 -   **Dynamic data type** : Hyron dynamic support for all data type from request
 
