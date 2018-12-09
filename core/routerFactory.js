@@ -1,22 +1,17 @@
-const getUriPath = require("../lib/queryParser").getUriPath;
-const {
-    runFontWare,
-    runBackWare
-} = require("./middleware");
 const http = require("http");
+const {
+    getUriPath
+} = require("../lib/queryParser");
 const handleResult = require("./responseHandler");
 const path = require('../type/path');
 const HTTPMessage = require("../type/HttpMessage");
-const SUPPORTED_METHOD = [
-    "GET",
-    "POST",
-    "HEAD",
-    "DELETE",
-    "PUT",
-    "PATCH",
-    "ALL",
-    "PRIVATE"
-];
+const prepareConfigModel = require('./configParser');
+const prepareEventName = require('../lib/eventNameCretor');
+const httpEventWrapper = require('./eventWapper');
+const {
+    isSupported
+} = require('./supportedMethod')
+
 
 /**
  * This class used to register event for http connection
@@ -65,10 +60,26 @@ class RouterFactory {
         var uriPath = getUriPath(req.url);
         var method = req.method;
 
+        var event = this.getEvent(method, uriPath);
+
+        if (event != null) {
+            event(req, res);
+        } else {
+
+            var err = new HTTPMessage(
+                404, // not found
+                `Can't find router at ${uriPath}`
+            );
+            handleResult(err, res, this.config.isDevMode);
+
+        }
+    }
+
+    getEvent(method, path) {
         var eventName, execute, index;
 
         if (
-            (eventName = method + uriPath) &&
+            (eventName = method + path) &&
             (execute = this.listener.get(eventName)) != null ||
 
             (eventName = "REST-" + eventName) &&
@@ -78,29 +89,13 @@ class RouterFactory {
             (execute = this.listener.get(eventName)) != null &&
             (req.isREST = true) ||
 
-            (uriPath == "/") &&
+            (path == "/") &&
             (eventName = method) &&
             (execute = this.listener.get(eventName)) != null
         ) {
-            execute(req, res);
-        } else {
-            var err = new HTTPMessage(
-                404, // not found
-                `Can't find router at ${uriPath}`
-            );
-            handleResult(err, res, this.config.isDevMode);
+            return execute;
         }
-    }
 
-    /**
-     * @description check if hyron supported for this method
-     * @static
-     * @param {string} method uppercase method name
-     * @returns true if supported other is false
-     * @memberof RouterFactory
-     */
-    static isSupported(method) {
-        return SUPPORTED_METHOD.includes(method);
     }
 
     /**
@@ -142,25 +137,32 @@ class RouterFactory {
                     prefix,
                     moduleName,
                     methodName,
-                    configModel.path
+                    configModel.path,
+                    this.config
                 );
                 path.build(this.config.baseURI, eventName, mainHandle);
                 tempModel.method = entryMethodType;
-                registerRouterByMethod.apply(this, [methodPath, eventName, mainHandle, tempModel]);
+                registerRouterByMethod.apply(this,
+                    [methodPath,
+                        eventName,
+                        instance,
+                        mainHandle,
+                        tempModel
+                    ]);
             });
         });
     }
 };
 
 /**
- * @description Used to register a signle router by method
+ * @description Used to register a single router by method
  * @param {string} methodPath
  * @param {string} eventName
  * @param {function} mainExecute
  * @param {object} routeConfig
  */
-function registerRouterByMethod(methodPath, eventName, mainExecute, routeConfig) {
-    if (!RouterFactory.isSupported(routeConfig.method))
+function registerRouterByMethod(methodPath, eventName, instance, mainExecute, routeConfig) {
+    if (!isSupported(routeConfig.method))
         throw new Error(
             `Method '${routeConfig.method}' in ${methodPath} do not support yet`
         );
@@ -173,176 +175,13 @@ function registerRouterByMethod(methodPath, eventName, mainExecute, routeConfig)
 
     this.listener.set(
         eventName,
-        httpEventWrapper(isDevMode, eventName, mainExecute, routeConfig.fontware, routeConfig.backware)
-    );
-}
-
-/**
- * @description used to wrap & return http event
- * @param {boolean} isDevMode
- * @param {string} eventName
- * @param {function} mainExecute
- * @param {[string]} fontware
- * @param {[string]} backware
- * @returns
- */
-function httpEventWrapper(
-    isDevMode,
-    eventName,
-    mainExecute,
-    fontware,
-    backware
-) {
-    return function httpEvent(req, res) {
-        var thisArgs = {
-            $executer: mainExecute,
-            $eventName: eventName
-        };
-
-        function callToRunBackWare(result) {
-            runBackWare(
-                eventName,
-                backware,
-                thisArgs,
-                [req, res, result],
-                data => {
-                    handleResult(data, res, isDevMode);
-                },
-                err => {
-                    handleResult(err, res, isDevMode);
-                }
-            );
-        }
-        runFontWare(
+        httpEventWrapper(isDevMode,
             eventName,
-            fontware,
-            thisArgs,
-            [req, res],
-            args => {
-                var result = mainExecute.apply(thisArgs, args);
-                callToRunBackWare(result);
-            },
-            err => {
-                callToRunBackWare(err);
-            }
-        );
-    }
-}
-
-/**
- * @description used to creates a standardized config
- * @param {string} methodPath
- * @param {object} routeConfig
- * @param {object} generalConfig
- * @param {object} appConfig
- */
-function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
-    if (typeof routeConfig == "boolean" | typeof routeConfig == "function") {
-        console.error(
-            `[warning] Don't support for config type at ${methodPath}`
-        );
-    }
-
-    var method = [],
-        fontware = [],
-        backware = [],
-        enableREST,
-        handle,
-        path;
-
-    function prepareMethod(type) {
-        if (typeof type == "string") {
-            type = type.toUpperCase();
-            if (type == "ALL") {
-                prepareMethod(SUPPORTED_METHOD);
-                return;
-            } else
-                method.push(type);
-        } else if (type instanceof Array) {
-            type.forEach(curType => {
-                method.push(curType.toUpperCase());
-            });
-        } else if (typeof type == "object") prepareMethod(type.method);
-        else
-            throw new TypeError(
-                `Method ${method} in ${methodPath} isn't string or array`
-            );
-
-    }
-
-    function inheritanceFromGeneralConfig() {
-        if (generalConfig == null) return;
-        if (method == null) {
-            if (generalConfig.method == null) method = "GET";
-            else method = generalConfig.method;
-        }
-
-        if (enableREST == null) enableREST = generalConfig.enableREST;
-
-        if (generalConfig.fontware != null)
-            fontware = fontware.concat(generalConfig.fontware);
-        if (generalConfig.backware != null)
-            backware = backware.concat(generalConfig.backware);
-    }
-
-    function inheritanceFromAppConfig() {
-        if (enableREST == null) enableREST = appConfig.enableRESTFul;
-    }
-
-    function loadFromRouteConfig() {
-        prepareMethod(routeConfig);
-        if (typeof routeConfig != "object") return;
-        enableREST = routeConfig.enableREST;
-        fontware = fontware.concat(routeConfig.fontware);
-        backware = backware.concat(routeConfig.backware);
-        path = routeConfig.path;
-        handle = routeConfig.handle;
-    }
-
-    loadFromRouteConfig();
-    inheritanceFromGeneralConfig();
-    inheritanceFromAppConfig();
-
-    return {
-        method,
-        enableREST,
-        fontware,
-        backware,
-        handle,
-        path
-    };
-}
-
-function prepareEventName(
-    isREST,
-    methodType,
-    prefix,
-    moduleName,
-    methodName,
-    customPath
-) {
-    if (customPath == null) {
-        return buildRouteName(
-            isREST,
-            methodType + '/',
-            prefix,
-            moduleName,
-            methodName
-        );
-    } else {
-        return buildRouteName(isREST, methodType + '/', customPath);
-    }
-}
-
-function buildRouteName(isREST, methodType, ...childRoute) {
-    var uri = "";
-    if (isREST) uri = "REST-";
-    uri += methodType;
-    childRoute.forEach(routeName => {
-        if (routeName != null & routeName != '') uri += routeName + "/";
-    });
-    uri = uri.substr(0, uri.length - 1);
-    return uri;
+            instance,
+            mainExecute,
+            routeConfig.fontware,
+            routeConfig.backware)
+    );
 }
 
 module.exports = RouterFactory;

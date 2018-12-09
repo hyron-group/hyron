@@ -1,20 +1,8 @@
 const varReader = require("./lib/variableParser");
-var supportedArgs = {
-    $headers: "req.headers",
-    $method: "req.method",
-    $httpVersion: "req.httpVersion",
-    $connection: "req.connection",
-    $socket: "req.socket",
-    $close:"req.close",
-    $setTimeout:"req.setTimeout",
-    $timeout:"req.timeout",
-    $statusMessage: "req.statusMessage",
-    $rawUrl: "req.url",
-    $trailers: "req.trailers",
-};
+const supportedArgs = require('./lib/argsMaping');
 var argsStorage = {};
 
-module.exports = function(req, res, prev, config) {
+module.exports = function(req, res, prev) {
     var argLoaderExec = prepareArgs(this.$eventName, this.$executer);
     Object.assign(this, argLoaderExec(req, res));
     return prev;

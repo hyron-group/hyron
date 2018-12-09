@@ -11,7 +11,7 @@ module.exports = class Demo {
             sample: "patch",
             showURL: {
                 method: ["get", "head"],
-                enableREST: true
+                enableREST: false
             },
             showArgs: {
                 method: "get",
@@ -28,8 +28,8 @@ module.exports = class Demo {
         return "hello world";
     }
 
-    async showMyName(name, pass) {
-        return "Nice to meet you, " + name+pass;
+    async showMyName(name) {
+        return "Nice to meet you, " + name;
     }
 
     showArgs(args = {
@@ -45,6 +45,7 @@ module.exports = class Demo {
             require('../type/path').findURL('upload'),
 
         ]
+        console.log(this.upload)
         return data;
     }
 

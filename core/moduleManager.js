@@ -1,7 +1,10 @@
 const http = require("http");
 const RouterFactory = require("./routerFactory");
 const generalSecretKey = require("../lib/generalKey");
-const { addMiddleware, getMiddleware } = require("./middleware");
+const {
+    addMiddleware,
+    getMiddleware
+} = require("./middleware");
 const loadConfigFromFile = require("../lib/configReader");
 const AbstractRouters = require("../type/AbstractRouters");
 
@@ -38,7 +41,7 @@ module.exports = class ModuleManager {
             secret: generalSecretKey(),
             poweredBy: "hyron",
             timeout: 60000,
-            ...defaultConfig[host+":"+port]
+            ...defaultConfig[host + ":" + port]
         };
         newInstance.routerFactory = new RouterFactory(newInstance.config);
         newInstance.app = http.createServer();
@@ -85,6 +88,7 @@ module.exports = class ModuleManager {
      *@description Setup app or it plugins with config
      * @param {object} config
      * @param {boolean} [config.isDevMode=true] if true, app will collect bug, log for development. Else, app will optimized for performance
+     * @param {boolean} [config.style] format event name to target format. include : camel, snake, lisp, lower
      * @param {boolean} [config.enableRESTFul=false] if true, app will support for REST-API. Enable REST method in requestConfig() method
      * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
      */

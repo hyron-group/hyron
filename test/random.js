@@ -1,10 +1,10 @@
-var a = class {
-    constructor(){
-        this.b = "c"
-    }
+var input = "showMYName";
 
-    t(){
-        delete this.b;
-        return this;
-    }
+var match;
+var reg = /[A-Z]+/g;
+
+while((match = reg.exec(input))!=null){
+    console.log(match)
 }
+
+// console.log()

@@ -1,4 +1,5 @@
 const crc = require("crc");
+const AsyncFunction = (async () => {}).constructor;
 
 var handlerHolder = [];
 var customFontWareIndex = {};
@@ -53,7 +54,7 @@ function addMiddleware(name, handle, isGlobal, inFont, config) {
  * @returns formated middleware function
  */
 function wrapperConfig(config) {
-    return function(req, res, prev) {
+    return function (req, res, prev) {
         return handle(req, res, prev, config);
     };
 }
@@ -126,7 +127,7 @@ function runMiddleware(
             result = func.apply(thisArgs, args);
         }
 
-        if (result instanceof Promise) {
+        if (result instanceof Promise || result instanceof AsyncFunction) {
             result
                 .then(data => {
                     args[2] = data;
