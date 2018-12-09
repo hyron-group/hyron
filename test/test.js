@@ -4,7 +4,7 @@ require('./nodejs');
 var app = hyron.getInstance(5479);
 
 app.setting({
-    style:'lisp'
+    // style:'lisp'
 })
 
 app.enableService({
