@@ -1,10 +1,8 @@
-var input = "showMYName";
+const typeCheck = require('../lib/typeFilter');
 
-var match;
-var reg = /[A-Z]+/g;
+var checker = typeCheck(["null"])
 
-while((match = reg.exec(input))!=null){
-    console.log(match)
-}
+var a = null;
 
-// console.log()
+console.log(checker(a))
+

@@ -3,7 +3,6 @@ module.exports = class Demo {
         return {
             $all: {
                 method: 'get',
-                fontware: ['!args-loader']
             },
             "": "all",
             showMyName: ["get", "post"],
@@ -29,6 +28,7 @@ module.exports = class Demo {
     }
 
     async showMyName(name) {
+        // @param name {type:boolean}
         return "Nice to meet you, " + name;
     }
 

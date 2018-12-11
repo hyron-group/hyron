@@ -5,7 +5,7 @@ const StatusCode = require("../../type/StatusCode");
 const conditionParser = require("./lib/conditionParser");
 const CONDITION_REG = /(@param\s+([\w\d]+)\s*([\w\d\s.:,\u002d\002b%^&'"*\[\]\{\}]*))/g;
 
-const ClientFile = require("./type/ClientFile");
+const ClientFile = require("../param-parser/type/ClientFile");
 const conditionStorage = {};
 const prettyConditionStorage = {};
 

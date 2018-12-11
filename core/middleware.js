@@ -1,4 +1,5 @@
 const crc = require("crc");
+const parseTypeFilter = require("../lib/typeFilter");
 const AsyncFunction = (async () => {}).constructor;
 
 var handlerHolder = [];
@@ -20,30 +21,31 @@ function getMiddleware(name) {
     return handlerHolder[indexOfHandle(name)];
 }
 
-/**
- * @description Used to register a middleware to scope
- * @param {string} name name of middleware
- * @param {function} handle function to handle
- * @param {boolean} isGlobal true if this middleware is global, and it can be run by mosts of router.
- * @param {boolean} inFont true if this middleware run in font of handle, else, it will run in back
- * @param {*} config for this middleware. it define by itself
- */
-function addMiddleware(name, handle, isGlobal, inFont, config) {
-    if (config != null) handle = wrapperConfig(config);
+function addMiddleware(name, isFont, meta, config) {
+    var isGlobal = meta.global || false;
+    var handle = meta.handle;
+    var onCreate = meta.onCreate;
+    var checkout = meta.checkout;
+    var typeFilter = meta.typeFilter;
+
     var index = indexOfHandle(name);
     if (index == -1) {
+        index = handlerHolder.length;
+        handle = eventWrapper(index, config, handle, onCreate, checkout, typeFilter);
         handlerHolder.push(handle);
-        index = handlerHolder.length - 1;
+    } else {
+        handlerHolder[index] = eventWrapper(index, config, handle, onCreate, checkout, typeFilter);
     }
+
     if (isGlobal) {
-        if (inFont) globalFontWareIndex[index] = name;
+        if (isFont) globalFontWareIndex[index] = name;
         else globalBackWareIndex[index] = name;
     } else {
-        if (inFont) customFontWareIndex[name] = index;
+        if (isFont) customFontWareIndex[name] = index;
         else customBackWareIndex[name] = index;
     }
     console.log(
-        `-> Registered ${inFont ? "fontware" : "backware"} ${name} ${
+        `-> Registered ${isFont ? "fontware" : "backware"} ${name} ${
             isGlobal ? "as global" : ""
         }`
     );
@@ -53,10 +55,51 @@ function addMiddleware(name, handle, isGlobal, inFont, config) {
  * @description Used to define structure for middleware function
  * @returns formated middleware function
  */
-function wrapperConfig(config) {
-    return function (req, res, prev) {
-        return handle(req, res, prev, config);
+function eventWrapper(index, config, handle, onCreate, checkout, typeFilter) {
+
+    var matchType = parseTypeFilter(typeFilter);
+
+    function done() {
+        handlerHolder[index] = finalFunction;
+    }
+
+    var finalFunction =
+        function (req, res, prev) {
+            return handle.apply(this, [req, res, prev, config]);
+        }
+
+    if (matchType != null) {
+        finalFunction =
+            function (req, res, prev) {
+                if (!matchType(prev)) return prev;
+                return handle.apply(this, [req, res, prev, config]);
+            }
+    }
+
+    if (checkout == null) checkout = function () {
+        done();
+        return false;
+    }
+
+    function idleFunction(req, res, prev) {
+        var isChange = checkout.apply(this, done);
+        if (isChange) onCreate.apply(this, config);
+        return finalFunction.apply(this, [req, res, prev]);
     };
+    if (onCreate != null) {
+        return function initFunction(req, res, prev) {
+            onCreate.apply(this, config);
+            var result = finalFunction.apply(this, [req, res, prev]);
+            // console.log(result)
+            if (checkout != null)
+                handlerHolder[index] = idleFunction;
+            else
+                handlerHolder[index] = finalFunction;
+
+            return result;
+        }
+    }
+    return idleFunction;
 }
 
 /**
@@ -92,16 +135,39 @@ function indexOfHandle(name) {
     return -1;
 }
 
-/**
- * @description Run and cached a set of middleware by registered event
- * @param {string} eventName name of http event
- * @param {[string]} reqMidWare set of request middle to run. add '!' before middleware name to disable it
- * @param {object} thisArgs this args for middleware. It can used to bind data inside or handle data from another middlew
- * @param {array} args include : req, res from http and var prev for result storage
- * @param {function} onComplete a function for execute success all middleware
- * @param {function} onFailed a function for execute failed from middleware
- * @param {*} position 'font' or 'back' to cache this run in font or back
- */
+
+function runFunc(func, thisArgs, args, onComplete, onFailed) {
+    var result;
+    if (func == null)
+        onComplete();
+    else {
+        result = func.apply(thisArgs, args);
+    }
+
+    if (result instanceof Promise || result instanceof AsyncFunction) {
+        result
+            .then(onComplete)
+            .catch(onFailed);
+    } else {
+        onComplete(result)
+    }
+}
+
+function runNextMiddleware(handlersIndex, args, thisArgs, onComplete, onFailed, i) {
+    var indexInStorage = handlersIndex[i];
+    if (!args[1].finished) {
+        if (indexInStorage != null) {
+            var execute = handlerHolder[indexInStorage];
+            runFunc(execute, thisArgs, args, (result) => {
+                args[2] = result;
+                runNextMiddleware(handlersIndex, args, thisArgs, onComplete, onFailed, i + 1);
+            }, onFailed);
+        } else {
+            onComplete(args[2]);
+        }
+    }
+}
+
 function runMiddleware(
     eventName,
     reqMidWare,
@@ -112,63 +178,13 @@ function runMiddleware(
     position
 ) {
     var handlersIndex = prepareHandler(eventName, reqMidWare, position);
-
-    var i = -1;
-
-    function runFunc(func) {
-        var result;
-        if (func == null) {
-            console.error(
-                `[warning] Can't load a unknown ${position}ware at ${eventName}:${i}`
-            );
-            runNextMiddleware();
-            return;
-        } else {
-            result = func.apply(thisArgs, args);
-        }
-
-        if (result instanceof Promise || result instanceof AsyncFunction) {
-            result
-                .then(data => {
-                    args[2] = data;
-                    runNextMiddleware();
-                })
-                .catch(err => {
-                    onFailed(err);
-                });
-        } else {
-            args[2] = result;
-            runNextMiddleware();
-        }
-    }
-
-    function runNextMiddleware() {
-        var indexInStorage = handlersIndex[++i];
-        if (!args[1].finished) {
-            if (indexInStorage != null) {
-                var execute = handlerHolder[indexInStorage];
-                runFunc(execute);
-            } else {
-                onComplete(args[2]);
-            }
-        }
-    }
     try {
-        runNextMiddleware();
+        runNextMiddleware(handlersIndex, args, thisArgs, onComplete, onFailed, 0);
     } catch (err) {
         onFailed(err);
     }
 }
 
-/**
- * @description Run a set of middleware and cache it in font of main handle
- * @param {*} eventName name of http event
- * @param {[string]} reqMidWare set of request middle to run. add '!' before middleware name to disable it
- * @param {object} thisArgs this args for middleware. It can used to bind data inside or handle data from another middlew
- * @param {array} args include : req, res from http and var prev for result storage
- * @param {function} onComplete a function for execute success all middleware
- * @param {function} onFailed a function for execute failed from middleware
- */
 function runFontWare(
     eventName,
     reqMidWare,
@@ -188,15 +204,6 @@ function runFontWare(
     );
 }
 
-/**
- * @description Run a set of middleware and cache it in back of main handle
- * @param {*} eventName name of http event
- * @param {[string]} reqMidWare set of request middle to run. add '!' before middleware name to disable it
- * @param {object} thisArgs this args for middleware. It can used to bind data inside or handle data from another middlew
- * @param {array} args include : req, res from http and var prev for result storage
- * @param {function} onComplete a function for execute success all middleware
- * @param {function} onFailed a function for execute failed from middleware
- */
 function runBackWare(
     eventName,
     reqMidWare,
@@ -216,13 +223,6 @@ function runBackWare(
     );
 }
 
-/**
- * @description prepare index list of middleware to run and cache it
- * @param {*} eventName name of http event
- * @param {*} reqMidWare set of request middle to run. add '!' before middleware name to disable it
- * @param {*} position 'font' or 'back' to cache this run in font or back
- * @returns
- */
 function prepareHandler(eventName, reqMidWare, position) {
     eventName += position;
     var handlersIndex = executesMidWareIndex[eventName];

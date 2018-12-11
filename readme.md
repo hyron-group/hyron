@@ -257,31 +257,6 @@ with query type. it also support for array or object type.
 
 ---
 
-> ### args-loader
-
-This plugin will load request info into "**this**" of router function in hyron class if necessary
-
-**Supported request params**
-
--   $headers: eval "req.headers
--   $method: eval "req.method"
--   $httpVersion: eval "req.httpVersion"
--   $connection: eval "req.connection"
--   $socket: eval "req.socket"
--   $write: eval "req.write"
--   $close: eval "req.close"
--   $statusCode: eval "req.status"
--   $setTimeout: eval "req.setTimeout"
--   $statusMessage: eval "req.statusMessage"
-
-```js
-showHeader(){
-return this.$requestHeaders;
-}
-```
-
----
-
 > ### custom-response
 
 This plugin used to custom http response that is node http support, include

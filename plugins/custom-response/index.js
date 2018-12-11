@@ -9,4 +9,6 @@
  * $headers : set header data
  * $redirect : redirect to a page
  */
-module.exports = require('./customResponse_bw')
+module.exports = {
+    backware : require('./customResponse_bw')
+}

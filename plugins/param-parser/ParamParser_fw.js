@@ -1,46 +1,42 @@
 const argumentParser = require("./lib/argumentParser");
-const Checker = require("./Checker");
 const queryParser = require("./lib/queryParser");
 const multiPartParser = require("./lib/multipartParser");
 const rawBodyParser = require("./lib/rawBodyParser");
 const urlEncodedParser = require("./lib/urlEncodedParser");
-const argsHolder = {};
 var handleHolder = {};
 
-module.exports = function(req, res, prev) {
+function handle(req, res, prev) {
     return new Promise((resolve, reject) => {
-        var executer = this.$executer;
         var eventName = this.$eventName;
-        var handle = prepareHandle(eventName, executer);
-        this.$args = argsHolder[eventName];
-        handle(resolve, reject, req);
+        var paramParser = handleHolder[eventName];
+        paramParser(resolve, reject, req);
     });
 };
 
-function prepareHandle(eventName, executer) {
-    var handle = handleHolder[eventName];
-    if (handle != null) {
-        return handle;
-    }
-
-    Checker.registerChecker(eventName, executer);
-    var argList = argumentParser(executer.toString());
-    argsHolder[eventName] = argList;
-    var handle = `(resolve, reject, req)=>{
-        var argList = ${JSON.stringify(argList)};
+function prepareHandle(eventName, argList) {
+    var handle = function (resolve, reject, req) {
         getDataFromRequest(argList, req, (data, err) => {
-            if (err != null) reject(err);
-            err = Checker.checkData(eventName, data);
             if (err != null) reject(err);
             var standardInput = resortDataIndex(data, argList);
             resolve(standardInput);
         });
-    }`;
+    };
 
-    handle = eval(handle);
+
     handleHolder[eventName] = handle;
+}
 
-    return handle;
+function checkout(done){
+    var eventName = this.$eventName;
+    return handleHolder[eventName]==null;
+}
+
+function onCreate(config) {
+    console.log('oncreate')
+    var eventName = this.$eventName;
+    var executer = this.$executer;
+    var argList = argumentParser(executer.toString());
+    prepareHandle(eventName, argList)
 }
 
 function getDataFromRequest(argList, req, onComplete) {
@@ -77,8 +73,8 @@ function getBodyData(req, onComplete) {
 function getRestData(req, argList, onComplete) {
     var url = req.url;
     var eor = url.indexOf("?");
-    if(eor==-1)eor = url.length;
-    var param = url.substring+(url.lastIndexOf("/") + 1, eor);
+    if (eor == -1) eor = url.length;
+    var param = url.substring + (url.lastIndexOf("/") + 1, eor);
     var output = {};
     output[argList[0]] = param;
     var method = req.method;
@@ -109,4 +105,11 @@ function resortDataIndex(data, argList) {
     });
 
     return resortInput;
+}
+
+module.exports = {
+    onCreate,
+    handle,
+    checkout,
+    global: true
 }

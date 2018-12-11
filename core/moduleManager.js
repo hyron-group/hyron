@@ -1,23 +1,15 @@
 const http = require("http");
 const RouterFactory = require("./routerFactory");
+const Middleware = require('./middleware');
 const generalSecretKey = require("../lib/generalKey");
-const {
-    addMiddleware,
-    getMiddleware
-} = require("./middleware");
-const loadConfigFromFile = require("../lib/configReader");
-const AbstractRouters = require("../type/AbstractRouters");
 
-var defaultConfig = {
-    ...loadConfigFromFile()
-};
 
 var instanceContainer = {};
 
 /**
  * This class used to setup & run a hyron server app
  */
-module.exports = class ModuleManager {
+class ModuleManager {
     /**
      * @description Get a instance of server app. It can used to listen client request at sepecial host and post
      * @static
@@ -31,9 +23,7 @@ module.exports = class ModuleManager {
         newInstance.port = port;
         newInstance.host = host;
         newInstance.prefix = prefix;
-        newInstance.baseURI =
-            defaultConfig.base_url || "http://" + host + ":" + port;
-        newInstance.enableMiddlewareByConfigFile();
+        newInstance.baseURI = "http://" + host + ":" + port;
         newInstance.config = {
             isDevMode: true,
             enableRESTFul: false,
@@ -41,47 +31,15 @@ module.exports = class ModuleManager {
             secret: generalSecretKey(),
             poweredBy: "hyron",
             timeout: 60000,
-            ...defaultConfig[host + ":" + port]
         };
+        newInstance.enableAddons([
+            require('../addons/defaultSetting')
+        ])
         newInstance.routerFactory = new RouterFactory(newInstance.config);
         newInstance.app = http.createServer();
 
         instanceContainer[newInstance.baseURI] = newInstance;
         return instanceContainer[newInstance.baseURI];
-    }
-
-    /**@deprecated This method automatic execute first time you require('hyron'). You don't need to call it again */
-    enableMiddlewareByConfigFile() {
-        var fontWareList = defaultConfig.fontware;
-        if (fontWareList != null)
-            Object.keys(fontWareList).forEach(name => {
-                try {
-                    var handle = require(fontWareList[name]);
-                    var pluginConfig = ModuleManager.getConfig(name);
-                    addMiddleware(name, handle, true, true, pluginConfig);
-                } catch (err) {
-                    console.error(
-                        `[warning] can't setup fontware : '${name}' because ${
-                            err.message
-                        }`
-                    );
-                }
-            });
-        var backWareList = defaultConfig.backware;
-        if (backWareList != null)
-            Object.keys(backWareList).forEach(name => {
-                try {
-                    var handle = require(backWareList[name]);
-                    var pluginConfig = ModuleManager.getConfig(name);
-                    addMiddleware(name, handle, true, false, pluginConfig);
-                } catch (err) {
-                    console.error(
-                        `[warning] can't setup backware : '${name}' because ${
-                            err.message
-                        }`
-                    );
-                }
-            });
     }
 
     /**
@@ -94,6 +52,16 @@ module.exports = class ModuleManager {
      */
     setting(config) {
         if (typeof config == "object") Object.assign(this.config, config);
+    }
+
+    enableAddons(addonsList) {
+        for (var i = 0; i < addonsList.length; i++) {
+            var addonsHandle = addonsList[i];
+            if (typeof addonsHandle != 'function')
+                throw new TypeError(`addons at index ${i} must be a function`);
+            addonsHandle.apply(this);
+
+        }
     }
 
     /**
@@ -158,75 +126,28 @@ module.exports = class ModuleManager {
      */
 
     /**
-     * @description Register functions run before a router. Any predefined function will run first
-     * @param {{name:string,MidwareMeta}} fontWareList
+     * @description Register plugins
+     * @param {{name:string,MidwareMeta}} pluginsList
      */
-    enableFontWare(fontWareList) {
-        if (typeof fontWareList == "object")
-            Object.keys(fontWareList).forEach(name => {
-                var config = fontWareList[name];
-                this.addMiddleware(name, config, true);
+    enablePlugins(pluginsList) {
+        if (pluginsList == null) return;
+        if (typeof pluginsList == "object")
+            Object.keys(pluginsList).forEach(name => {
+                var pluginConfig = this.config[name];
+                var pluginsMeta = pluginsList[name];
+                if(typeof pluginsMeta == 'string'){
+                    pluginsMeta = require(pluginsMeta);
+                }
+                var fontwareMeta = pluginsMeta.fontware;
+                var backwareMeta = pluginsMeta.backware;
+                if (fontwareMeta != null)
+                    registerMiddleware(name, true, fontwareMeta, pluginConfig);
+                if (backwareMeta != null)
+                    registerMiddleware(name, false, backwareMeta, pluginConfig);
             });
+        else throw new TypeError('Type of plugins meta must be Object declare config of plugins')
     }
 
-    /**
-     * @description retrieve a fontware by name
-     * @param {string} name
-     * @returns function handle
-     */
-    getFontWare(name) {
-        return getMiddleware(name);
-    }
-
-    /**
-     * @description retrieve a backware by name
-     * @param {string} name
-     * @returns function handle
-     */
-    getBackWare(name) {
-        return getMiddleware(name);
-    }
-
-    /**
-     * @description Register functions run after a router. Any predefined function will run last
-     * @param {{name:string,MidwareMeta}} backWareList
-     */
-    enableBackWare(backWareList) {
-        if (typeof backWareList == "object")
-            Object.keys(backWareList).forEach(name => {
-                this.addMiddleware(name, backWareList[name], false);
-            });
-    }
-
-    /**
-     * @description Register a single middleware as fontware or backware
-     * @param {String} name name of this middleware
-     * @param {MidwareMeta} meta contain config of this middware
-     * @param {boolean} inFont true if it is a fontware or false if it is a backware
-     */
-    addMiddleware(name, meta, inFont) {
-        var handler = meta;
-        var isGlobal = false;
-        if (typeof handler == "string") {
-            handler = require(handler);
-        }
-        if (typeof handler == "object") {
-            if (handler.global == true) isGlobal = true;
-            handler = handler.handle;
-            if (typeof handler == "string") {
-                handler = require(handler);
-            }
-        } else if (typeof handler != "function") {
-            throw new Error(
-                `${
-                    inFont ? "Fontware" : "Backware"
-                }} ${name} haven't declare handle properties`
-            );
-        }
-        var pluginConfig = ModuleManager.getConfig(name);
-
-        addMiddleware(name, handler, isGlobal, inFont, pluginConfig);
-    }
 
     /**
      * @description start server
@@ -248,4 +169,26 @@ module.exports = class ModuleManager {
         this.app.listen(this.port, this.host, callback);
         return this.app;
     }
+
+
 };
+
+
+/**
+ * @description Register a single middleware as fontware or backware
+ * @param {String} name name of this middleware
+ * @param {MidwareMeta} meta contain config of this middware
+ * @param {boolean} inFont true if it is a fontware or false if it is a backware
+ */
+function registerMiddleware(name, isFontware, meta, config) {
+    if (typeof meta == "object") {
+        Middleware.addMiddleware(name, isFontware, meta, config);
+    } else if (typeof meta == "string") {
+        meta = require(meta);
+        return registerMiddleware(name, isFontware, meta, config);
+    } else throw new TypeError(`metadata of plugins '${name}' must be object or string`)
+
+}
+
+
+module.exports = ModuleManager;
