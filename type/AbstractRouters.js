@@ -10,7 +10,8 @@ class AbstractRouters {
      * @property {boolean} enableREST enable REST mode in this router
      * @property {Array.<string|function>} fontware list of fontware run before router. add '!' before name to turn of global fontware
      * @property {Array.<string|function>} backware list of backware run after router. add '!' before name to turn of global backware 
-     * @property {string} uriPath custom path of router
+     * @property {Array.<string>} plugins list of plugins. add '!' before name to turn of global plugins.
+     * @property {string} path custom path of router
      */
 
     /**

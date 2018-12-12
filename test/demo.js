@@ -28,8 +28,7 @@ module.exports = class Demo {
     }
 
     async showMyName(name) {
-        // @param name {type:boolean}
-        return "Nice to meet you, " + name;
+        return "Nice to meet you, " + name; 
     }
 
     showArgs(args = {

@@ -19,8 +19,8 @@ function build(baseURL, eventName, executer) {
     } else Object.assign(pathHolder[baseURL], routerData);
 }
 
-function getURL(path) {
-    var completePath = cache[path];
+function getURL(query) {
+    var completePath = cache[query];
     if (completePath != null) {
         return completePath;
     } else {
@@ -30,9 +30,9 @@ function getURL(path) {
             var registeredPaths = Object.keys(pathHolder[curBaseUrl]);
             for (var j = 0; j < registeredPaths.length; j++) {
                 var curPath = registeredPaths[j];
-                if (curPath.endsWith(path)) {
+                if (curPath.endsWith(query)) {
                     completePath = curBaseUrl + curPath;
-                    cache[path] = completePath;
+                    cache[query] = completePath;
                     return completePath;
                 }
             }

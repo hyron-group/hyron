@@ -14,5 +14,4 @@ function onCreate() {
 module.exports = {
     handle,
     onCreate,
-    global:true
 }

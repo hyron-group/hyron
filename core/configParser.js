@@ -18,6 +18,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
     var method = [],
         fontware = [],
         backware = [],
+        plugins = [],
         enableREST,
         handle,
         path;
@@ -45,7 +46,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
     function inheritanceFromGeneralConfig() {
         if (generalConfig == null) return;
         if (method == null) {
-            if (generalConfig.method == null) method = "GET";
+            if (generalConfig.method == null) method = ["GET"];
             else method = generalConfig.method;
         }
 
@@ -67,6 +68,10 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
         enableREST = routeConfig.enableREST;
         fontware = fontware.concat(routeConfig.fontware);
         backware = backware.concat(routeConfig.backware);
+        if(routeConfig.plugins!=null) {
+            fontware = fontware.concat(routeConfig.plugins);
+            backware = backware.concat(routeConfig.plugins);
+        }
         path = routeConfig.path;
         handle = routeConfig.handle;
     }

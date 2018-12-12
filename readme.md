@@ -16,10 +16,8 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 
 # Release
 
-- support for **raw data** type with $body
-- Optimize for performance
-- Support for self call functions (this.other_function)
-- Support style name with style option in setting. support for : snake, lisp, camel, lower
+- More powerful feature for plugins
+
 
 # Example
 
@@ -63,120 +61,6 @@ A router register on :
 # API
 
 ## Class : ModuleManager (hyron)
-
-> ### _static_ **getInstance** ( port, host, prefix ) : ModuleManager
-
-Used to create new app instance.
-Call this method by **require('hyron')**
-
-### **params :**
-
--   **port** ( number ) : port number this for instance. default is **3000**
--   **host** ( string ) : host name for this instance. default is **localhost**
--   **prefix** ( string ) : name of app instance. It used when you have multi app instance, make listener hold on : http://host:port/prefix
-
----
-
-> ### **setting** ( config ) : void
-
-Used to config app and installed plugins
-
-### **params :**
-
--   **config** ( object ) : config of app or it plugins
-
----
-
-> ### _static_ **getConfig** ( name ) : string | object<?>
-
-Used to get config of app or installed plugins by name
-
-**params :**
-- **name** (string) : config item name or plugin name
-
----
-
-
-> ### _static_ **getInstanceManager** () : Object<baseURI, ModuleManager>
-
-Used to get all app instance created
-
----
-
-> ### **enableMiddlewareByConfigFile** () : void
-
-This function will automatic call when first time require('hyron')
-This function used to load config from appcfg.ini file from root and their plugins
-**appcfg.ini** have characteristics inheritance. It mean you can overload plugins setting from your project if that plugins props declare < parent > in it appcfg.ini
-
----
-
-> ### **enableFontWare** ( fontware ) : void
-
-This method used to register plugins will be executed before handler (declare in enableModule()) to handle client request for input
-
-Any predefined plugin will be run first
-
-### **params :**
-
--   **fontware** (object {**name** : **handle**} ): contain list of plugin and it config
-    -   **name** ( string ) : name of plugins
-    -   **handle** ( function | object )
-        -   **function** : this function will be execute before main handle declare in enableModule()
-        -   **object** { **global** , **handle** } : meta data for handle
-            -   **global** ( boolean ) : true if you want auto execute this plugins before every main handle
-            -   **handle** ( function(req, res, prev) ) : like below handle
-                -   **req** (IncomingMessage) : client request
-                -   **res** (ServerResponse) : server response
-                -   **prev** : preview data return by abort fontware
-
-
----
-
-> ### **enableBackware** ( backware ) : void
-
-This method used to register plugins will be executed after handler (declare in enableModule()) to handle server response for output
-
-Any predefined plugin will be run last
-
-### **params :**
-
--   **fontware** (object {**name** : **handle**} ): contain list of plugin and it config
-    -   **name** ( string ) : name of plugins
-    -   **handle** ( function | object )
-        -   **function** : this function will be execute after main handle declare in enableModule()
-        -   **object** { **global** , **handle** } : meta data for handle
-            -   **global** ( boolean ) : true if you want auto execute this plugins after every main handle
-            -   **handle** ( function(req, res, prev) ) : like below handle
-                -   **req** (IncomingMessage) : client request
-                -   **res** (ServerResponse) : server response
-                -   **prev** : preview data return by below backware
-
-
-
----
-
-> ### enableService ( module ) : void
-
-Register main handle (logic of routers)
-
-### **params :**
-
--   **module** ( object {**name** : **module**} ) : The set of functions is encapsulated to handle specific functions. Which will become the router
-    -   name ( **string** ) : name o module
-    -   module ( **HyronClass** ) : a packet of functions and it config
-
----
-
-> ### startServer ( callback ) : void
-
-Start this instance for listen client request
-
-### **params :**
-
--   **callback** ( function ) : event when server started
-
----
 
 ## type/HTTPMessage
 

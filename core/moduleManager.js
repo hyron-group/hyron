@@ -81,7 +81,7 @@ class ModuleManager {
      * @static
      * @returns {{baseURI:string,instance:ModuleManager}} instances created by getInstance()
      */
-    static getInstanceManager() {
+    static getInstanceContainer() {
         return instanceContainer;
     }
 
