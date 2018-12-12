@@ -59,6 +59,7 @@ In general, to build a plugins is relatively easy. You need to equip yourself wi
 -   All plugins should be declared in [hyron.prototype.enablePlugins]()
 -   Plugins can be run automatically on each main handle by enabling the 'global' property when declared
 -   Plugins that have been declared can be specified by running or not, by declarations in each service.
+-   Plugins **handle is a function**. lambda function is wrong
 -   Note the order of the declaration. With **Fontware**, whichever function is **declared in advance will run first**. Conversely, with **Backware**, any **predefined function will be run after**
 
 **5. Some packages may not need to be declared :**

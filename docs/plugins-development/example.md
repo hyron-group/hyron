@@ -69,7 +69,7 @@ static requestConfig(){
         method_1 : "get",
         method_2 : {
             method : "post",
-            fontware : [
+            plugins : [
                 "!cache" // used '!' before plugins name to turn off plugins.
                 "another_fontware" // or just name of plugin to turn it on
             ]

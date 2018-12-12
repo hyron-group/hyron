@@ -98,7 +98,7 @@ class ModuleManager {
                 if (routePackage.requestConfig == null) {
                     // not is a hyron service
                     try {
-                        routePackage(this.baseURI, moduleName);
+                        routePackage(this.port, this.host, this.prefix, this.config);
                     } catch (err) {
                         console.error(
                             `hyron do not support for service define like '${moduleName}' yet`

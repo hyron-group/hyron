@@ -61,7 +61,8 @@ All default key supported :
 - **enableRESTFul** ( boolean ) : true if you want turn all route become rest. You also turn of it in each route. default is **false**
 - **secret** ( string ) : is special key from appcfg.ini or random key it it not set yet
 - **timeout** ( number ) : expert timeout for router connection. default is 60s
-- **poweredBy ( string ) : provider name. default is "hyron"
+- **poweredBy** ( string ) : provider name. default is "hyron"
+- **style** ( string ) : style of uri path. Hyron support for 4 style, include : camel ( likeThis ), snack ( like_this ), lisp ( like-this ), lower(likethis).
 
 ### **params :**
 
@@ -80,7 +81,9 @@ Used to get config of app or installed plugins by name
 
 > ### **enableAddons** (addonsList) : void
 
-Used to register addons for this instance. All addons have access to all the resources provided in this class
+Used to register addons for this instance. All addons have access to all the resources provided in this class.
+
+If you want to build your own addons, see this topic : [how to build a addons ? ](./addons-development/overview.md)
 
 **params :**
 - addonsList ( Array<Function> ) : list of addons called on this instance
@@ -141,6 +144,26 @@ This class is base element of hyron framework, to declare routers, setup plugins
 To used it, include it in [*enableService()*](###-**enableService**-(-moduleList-)-:-void) method
 
 
+> ### *static* **requestConfig** () : Object
+
+Used to description about route that server will listen into.
+
+### **Return**
+
+object { method_name : meta }
+
+- **method_name** ( string ) : name of handle method declared in this class
+- **meta** ( string | object | Array.\<string\> ) : declare info about this router
+    + ( **string** ) : method name, include : get, head, post, put, delete, patch, all, private
+    + (**Array.\<string\>**) : set of method name like about
+    + (**object**) : object description detail about route
+        * **method** ( string|Array\<string\> ) : like about
+        * **handle** ( function ) : handle function if handle method is not defined
+        * **fontware** ( Array.\<string\> ) : list of enable or disable fontware by name
+        * **backware** ( Array.\<string\> ) : list of enable or disable backware by name
+        * **plugins** ( Array.\<string\> ) : list of enable or disable plugins by name. It is an acronym for fontware and backware
+        * **path** ( string ) : custom uri path for this router. If it not defined, a router with name */method_name* will be registered
+        * **enableREST** ( boolean ) : true if method is REST API, then handle function argument at index 0 will be pass path param.
 
 ---
 
