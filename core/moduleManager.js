@@ -34,9 +34,7 @@ class ModuleManager {
             poweredBy: "hyron",
             timeout: 60000,
         };
-        newInstance.enableAddons([
-            require('../addons/defaultSetting')
-        ])
+        loadPluginsFromConfig();
         newInstance.routerFactory = new RouterFactory(newInstance.config);
         newInstance.app = http.createServer();
 
@@ -56,6 +54,11 @@ class ModuleManager {
         if (typeof config == "object") Object.assign(this.config, config);
     }
 
+    /**
+     * @description Turn on addons for that instance
+     * @param {Array.<function>} addonsList list of addons
+     * @memberof ModuleManager
+     */
     enableAddons(addonsList) {
         for (var i = 0; i < addonsList.length; i++) {
             var addonsHandle = addonsList[i];
@@ -118,18 +121,8 @@ class ModuleManager {
     }
 
     /**
-     * @typedef {object} CustomHandle
-     * @prop {function} handle a function to handle with data
-     * @prop {boolean} global true if this handle is a global function, and can be run by most of routers
-     */
-
-    /**
-     * @typedef {function|CustomHandle} MidwareMeta
-     */
-
-    /**
      * @description Register plugins
-     * @param {{name:string,MidwareMeta}} pluginsList
+     * @param {{name:string,meta}} pluginsList
      */
     enablePlugins(pluginsList) {
         if (pluginsList == null) return;
@@ -176,12 +169,6 @@ class ModuleManager {
 };
 
 
-/**
- * @description Register a single middleware as fontware or backware
- * @param {String} name name of this middleware
- * @param {MidwareMeta} meta contain config of this middware
- * @param {boolean} inFont true if it is a fontware or false if it is a backware
- */
 function registerMiddleware(name, isFontware, meta, config) {
     if (typeof meta == "object") {
         Middleware.addMiddleware(name, isFontware, meta, config);
@@ -191,6 +178,26 @@ function registerMiddleware(name, isFontware, meta, config) {
     } else throw new TypeError(`metadata of plugins '${name}' must be object or string`)
 
 }
+
+function loadPluginsFromConfig() {
+    var fontware = defaultConfig.fontware;
+    var backware = defaultConfig.backware;
+
+    if(fontware!=null)
+    Object.keys(fontware).forEach(name=>{
+        var metaPath = fontware[name];
+        var fontwareMeta = require(metaPath);
+        registerMiddleware(metaPath.name, true, fontwareMeta, defaultConfig[name]);
+    })
+
+    if(backware!=null)
+    Object.keys(backware).forEach(name=>{
+        var metaPath = backware[name];
+        var backwareMeta = require(metaPath);
+        registerMiddleware(metaPath.name, true, backwareMeta, `defaultConfig`[name]);
+    })
+}
+
 
 
 module.exports = ModuleManager;
