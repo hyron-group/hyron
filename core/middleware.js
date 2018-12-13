@@ -278,12 +278,18 @@ function prepareHandler(eventName, reqMidWare, position) {
     if (inFont) {
         for (var indexOfCurMiddleware in enableList) {
             var enableMidWareName = enableList[indexOfCurMiddleware];
-            indexList.push(customFontWareIndex[enableMidWareName]);
+            var fontwareIndex = customFontWareIndex[enableMidWareName];
+            if(fontwareIndex!=null)
+            indexList.push(fontwareIndex);
+            else console.warn(`[warning] Can't find fontware by name '${enableMidWareName}'`)
         }
     } else {
         for (var indexOfCurMiddleware in enableList) {
             var enableMidWareName = enableList[indexOfCurMiddleware];
-            indexList.push(customBackWareIndex[enableMidWareName]);
+            var backwareIndex = customBackWareIndex[enableMidWareName];
+            if(backwareIndex!=null)
+            indexList.push(backwareIndex);
+            else console.warn(`[warning] Can't find backware by name '${enableMidWareName}'`)
         }
 
         indexList = indexList.reverse();

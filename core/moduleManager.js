@@ -34,7 +34,7 @@ class ModuleManager {
             poweredBy: "hyron",
             timeout: 60000,
         };
-        loadPluginsFromConfig();
+        loadPluginsFromConfig.apply(newInstance);
         newInstance.routerFactory = new RouterFactory(newInstance.config);
         newInstance.app = http.createServer();
 
@@ -182,8 +182,10 @@ function registerMiddleware(name, isFontware, meta, config) {
 function loadPluginsFromConfig() {
     var fontware = defaultConfig.fontware;
     var backware = defaultConfig.backware;
+    var plugins = defaultConfig.plugins;
 
-    console.log(fontware);
+    this.enablePlugins(plugins);
+
     if(fontware!=null)
     Object.keys(fontware).forEach(name=>{
         var metaPath = fontware[name];
@@ -195,7 +197,7 @@ function loadPluginsFromConfig() {
     Object.keys(backware).forEach(name=>{
         var metaPath = backware[name];
         var backwareMeta = require(metaPath);
-        registerMiddleware(name, true, backwareMeta, `defaultConfig`[name]);
+        registerMiddleware(name, false, backwareMeta, defaultConfig[name]);
     })
 }
 

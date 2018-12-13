@@ -32,7 +32,6 @@ function checkout(done){
 }
 
 function onCreate(config) {
-    console.log('oncreate')
     var eventName = this.$eventName;
     var executer = this.$executer;
     var argList = argumentParser(executer.toString());
