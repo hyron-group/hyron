@@ -1,4 +1,6 @@
-const {getAllowMethod} = require('./supportedMethod');
+const {
+    getAllowMethod
+} = require('./supportedMethod');
 
 
 /**
@@ -22,6 +24,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
         enableREST,
         handle,
         path;
+
 
     function prepareMethod(type) {
         if (typeof type == "string") {
@@ -49,9 +52,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
             if (generalConfig.method == null) method = ["GET"];
             else method = generalConfig.method;
         }
-
         if (enableREST == null) enableREST = generalConfig.enableREST;
-
         if (generalConfig.fontware != null)
             fontware = fontware.concat(generalConfig.fontware);
         if (generalConfig.backware != null)
@@ -66,9 +67,11 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
         prepareMethod(routeConfig);
         if (typeof routeConfig != "object") return;
         enableREST = routeConfig.enableREST;
-        fontware = fontware.concat(routeConfig.fontware);
-        backware = backware.concat(routeConfig.backware);
-        if(routeConfig.plugins!=null) {
+        if (routeConfig.fontware != null)
+            fontware = fontware.concat(routeConfig.fontware);
+        if (routeConfig.backware != null)
+            backware = backware.concat(routeConfig.backware);
+        if (routeConfig.plugins != null) {
             fontware = fontware.concat(routeConfig.plugins);
             backware = backware.concat(routeConfig.plugins);
         }
@@ -85,8 +88,9 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
         enableREST,
         fontware,
         backware,
+        plugins,
         handle,
-        path
+        path,
     };
 }
 

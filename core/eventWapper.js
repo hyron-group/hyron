@@ -2,7 +2,7 @@ const {
     runFontWare,
     runBackWare
 } = require("./middleware");
-const AsyncFunction = (async ()=>{}).constructor;
+const AsyncFunction = (async () => {}).constructor;
 const handleResult = require("./responseHandler");
 
 
@@ -51,10 +51,10 @@ function httpEventWrapper(
             [req, res],
             args => {
                 var result = mainExecute.apply(thisArgs, args);
-                if(result instanceof Promise || result instanceof AsyncFunction){
-                    result.then((data)=>{
+                if (result instanceof Promise || result instanceof AsyncFunction) {
+                    result.then((data) => {
                         startBackWare(req, res, data, thisArgs);
-                    }).catch(err=>{
+                    }).catch(err => {
                         startBackWare(req, res, err, thisArgs);
                     })
                 }

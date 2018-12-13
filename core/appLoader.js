@@ -17,7 +17,6 @@ module.exports = function rebuildAppFromCfg() {
                 if (typeof cfg == "string") {
                     loadModuleConfigFile(baseURI, cfg);
                 } else if (typeof cfg == "object") startModule(baseURI, cfg);
-                console.log(baseURI);
             });
         }
     } catch (err) {}

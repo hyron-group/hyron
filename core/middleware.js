@@ -139,7 +139,7 @@ function indexOfHandle(name) {
 function runFunc(func, thisArgs, args, onComplete, onFailed) {
     var result;
     if (func == null)
-        onComplete();
+        onComplete(args[2]);
     else {
         result = func.apply(thisArgs, args);
     }

@@ -2,7 +2,9 @@ const http = require("http");
 const RouterFactory = require("./routerFactory");
 const Middleware = require('./middleware');
 const generalSecretKey = require("../lib/generalKey");
+const loadConfigFromFile = require('../lib/configReader');
 
+var defaultConfig = loadConfigFromFile();
 
 var instanceContainer = {};
 
@@ -23,7 +25,7 @@ class ModuleManager {
         newInstance.port = port;
         newInstance.host = host;
         newInstance.prefix = prefix;
-        newInstance.baseURI = "http://" + host + ":" + port;
+        newInstance.baseURI = defaultConfig.base_uri || "http://" + host + ":" + port;
         newInstance.config = {
             isDevMode: true,
             enableRESTFul: false,
@@ -133,9 +135,9 @@ class ModuleManager {
         if (pluginsList == null) return;
         if (typeof pluginsList == "object")
             Object.keys(pluginsList).forEach(name => {
-                var pluginConfig = this.config[name];
+                var pluginConfig = defaultConfig[name];
                 var pluginsMeta = pluginsList[name];
-                if(typeof pluginsMeta == 'string'){
+                if (typeof pluginsMeta == 'string') {
                     pluginsMeta = require(pluginsMeta);
                 }
                 var fontwareMeta = pluginsMeta.fontware;

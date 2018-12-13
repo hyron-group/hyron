@@ -142,25 +142,18 @@ class RouterFactory {
                 );
                 path.build(this.config.baseURI, eventName, mainHandle);
                 tempModel.method = entryMethodType;
-                registerRouterByMethod.apply(this,
-                    [methodPath,
-                        eventName,
-                        instance,
-                        mainHandle,
-                        tempModel
-                    ]);
+                registerRouterByMethod.apply(this, [
+                    methodPath,
+                    eventName,
+                    instance,
+                    mainHandle,
+                    tempModel
+                ]);
             });
         });
     }
 };
 
-/**
- * @description Used to register a single router by method
- * @param {string} methodPath
- * @param {string} eventName
- * @param {function} mainExecute
- * @param {object} routeConfig
- */
 function registerRouterByMethod(methodPath, eventName, instance, mainExecute, routeConfig) {
     if (!isSupported(routeConfig.method))
         throw new Error(

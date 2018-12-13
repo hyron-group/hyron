@@ -5,12 +5,15 @@ module.exports = class Demo {
                 method: 'get',
             },
             "": "all",
-            showMyName: ["get", "post"],
+            showMyName: {
+                method : ["get", "post"],
+                plugins : ["checker"]
+            },
             upload: "post",
             sample: "patch",
             showURL: {
                 method: ["get", "head"],
-                enableREST: false
+                enableREST: false,
             },
             showArgs: {
                 method: "get",
@@ -27,8 +30,9 @@ module.exports = class Demo {
         return "hello world";
     }
 
-    async showMyName(name) {
-        return "Nice to meet you, " + name; 
+    async showMyName(first, last) {
+        //@param last {type : number}
+        return "Nice to meet you, " + first+last; 
     }
 
     showArgs(args = {

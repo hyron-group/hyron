@@ -1,8 +1,4 @@
 const loadConfigFromFile = require("../../lib/configReader");
-const {
-    addMiddleware
-} = require("../../core/middleware");
-
 
 var defaultConfig = {
     ...loadConfigFromFile()
@@ -10,7 +6,6 @@ var defaultConfig = {
 
 function setup() {
     setURI.apply(this);
-    loadPluginsSetting.apply(this);
     enablePluginsByConfigFile.apply(this);
 }
 
@@ -20,12 +15,9 @@ function enablePluginsByConfigFile() {
     this.enablePlugins(pluginsList);
 }
 
-function loadPluginsSetting() {
-    Object.assign(this.config, defaultConfig[this.baseURI]);
-}
-
 function setURI() {
     var customURI = defaultConfig.base_url;
+    if(customURI!=null)
     this.baseURI = customURI;
 }
 
