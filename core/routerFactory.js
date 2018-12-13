@@ -129,6 +129,8 @@ class RouterFactory {
             );
             var mainHandle = instance[methodName] || configModel.handle;
 
+            if(mainHandle==null) throw new Error(`Can't find main-handle for route ${methodName}`)
+
             configModel.method.forEach(entryMethodType => {
                 var tempModel = configModel;
                 var eventName = prepareEventName(

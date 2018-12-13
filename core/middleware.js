@@ -63,7 +63,14 @@ function eventWrapper(index, config, handle, onCreate, checkout, typeFilter) {
         handlerHolder[index] = finalFunction;
     }
 
-    var finalFunction =
+    var finalFunction;
+
+    if (handle == null) {
+        finalFunction = function (req, res, prev) {
+            return prev;
+        }
+    } else
+        finalFunction =
         function (req, res, prev) {
             return handle.apply(this, [req, res, prev, config]);
         }
@@ -279,16 +286,16 @@ function prepareHandler(eventName, reqMidWare, position) {
         for (var indexOfCurMiddleware in enableList) {
             var enableMidWareName = enableList[indexOfCurMiddleware];
             var fontwareIndex = customFontWareIndex[enableMidWareName];
-            if(fontwareIndex!=null)
-            indexList.push(fontwareIndex);
+            if (fontwareIndex != null)
+                indexList.push(fontwareIndex);
             else console.warn(`[warning] Can't find fontware by name '${enableMidWareName}'`)
         }
     } else {
         for (var indexOfCurMiddleware in enableList) {
             var enableMidWareName = enableList[indexOfCurMiddleware];
             var backwareIndex = customBackWareIndex[enableMidWareName];
-            if(backwareIndex!=null)
-            indexList.push(backwareIndex);
+            if (backwareIndex != null)
+                indexList.push(backwareIndex);
             else console.warn(`[warning] Can't find backware by name '${enableMidWareName}'`)
         }
 
