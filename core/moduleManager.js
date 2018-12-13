@@ -183,18 +183,19 @@ function loadPluginsFromConfig() {
     var fontware = defaultConfig.fontware;
     var backware = defaultConfig.backware;
 
+    console.log(fontware);
     if(fontware!=null)
     Object.keys(fontware).forEach(name=>{
         var metaPath = fontware[name];
         var fontwareMeta = require(metaPath);
-        registerMiddleware(metaPath.name, true, fontwareMeta, defaultConfig[name]);
+        registerMiddleware(name, true, fontwareMeta, defaultConfig[name]);
     })
 
     if(backware!=null)
     Object.keys(backware).forEach(name=>{
         var metaPath = backware[name];
         var backwareMeta = require(metaPath);
-        registerMiddleware(metaPath.name, true, backwareMeta, `defaultConfig`[name]);
+        registerMiddleware(name, true, backwareMeta, `defaultConfig`[name]);
     })
 }
 
