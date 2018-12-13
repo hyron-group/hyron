@@ -3,6 +3,7 @@ node_modules/
 .history/
 .github/
 test/
+.vscode/
 yarn.lock
 yarn.lock
 workflow.md
