@@ -1,27 +1,25 @@
 module.exports = class Demo {
     static requestConfig() {
         return {
-            $all: {
-                method: 'get',
-            },
-            "": "all",
-            showMyName: {
-                method : ["get", "post"],
-            },
-            upload: "post",
-            sample: "patch",
-            showURL: {
-                method: ["get", "head"],
-                enableREST: false,
-            },
-            showArgs: {
-                method: "get",
-                enableREST: true
-            },
-            view: {
-                method: ["get", "head"],
-                enableREST: true
-            }
+            // $all: {
+            //     method: 'get',
+            // },
+            // "": "all",
+            showMyName: "get",
+            // upload: "post",
+            // sample: "patch",
+            // showURL: {
+            //     method: ["get", "head"],
+            //     enableREST: false,
+            // },
+            // showArgs: {
+            //     method: "get",
+            //     enableREST: true
+            // },
+            // view: {
+            //     method: ["get", "head"],
+            //     enableREST: true
+            // }
         };
     }
 
@@ -30,9 +28,7 @@ module.exports = class Demo {
     }
 
     showMyName(first, last) {
-        //@param last {type : number}
-        throw new Error("break");
-        return "Nice to meet you, " + first+last; 
+        return "Nice to meet you, " + first; 
     }
 
     showArgs(args = {

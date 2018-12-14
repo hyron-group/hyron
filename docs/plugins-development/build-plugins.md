@@ -1,5 +1,7 @@
 This topic will taling about how to build a plugins
 
+<img src="https://imgur.com/Y3I7nIm.png"/>
+
 ## Table of contents
 
 1. [Plugins structure](##1.-Plugins-structure)
