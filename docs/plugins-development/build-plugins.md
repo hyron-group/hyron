@@ -22,17 +22,17 @@ A plugins like a black-box. Therefore, you need to declare that hyron can load a
 
 ```js
 module.exports = {
-    // (option) : a function will be execute before main handle
+    // a function will be execute before main handle
     fontware: {
-        // (required) : handle function for this font-middleware
+        // handle function for this font-middleware
         handle: Function,
-         // (option) : true if enable auto run per each service for this font-middleware
+         // true if enable auto run per each service for this font-middleware
         global: Boolean,
-        // (option) : a function called for first time plugins loaded
+        // a function called for first time plugins loaded
         onCreate: Function,
-        // (option) : a check function to revoke onCreate if it return true
+        // a check function to revoke onCreate if it return true
         checkout: Function,
-        // (option) : list of type that font-middleware handle
+        // list of type that font-middleware handle
         typeFilter: [String]
     },
     // (option) : a function will be execute after main handle

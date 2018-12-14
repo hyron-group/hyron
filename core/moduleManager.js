@@ -103,7 +103,10 @@ class ModuleManager {
                 if (routePackage.requestConfig == null) {
                     // not is a hyron service
                     try {
-                        routePackage(this.port, this.host, this.prefix, this.config);
+                        var config = this.config;
+                        var serviceConfig = defaultConfig[moduleName];
+                        if(serviceConfig!=null)Object.assign(config, serviceConfig);
+                        routePackage(this.app, config);
                     } catch (err) {
                         console.error(
                             `hyron do not support for service define like '${moduleName}' yet`
@@ -173,8 +176,12 @@ function registerMiddleware(name, isFontware, meta, config) {
     if (typeof meta == "object") {
         Middleware.addMiddleware(name, isFontware, meta, config);
     } else if (typeof meta == "string") {
-        meta = require(meta);
-        return registerMiddleware(name, isFontware, meta, config);
+        try {
+            meta = require(meta);
+            return registerMiddleware(name, isFontware, meta, config);
+        } catch(err){
+            console.warn(`[waring] Can't load plugins '${name}' because ${err.message}`)
+        }
     } else throw new TypeError(`metadata of plugins '${name}' must be object or string`)
 
 }
@@ -186,19 +193,19 @@ function loadPluginsFromConfig() {
 
     this.enablePlugins(plugins);
 
-    if(fontware!=null)
-    Object.keys(fontware).forEach(name=>{
-        var metaPath = fontware[name];
-        var fontwareMeta = require(metaPath);
-        registerMiddleware(name, true, fontwareMeta, defaultConfig[name]);
-    })
+    if (fontware != null)
+        Object.keys(fontware).forEach(name => {
+            var metaPath = fontware[name];
+            var fontwareMeta = require(metaPath);
+            registerMiddleware(name, true, fontwareMeta, defaultConfig[name]);
+        })
 
-    if(backware!=null)
-    Object.keys(backware).forEach(name=>{
-        var metaPath = backware[name];
-        var backwareMeta = require(metaPath);
-        registerMiddleware(name, false, backwareMeta, defaultConfig[name]);
-    })
+    if (backware != null)
+        Object.keys(backware).forEach(name => {
+            var metaPath = backware[name];
+            var backwareMeta = require(metaPath);
+            registerMiddleware(name, false, backwareMeta, defaultConfig[name]);
+        })
 }
 
 

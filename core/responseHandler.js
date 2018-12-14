@@ -1,3 +1,4 @@
+const AsyncFunction = (async () => {}).constructor;
 /**
  * @description This function used to handle basic result for response
  * @param {*} result result after handle success
@@ -6,16 +7,17 @@
 function handingResult(result, res, isDevMode = false) {
     if (typeof result == "string" || result instanceof Buffer || result == null) {
         res.end(result);
-    } else if (result instanceof Promise) {
+    } else if (result instanceof Promise || result instanceof AsyncFunction) {
         result
-            .then(val => res.end(handingResult(val, res)))
+            .then(val => {
+                res.end(handingResult(val, res))
+            })
             .catch(err => {
                 handingError(err, res, isDevMode);
             });
     } else if (result instanceof Error) {
         handingError(result, res, isDevMode);
-    } 
-    else res.end(result.toString());
+    } else res.end(result.toString());
 }
 
 /**

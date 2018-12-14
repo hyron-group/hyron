@@ -38,7 +38,7 @@ An application with service-oriented architecture (SOA) will help you
 
 **4. Hyron also provides unofficial support for special services without declaring requestConfig() method**
 
--   in this case, it need to wrap into a function with param is (port, host, prefix, config)
+-   in this case, it need to wrap into a function with param is (app, config)
 -   hyron can not handle these services closely, so some plugins or addons may not work on these packages.
 
 

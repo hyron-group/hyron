@@ -7,7 +7,6 @@ module.exports = class Demo {
             "": "all",
             showMyName: {
                 method : ["get", "post"],
-                plugins : ["checker"]
             },
             upload: "post",
             sample: "patch",
@@ -30,8 +29,9 @@ module.exports = class Demo {
         return "hello world";
     }
 
-    async showMyName(first, last) {
+    showMyName(first, last) {
         //@param last {type : number}
+        throw new Error("break");
         return "Nice to meet you, " + first+last; 
     }
 

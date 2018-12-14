@@ -51,13 +51,6 @@ function httpEventWrapper(
             [req, res],
             args => {
                 var result = mainExecute.apply(thisArgs, args);
-                if (result instanceof Promise || result instanceof AsyncFunction) {
-                    result.then((data) => {
-                        startBackWare(req, res, data, thisArgs);
-                    }).catch(err => {
-                        startBackWare(req, res, err, thisArgs);
-                    })
-                }
                 startBackWare(req, res, result, thisArgs);
             },
             err => {
