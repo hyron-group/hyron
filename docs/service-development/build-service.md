@@ -220,6 +220,20 @@ basicAuth
 
 ```
 
+### **Base router**
+
+If you want to have a router like 
+
+```
+http://localhost/
+http://localhost/getting-started
+```
+
+don't worry, you can do it with hyron, it very easy. Has two way to do that
+
+- used path properties in requestConfig
+- change method name and key name to "".
+
 ---
 
 Next step : [build unofficial service](./build-unofficial-service.md)

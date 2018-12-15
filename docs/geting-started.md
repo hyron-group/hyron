@@ -1,9 +1,11 @@
 ## Roadmap to lean hyron
 
-- basic about javascript
-- a hyron app example
-- what is plugins
-- api reference
+- [Basic about javascript](https://www.w3schools.com/js/)
+- [A hyron app example](./app-example.md)
+- [Service development](./service-development/overview.md)
+- [Plugins development](./plugins-development/overview.md)
+- [api reference](./api-reference.md)
+- [Addons development](./addons-development/overview.md)
 
 ## Create app step-by-step
 
@@ -69,7 +71,7 @@ class demo {
 
 So, after this step, you just registered a listener on showMyName() method. It also called is 'main handle'. every plugins will focused to this method.
 
-[ request ] ---> [ fontware ] ---> [ main handle ] ---> [ backware ] ---> [ client ]
+<img src="https://imgur.com/K4OhtaE.png"/>
 
 ## *Step 5 : declare created module to hyron & start server*
 
@@ -95,4 +97,4 @@ Not only that, hyron offers many other useful features, check it out at : [API R
 
 ---
 
-Next step : [How to develop own service ?](./service-developemnt)
+Next step : [How to develop own service ?](./service-developemnt/overview.md)

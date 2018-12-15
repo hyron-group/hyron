@@ -1,6 +1,6 @@
 <img src='https://i.imgur.com/mAjPWAu.png' width='240px'/>
 
-HyronJS is a powerful framework that helps build a Backend application faster and more efficiently
+HyronJS is a [powerful](./benchmark.md) framework that helps build a Backend application faster and more efficiently
 
 ## Who is the user ?
 
