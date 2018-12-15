@@ -60,7 +60,7 @@ A router register on :
 
 ## Reference Document
 
-See more at : https://github.com/hyron-group/hyron/tree/master/docs
+See more at : https://hyron.gitbook.io/hyron/
 
 ## Contributing to Hyron
 
