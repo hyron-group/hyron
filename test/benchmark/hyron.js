@@ -1,6 +1,4 @@
-const hyron = require('../index');
-require('./nodejs');
-require('./express')
+const hyron = require('../../index');
 
 var app = hyron.getInstance(5479);
 
@@ -9,7 +7,7 @@ app.setting({
 })
 
 app.enableService({
-    "" : require('./demo')
+    "" : require('../demo')
 })
 
 app.startServer();
