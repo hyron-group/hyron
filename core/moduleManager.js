@@ -26,6 +26,7 @@ class ModuleManager {
         newInstance.host = host;
         newInstance.prefix = prefix;
         newInstance.baseURI = defaultConfig.base_uri || "http://" + host + ":" + port;
+        console.log(`\nRegister instance : ${newInstance.baseURI} ---------`)
         newInstance.config = {
             isDevMode: true,
             enableRESTFul: false,
