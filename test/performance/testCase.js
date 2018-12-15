@@ -1,14 +1,9 @@
 var compare = require('./comparator');
-var o = {
-    b:'c',
-    c:'d',
-    d:'e'
-}
 
-var m = new Map();
-m.set("b", "c");
-m.set("c", "d");
-m.set("d","e");
+var a = {a:'b'};
+
+var b = {b:'c'};
+
 
 compare({
     setup: () => {
@@ -16,10 +11,14 @@ compare({
     },
 
     type_case1: () => {
-        return o['d'];
+        var c = a;
+        return c;
     },
 
     type_case2: () => {
-        return m.get('d');
+        var c = {};
+        Object.assign(c, a, b)
+        return c;
+
     },
-}, 100000000)
+}, 100000)

@@ -24,12 +24,9 @@ function getURL(query) {
     if (completePath != null) {
         return completePath;
     } else {
-        var baseURLs = Object.keys(pathHolder);
-        for (var i = 0; i < baseURLs.length; i++) {
-            var curBaseUrl = baseURLs[i];
-            var registeredPaths = Object.keys(pathHolder[curBaseUrl]);
-            for (var j = 0; j < registeredPaths.length; j++) {
-                var curPath = registeredPaths[j];
+        for (var curBaseUrl in pathHolder) {
+            var instancePaths = pathHolder[curBaseUrl];
+            for (var curPath in instancePaths) {
                 if (curPath.endsWith(query)) {
                     completePath = curBaseUrl + curPath;
                     cache[query] = completePath;
@@ -49,12 +46,9 @@ function findURL(func) {
     if (completePath != null) {
         return completePath;
     } else {
-        var baseURLs = Object.keys(pathHolder);
-        for (var i = 0; i < baseURLs.length; i++) {
-            var curBaseUrl = baseURLs[i];
-            var registeredPaths = Object.keys(pathHolder[curBaseUrl]);
-            for (var j = 0; j < registeredPaths.length; j++) {
-                var curPath = registeredPaths[j];
+        for (var curBaseUrl in pathHolder) {
+            var instancePaths = pathHolder[curBaseUrl];
+            for (var curPath in instancePaths) {
                 var curHandle = pathHolder[curBaseUrl][curPath];
                 if (curHandle.toString() == func) {
                     completePath = curBaseUrl + curPath;

@@ -11,7 +11,7 @@ const {
  * @param {object} appConfig
  */
 function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
-    if (typeof routeConfig == "boolean" | typeof routeConfig == "function") {
+    if (typeof routeConfig == "boolean" || typeof routeConfig == "function") {
         console.error(
             `[warning] Don't support for config type at ${methodPath}`
         );

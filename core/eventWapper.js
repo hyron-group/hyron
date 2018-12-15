@@ -2,7 +2,6 @@ const {
     runFontWare,
     runBackWare
 } = require("./middleware");
-const AsyncFunction = (async () => {}).constructor;
 const handleResult = require("./responseHandler");
 
 

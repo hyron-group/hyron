@@ -10,7 +10,7 @@ function handingResult(result, res, isDevMode = false) {
     } else if (result instanceof Promise || result instanceof AsyncFunction) {
         result
             .then(val => {
-                res.end(handingResult(val, res))
+                res.end(handingResult(val, res, isDevMode))
             })
             .catch(err => {
                 handingError(err, res, isDevMode);

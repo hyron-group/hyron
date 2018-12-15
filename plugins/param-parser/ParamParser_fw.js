@@ -9,6 +9,7 @@ function handle(req, res, prev) {
     return new Promise((resolve, reject) => {
         var eventName = this.$eventName;
         var paramParser = handleHolder[eventName];
+        if(paramParser==null) paramParser = onCreate.apply(this);
         paramParser(resolve, reject, req);
     });
 };
@@ -24,18 +25,14 @@ function prepareHandle(eventName, argList) {
 
 
     handleHolder[eventName] = handle;
-}
-
-function checkout(done){
-    var eventName = this.$eventName;
-    return handleHolder[eventName]==null;
+    return handle;
 }
 
 function onCreate(config) {
     var eventName = this.$eventName;
     var executer = this.$executer;
     var argList = argumentParser(executer.toString());
-    prepareHandle(eventName, argList)
+    return prepareHandle(eventName, argList)
 }
 
 function getDataFromRequest(argList, req, onComplete) {
@@ -62,7 +59,7 @@ function getBodyData(req, onComplete) {
         onComplete(null);
     } else if (reqBodyType == "application/x-www-form-urlencoded") {
         urlEncodedParser(req, onComplete)
-    } else if (reqBodyType.startsWith("multipart")) {
+    } else if (reqBodyType > "multipart" && reqBodyType < "multipart/z") {
         multiPartParser(req, onComplete);
     } else {
         rawBodyParser(req, onComplete)
@@ -73,7 +70,7 @@ function getRestData(req, argList, onComplete) {
     var url = req.url;
     var eor = url.indexOf("?");
     if (eor == -1) eor = url.length;
-    var param = url.substring + (url.lastIndexOf("/") + 1, eor);
+    var param = url.substring(url.lastIndexOf("/") + 1, eor);
     var output = {};
     output[argList[0]] = param;
     var method = req.method;
@@ -89,11 +86,11 @@ function getRestData(req, argList, onComplete) {
 }
 
 function isBodyParamType(method) {
-    return (method == "POST") | (method == "PUT") | (method == "PATCH");
+    return (method == "POST") || (method == "PUT") || (method == "PATCH");
 }
 
 function isQueryParamType(method) {
-    return (method == "GET") | (method == "DELETE") | (method == "HEAD");
+    return (method == "GET") || (method == "DELETE") || (method == "HEAD");
 }
 
 function resortDataIndex(data, argList) {
@@ -109,6 +106,5 @@ function resortDataIndex(data, argList) {
 module.exports = {
     onCreate,
     handle,
-    checkout,
     global: true
 }

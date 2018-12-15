@@ -1,34 +1,34 @@
 module.exports = class Demo {
     static requestConfig() {
         return {
-            // $all: {
-            //     method: 'get',
-            // },
-            // "": "all",
+            $all: {
+                method: 'get',
+            },
+            "": "all",
             showMyName: "get",
-            // upload: "post",
-            // sample: "patch",
-            // showURL: {
-            //     method: ["get", "head"],
-            //     enableREST: false,
-            // },
-            // showArgs: {
-            //     method: "get",
-            //     enableREST: true
-            // },
-            // view: {
-            //     method: ["get", "head"],
-            //     enableREST: true
-            // }
+            upload: "post",
+            sample: "patch",
+            showURL: {
+                method: ["get", "head"],
+                enableREST: false,
+            },
+            showArgs: {
+                method: "get",
+                enableREST: true
+            },
+            view: {
+                method: ["get", "head"],
+                enableREST: true
+            }
         };
     }
 
     ""() {
-        return "hello world";
+        return true;
     }
 
-    showMyName(first, last) {
-        return "Nice to meet you, " + first; 
+    async showMyName(first, last) {
+        return "Nice to meet you, " + first+last; 
     }
 
     showArgs(args = {

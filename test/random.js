@@ -1,8 +1,3 @@
-const typeCheck = require('../lib/typeFilter');
+var a = {a:'b'};
 
-var checker = typeCheck(["null"])
-
-var a = null;
-
-console.log(checker(a))
-
+var b = {b:'c'};

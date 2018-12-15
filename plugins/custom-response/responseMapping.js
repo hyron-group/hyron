@@ -1,22 +1,22 @@
 const RESPONSE_HANDLE = {
-    $type : (data, res)=>{
+    $type: (data, res) => {
         res.setHeader("Content-Type", data);
     },
-    $data : (data, res)=>{
+    $data: (data, res) => {
         res.write(data);
     },
-    $status : (data, res)=>{
+    $status: (data, res) => {
         res.statusCode = data;
     },
-    $headers : (data, res)=>{
-            Object.keys(data).forEach(key => {
-                res.setHeader(key, data[key]);
-            });
+    $headers: (data, res) => {
+        for (var key in data) {
+            res.setHeader(key, data[key]);
+        }
     },
-    $message : (data, res)=>{
+    $message: (data, res) => {
         res.statusMessage = data;
     },
-    $redirect : (data, res)=>{
+    $redirect: (data, res) => {
         res.statusCode = 302;
         res.setHeader("Location", data);
     }
