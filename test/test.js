@@ -1,5 +1,6 @@
 const hyron = require('../index');
 require('./nodejs');
+require('./express')
 
 var app = hyron.getInstance(5479);
 
