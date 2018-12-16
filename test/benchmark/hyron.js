@@ -6,7 +6,7 @@ app.setting({
     // style:'lisp'
 })
 
-app.enableService({
+app.enableServices({
     "" : require('../demo')
 })
 

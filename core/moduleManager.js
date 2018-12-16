@@ -95,7 +95,7 @@ class ModuleManager {
      * @description Register router by function packages
      * @param {{moduleName:string,AbstractRouters}} moduleList a package of main handle contain business logic
      */
-    enableService(moduleList) {
+    enableServices(moduleList) {
         if (typeof moduleList == "object")
             Object.keys(moduleList).forEach(moduleName => {
                 var routePackage = moduleList[moduleName];
