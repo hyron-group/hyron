@@ -17,8 +17,8 @@ module.exports = {
     getMiddleware
 };
 
-(function registerSyncFunc(){
-    var syncFunc = function(req, res, prev){
+(function registerSyncFunc() {
+    var syncFunc = function (req, res, prev) {
         return prev;
     };
     handlerHolder.push(syncFunc);
@@ -157,7 +157,7 @@ function runFunc(func, thisArgs, args, onComplete, onFailed) {
     if (func == null)
         onComplete(args[2]);
     if (result instanceof Promise || result instanceof AsyncFunction) {
-        result.then(data=>{
+        result.then(data => {
             args[2] = data;
             result = func.apply(thisArgs, args);
             onComplete(result);
@@ -272,7 +272,17 @@ function prepareHandler(eventName, reqMidWare, position) {
             var newMiddlewareName = crc
                 .crc32(middleware.toString())
                 .toString(32);
-            addMiddleware(newMiddlewareName, middleware, false, inFont);
+
+            var newMiddlewareName = crc
+                .crc32(middleware.toString())
+                .toString(32);
+            var meta = {
+                handle: middleware,
+                global: false
+            };
+
+            addMiddleware(newMiddlewareName, middleware, meta, inFont);
+
             enableList.push(newMiddlewareName);
         }
     }
@@ -295,7 +305,7 @@ function prepareHandler(eventName, reqMidWare, position) {
             var enableMidWareName = enableList[indexOfCurMiddleware];
             var fontwareIndex = customFontWareIndex[enableMidWareName];
             if (fontwareIndex != null)
-            indexList.push(fontwareIndex);
+                indexList.push(fontwareIndex);
             else console.warn(`[warning] Can't find fontware by name '${enableMidWareName}'`)
         }
         indexList.push(0);
