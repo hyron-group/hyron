@@ -16,7 +16,7 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 
 # Release
 
-- More powerful feature for plugins
+- fix bug
 
 
 # Example
@@ -30,7 +30,7 @@ const hyron = require("hyron");
 
 var myApp = hyron.getInstance(3000, "localhost");
 
-myApp.enableService({
+myApp.enableServices({
     demo: require("./SimpleApp")
 });
 
