@@ -3,6 +3,8 @@ const RouterFactory = require("./routerFactory");
 const Middleware = require('./middleware');
 const generalSecretKey = require("../lib/generalKey");
 const loadConfigFromFile = require('../lib/configReader');
+const path = require('path');
+var projectDir = __dirname.substr(0, __dirname.indexOf("node_modules") != -1 || __dirname.length);
 
 var defaultConfig = loadConfigFromFile();
 
@@ -123,8 +125,10 @@ class ModuleManager {
         if (typeof moduleList == "object")
             Object.keys(moduleList).forEach(moduleName => {
                 var routePackage = moduleList[moduleName];
-                if (typeof routePackage == "string")
-                    routePackage = require("../../" + routePackage);
+                if (typeof routePackage == "string") {
+
+                    routePackage = require(path.join(projectDir, routePackage));
+                }
                 if (routePackage.requestConfig == null) {
                     // not is a hyron service
                     try {

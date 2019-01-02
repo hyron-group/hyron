@@ -1,9 +1,5 @@
-const crc = require('crc');
-var func = function(){
-    return "sss";
-}
+var path = require('path');
 
-var obj = {func}
+var pat = path.join(__dirname, "/node_modules/../");
 
-
-console.log(crc.crc16(Object.).toString(16));
+console.log(pat)

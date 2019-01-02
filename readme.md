@@ -17,6 +17,7 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 # Release
 
 - fix bug
+- support for string path for hyron.prototype.enableService
 
 
 # Example
@@ -31,7 +32,7 @@ const hyron = require("hyron");
 var myApp = hyron.getInstance(3000, "localhost");
 
 myApp.enableServices({
-    demo: require("./SimpleApp")
+    demo: "./SimpleApp"
 });
 
 myApp.startServer();
