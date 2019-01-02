@@ -4,8 +4,8 @@ const Middleware = require('./middleware');
 const generalSecretKey = require("../lib/generalKey");
 const loadConfigFromFile = require('../lib/configReader');
 const path = require('path');
-var projectDir = __dirname.substr(0, __dirname.indexOf("node_modules") != -1 || __dirname.length);
-
+var projectDir = __dirname.substr(0, __dirname.indexOf("node_modules"));
+if (projectDir == null) projectDir = path.join(__dirname, "../"); // for test
 var defaultConfig = loadConfigFromFile();
 
 var instanceContainer = {};
