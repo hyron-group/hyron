@@ -7,7 +7,7 @@ app.setting({
 })
 
 app.enableServices({
-    "" : require("../../test/demo")
+    "" : "./test/demo"
 })
 
 app.startServer();

@@ -5,7 +5,8 @@ const generalSecretKey = require("../lib/generalKey");
 const loadConfigFromFile = require('../lib/configReader');
 const path = require('path');
 var projectDir = __dirname.substr(0, __dirname.indexOf("node_modules"));
-if (projectDir == null) projectDir = path.join(__dirname, "../"); // for test
+if (projectDir == "") projectDir = path.join(__dirname, "../");
+console.log(projectDir)
 var defaultConfig = loadConfigFromFile();
 
 var instanceContainer = {};
@@ -67,8 +68,16 @@ class ModuleManager {
             var addonsHandle = addonsList[i];
             if (typeof addonsHandle != 'function')
                 throw new TypeError(`addons at index ${i} must be a function`);
+            if (typeof addonsHandle == 'string') {
+                try{
+                    addonsHandle = require(path.join(projectDir, addonsHandle))
+                } catch(err){}
+                try{
+                    // for installed addons 
+                    addonsHandle = require(addonsHandle)
+                } catch(err){}
+            }
             addonsHandle.call(this);
-
         }
     }
 
@@ -83,7 +92,14 @@ class ModuleManager {
                 var pluginConfig = defaultConfig[name];
                 var pluginsMeta = pluginsList[name];
                 if (typeof pluginsMeta == 'string') {
-                    pluginsMeta = require(pluginsMeta);
+                    try{
+                        // for default plugins or installed plugins
+                        pluginsMeta = require(pluginsMeta);
+                    } catch(err){}
+                    try{
+                        pluginsMeta = require(path.join(projectDir, pluginsMeta));
+                    } catch(err){}
+                    
                 }
                 var fontwareMeta = pluginsMeta.fontware;
                 var backwareMeta = pluginsMeta.backware;
@@ -126,8 +142,13 @@ class ModuleManager {
             Object.keys(moduleList).forEach(moduleName => {
                 var routePackage = moduleList[moduleName];
                 if (typeof routePackage == "string") {
-
-                    routePackage = require(path.join(projectDir, routePackage));
+                    try {
+                        routePackage = require(path.join(projectDir, routePackage));
+                    } catch(err){}
+                    try {
+                        // for installed service
+                        routePackage = require(routePackage);
+                    }catch(err){}
                 }
                 if (routePackage.requestConfig == null) {
                     // not is a hyron service
