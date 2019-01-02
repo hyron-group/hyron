@@ -21,14 +21,6 @@ module.exports = function rebuildAppFromCfg() {
         }
     } catch (err) {}
 };
-/* 
-{
-    fontware,
-    backware,
-    service,
-    setting,
-}
-*/
 function startModule(baseURI, config) {
     var instance = ModuleManager.getInstance(baseURI);
     instance.enableFontWare(config.fontware);

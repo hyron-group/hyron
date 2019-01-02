@@ -9,7 +9,7 @@ function handle(req, res, prev) {
     return new Promise((resolve, reject) => {
         var eventName = this.$eventName;
         var paramParser = handleHolder[eventName];
-        if(paramParser==null) paramParser = onCreate.apply(this);
+        if(paramParser==null) paramParser = onCreate.call(this);
         paramParser(resolve, reject, req);
     });
 };

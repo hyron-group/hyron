@@ -3,3 +3,4 @@ node_modules/
 .history/
 .github/
 yarn-error.log
+.vscode/

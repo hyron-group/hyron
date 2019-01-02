@@ -129,7 +129,7 @@ class RouterFactory {
             );
             var mainHandle = instance[methodName] || configModel.handle;
 
-            if(mainHandle==null) throw new Error(`Can't find main-handle for route ${methodName}`)
+            if (mainHandle == null) throw new Error(`Can't find main-handle for route ${methodName}`)
 
             configModel.method.forEach(entryMethodType => {
                 var tempModel = configModel;
@@ -144,39 +144,41 @@ class RouterFactory {
                 );
                 path.build(this.config.baseURI, eventName, mainHandle);
                 tempModel.method = entryMethodType;
-                registerRouterByMethod.apply(this, [
+                this.registerRouterByMethod(
                     methodPath,
                     eventName,
                     instance,
                     mainHandle,
                     tempModel
-                ]);
+                );
             });
         });
     }
-};
 
-function registerRouterByMethod(methodPath, eventName, instance, mainExecute, routeConfig) {
-    if (!isSupported(routeConfig.method))
-        throw new Error(
-            `Method '${routeConfig.method}' in ${methodPath} do not support yet`
-        );
 
-    var isDevMode = this.config.isDevMode;
-    // Executer will call each request
+    registerRouterByMethod(methodPath, eventName, instance, mainExecute, routeConfig) {
+        if (!isSupported(routeConfig.method))
+            throw new Error(
+                `Method '${routeConfig.method}' in ${methodPath} do not support yet`
+            );
 
-    console.log("-> event : " + eventName);
-    // store listener
+        var isDevMode = this.config.isDevMode;
+        // Executer will call each request
 
-    this.listener.set(
-        eventName,
-        httpEventWrapper(isDevMode,
+        console.log("-> event : " + eventName);
+        // store listener
+
+        this.listener.set(
             eventName,
-            instance,
-            mainExecute,
-            routeConfig.fontware,
-            routeConfig.backware)
-    );
-}
+            httpEventWrapper(isDevMode,
+                eventName,
+                instance,
+                mainExecute,
+                routeConfig.fontware,
+                routeConfig.backware)
+        );
+    }
+
+};
 
 module.exports = RouterFactory;

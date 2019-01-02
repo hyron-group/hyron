@@ -79,14 +79,14 @@ function eventWrapper(index, config, handle, onCreate, checkout, typeFilter) {
     } else
         finalFunction =
         function (req, res, prev) {
-            return handle.apply(this, [req, res, prev, config]);
+            return handle.call(this, req, res, prev, config);
         }
 
     if (matchType != null) {
         finalFunction =
             function (req, res, prev) {
                 if (!matchType(prev)) return prev;
-                return handle.apply(this, [req, res, prev, config]);
+                return handle.call(this, req, res, prev, config);
             }
     }
 
@@ -96,14 +96,14 @@ function eventWrapper(index, config, handle, onCreate, checkout, typeFilter) {
     }
 
     function idleFunction(req, res, prev) {
-        var isChange = checkout.apply(this, done);
-        if (isChange) onCreate.apply(this, config);
-        return finalFunction.apply(this, [req, res, prev]);
+        var isChange = checkout.call(this, done);
+        if (isChange) onCreate.call(this, config);
+        return finalFunction.call(this, req, res, prev);
     };
     if (onCreate != null) {
         return function initFunction(req, res, prev) {
-            onCreate.apply(this, config);
-            var result = finalFunction.apply(this, [req, res, prev]);
+            onCreate.call(this, config);
+            var result = finalFunction.call(this, req, res, prev);
             // console.log(result)
             if (checkout != null)
                 handlerHolder[index] = idleFunction;

@@ -1,24 +1,53 @@
-module.exports = {
-    merge: function(...targetClass) {
-        var finalMixinsClass = class Mixins {};
-        var reqConfig = {};
+const middleware = require('../core/middleware');
+const ModuleManager = require('../core/moduleManager');
+const crc = require('crc').crc16;
 
-        for (var i = 0; i < targetClass.length; i++) {
-            var curClass = targetClass[i];
-            Object.assign(reqConfig, curClass.requestConfig());
-            finalMixinsClass = class Mixins extends allOf(
-                finalMixinsClass,
-                curClass
-            ) {};
-        }
+function bind(handle, pluginsList) {
+    // var plugins = {};
+    // var eventName = crc(handle.toString()).toString(16);
 
-        finalMixinsClass.requestConfig = function() {
-            return reqConfig;
-        };
+    // if (pluginsList != null)
+    //     var pluginsName = [];
+    // if (!pluginsList instanceof Array) throw new TypeError('bind args at index 1 should be a Array');
 
-        return finalMixinsClass;
+    // for (var i = 0; i < pluginsList.length; i++) {
+
+    //     var {
+    //         fontware,
+    //         backware
+    //     } = pluginsList[i];
+    //     if (fontware != null) fontware.global = false;
+    //     if (backware != null) backware.global = false;
+        
+    //     var pluginsName = `pl-${i}`;
+    //     plugins[pluginsName] = pluginsList[i];
+    //     pluginsName[i] = pluginsName;
+    // }
+
+    // new ModuleManager().enablePlugins(plugins);
+
+    // return eventWrapper;
+}
+
+function merge(...targetClass) {
+    var finalMixinsClass = class Mixins {};
+    var reqConfig = {};
+
+    for (var i = 0; i < targetClass.length; i++) {
+        var curClass = targetClass[i];
+        Object.assign(reqConfig, curClass.requestConfig());
+        finalMixinsClass = class Mixins extends allOf(
+            finalMixinsClass,
+            curClass
+        ) {};
     }
-};
+
+    finalMixinsClass.requestConfig = function () {
+        return reqConfig;
+    };
+
+    return finalMixinsClass;
+}
 
 function allOf(BaseClass, ...Mixins) {
     function copyProperties(target, source) {
@@ -57,3 +86,11 @@ function allOf(BaseClass, ...Mixins) {
 
     return Base;
 }
+
+function load(plugins) {
+
+}
+
+module.exports = {
+    merge
+};

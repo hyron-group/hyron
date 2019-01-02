@@ -1,3 +1,9 @@
-var a = {a:'b'};
+const crc = require('crc');
+var func = function(){
+    return "sss";
+}
 
-var b = {b:'c'};
+var obj = {func}
+
+
+console.log(crc.crc16(Object.).toString(16));

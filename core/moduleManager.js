@@ -35,7 +35,7 @@ class ModuleManager {
             poweredBy: "hyron",
             timeout: 60000,
         };
-        loadPluginsFromConfig.apply(newInstance);
+        loadPluginsFromConfig.call(newInstance);
         newInstance.routerFactory = new RouterFactory(newInstance.config);
         newInstance.app = http.createServer();
 
@@ -65,10 +65,34 @@ class ModuleManager {
             var addonsHandle = addonsList[i];
             if (typeof addonsHandle != 'function')
                 throw new TypeError(`addons at index ${i} must be a function`);
-            addonsHandle.apply(this);
+            addonsHandle.call(this);
 
         }
     }
+
+    /**
+     * @description Register plugins
+     * @param {{name:string,meta}} pluginsList
+     */
+    enablePlugins(pluginsList) {
+        if (pluginsList == null) return;
+        if (typeof pluginsList == "object")
+            Object.keys(pluginsList).forEach(name => {
+                var pluginConfig = defaultConfig[name];
+                var pluginsMeta = pluginsList[name];
+                if (typeof pluginsMeta == 'string') {
+                    pluginsMeta = require(pluginsMeta);
+                }
+                var fontwareMeta = pluginsMeta.fontware;
+                var backwareMeta = pluginsMeta.backware;
+                if (fontwareMeta != null)
+                    registerMiddleware(name, true, fontwareMeta, pluginConfig);
+                if (backwareMeta != null)
+                    registerMiddleware(name, false, backwareMeta, pluginConfig);
+            });
+        else throw new TypeError('Type of plugins meta must be Object declare config of plugins')
+    }
+
 
     /**
      * @description Return config of app or it plugins
@@ -106,7 +130,7 @@ class ModuleManager {
                     try {
                         var config = this.config;
                         var serviceConfig = defaultConfig[moduleName];
-                        if(serviceConfig!=null)Object.assign(config, serviceConfig);
+                        if (serviceConfig != null) Object.assign(config, serviceConfig);
                         routePackage(this.app, config);
                     } catch (err) {
                         console.error(
@@ -123,30 +147,6 @@ class ModuleManager {
                 }
             });
     }
-
-    /**
-     * @description Register plugins
-     * @param {{name:string,meta}} pluginsList
-     */
-    enablePlugins(pluginsList) {
-        if (pluginsList == null) return;
-        if (typeof pluginsList == "object")
-            Object.keys(pluginsList).forEach(name => {
-                var pluginConfig = defaultConfig[name];
-                var pluginsMeta = pluginsList[name];
-                if (typeof pluginsMeta == 'string') {
-                    pluginsMeta = require(pluginsMeta);
-                }
-                var fontwareMeta = pluginsMeta.fontware;
-                var backwareMeta = pluginsMeta.backware;
-                if (fontwareMeta != null)
-                    registerMiddleware(name, true, fontwareMeta, pluginConfig);
-                if (backwareMeta != null)
-                    registerMiddleware(name, false, backwareMeta, pluginConfig);
-            });
-        else throw new TypeError('Type of plugins meta must be Object declare config of plugins')
-    }
-
 
     /**
      * @description start server
@@ -180,7 +180,7 @@ function registerMiddleware(name, isFontware, meta, config) {
         try {
             meta = require(meta);
             return registerMiddleware(name, isFontware, meta, config);
-        } catch(err){
+        } catch (err) {
             console.warn(`[waring] Can't load plugins '${name}' because ${err.message}`)
         }
     } else throw new TypeError(`metadata of plugins '${name}' must be object or string`)
