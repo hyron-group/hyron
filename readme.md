@@ -17,7 +17,7 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 # Release
 
 - fix bug
-- support for string path for hyron.prototype.enableService
+- support for string path for enableServices, enablePlugins and enableAddons
 
 
 # Example
