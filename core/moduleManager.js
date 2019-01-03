@@ -6,7 +6,6 @@ const loadConfigFromFile = require('../lib/configReader');
 const path = require('path');
 var projectDir = __dirname.substr(0, __dirname.indexOf("node_modules"));
 if (projectDir == "") projectDir = path.join(__dirname, "../");
-console.log(projectDir)
 var defaultConfig = loadConfigFromFile();
 
 var instanceContainer = {};
