@@ -11,15 +11,15 @@ var defaultConfig = loadConfigFromFile();
 var instanceContainer = {};
 
 /**
- * This class used to setup & run a hyron server app
+ * This class is used to setup & run a hyron server app
  */
 class ModuleManager {
     /**
-     * @description Get a instance of server app. It can used to listen client request at sepecial host and post
+     * @description Get an instance of server app. It can be used to listen to client request at special host and post
      * @static
-     * @param {number} [port=3000] number of server app listen in
-     * @param {string} [host=localhost] name of server app listen in
-     * @param {string} name of app instance. It used when you have multi app instance, make listener hold on : http://host:port/[prefix]
+     * @param {number} [port=3000] port number of server app listen in
+     * @param {string} [host=localhost] address of server app listen in
+     * @param {string} prefix of app instance. It is used when you have multi app instance, make listener hold on : http://host:port/[prefix]
      * @returns {ModuleManager}
      */
     static getInstance(port = 3000, host = "localhost", prefix = "") {
@@ -46,9 +46,9 @@ class ModuleManager {
     }
 
     /**
-     *@description Setup app or it plugins with config
+     *@description Setup app or its plugins with config
      * @param {object} config
-     * @param {boolean} [config.isDevMode=true] if true, app will collect bug, log for development. Else, app will optimized for performance
+     * @param {boolean} [config.isDevMode=true] if true, app will collect bug, log for development. Else, app will be optimized for performance
      * @param {boolean} [config.style] format event name to target format. include : camel, snake, lisp, lower
      * @param {boolean} [config.enableRESTFul=false] if true, app will support for REST-API. Enable REST method in requestConfig() method
      * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
@@ -133,7 +133,7 @@ class ModuleManager {
     }
 
     /**
-     * @description Register router by function packages
+     * @description Register router with function packages
      * @param {{moduleName:string,AbstractRouters}} moduleList a package of main handle contain business logic
      */
     enableServices(moduleList) {
@@ -205,7 +205,7 @@ function registerMiddleware(name, isFontware, meta, config) {
             meta = require(meta);
             return registerMiddleware(name, isFontware, meta, config);
         } catch (err) {
-            console.warn(`[waring] Can't load plugins '${name}' because ${err.message}`)
+            console.warn(`[warning] Can't load plugins '${name}' because ${err.message}`)
         }
     } else throw new TypeError(`metadata of plugins '${name}' must be object or string`)
 
