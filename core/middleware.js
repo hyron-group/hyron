@@ -52,9 +52,9 @@ function addMiddleware(name, isFont, meta, config) {
         else customBackWareIndex[name] = index;
     }
     console.log(
-        `-> Registered ${isFont ? "fontware" : "backware"} ${name} ${
+        `\x1b[36m-> Registered ${isFont ? "fontware" : "backware"} ${name} ${
             isGlobal ? "as global" : ""
-        }`
+        }\x1b[0m`
     );
 }
 

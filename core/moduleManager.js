@@ -28,7 +28,7 @@ class ModuleManager {
         newInstance.host = host;
         newInstance.prefix = prefix;
         newInstance.baseURI = defaultConfig.base_uri || "http://" + host + ":" + port;
-        console.log(`\nRegister instance : ${newInstance.baseURI} ---------`)
+        console.log()
         newInstance.config = {
             isDevMode: true,
             enableRESTFul: false,
@@ -158,7 +158,7 @@ class ModuleManager {
                         routePackage(this.app, config);
                     } catch (err) {
                         console.error(
-                            `hyron do not support for service define like '${moduleName}' yet`
+                            `Hyron do not support for service define like '${moduleName}' yet`
                         );
                     }
                 } else {
@@ -184,7 +184,7 @@ class ModuleManager {
         if (typeof callback != "function") {
             callback = () => {
                 console.log(
-                    `\nServer started at : http://${this.host}:${this.port}`
+                    `\nServer started at : http://${this.host}:${this.port}...`
                 );
             };
         }
