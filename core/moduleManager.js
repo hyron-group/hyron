@@ -194,7 +194,7 @@ class ModuleManager {
     }
 
 
-};
+}
 
 
 function registerMiddleware(name, isFontware, meta, config) {
