@@ -21,7 +21,12 @@
   "main": "index.js",
   "name": "hyron",
   "scripts": {
-    "test": "nodemon ./test"
+    "test": "mocha"
   },
-  "version": "2.1.5"
+  "version": "2.1.5",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "supertest": "^3.3.0"
+  }
 }
