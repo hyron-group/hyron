@@ -1,5 +1,6 @@
 const crc = require("crc");
 const parseTypeFilter = require("../lib/typeFilter");
+const logger = require('../lib/logger')
 const AsyncFunction = (async () => {}).constructor;
 
 var handlerHolder = [];
@@ -51,7 +52,7 @@ function addMiddleware(name, isFont, meta, config) {
         if (isFont) customFontWareIndex[name] = index;
         else customBackWareIndex[name] = index;
     }
-    console.log(
+    logger.info(
         `\x1b[36m-> Registered ${isFont ? "fontware" : "backware"} ${name} ${
             isGlobal ? "as global" : ""
         }\x1b[0m`
@@ -104,7 +105,6 @@ function eventWrapper(index, config, handle, onCreate, checkout, typeFilter) {
         return function initFunction(req, res, prev) {
             onCreate.call(this, config);
             var result = finalFunction.call(this, req, res, prev);
-            // console.log(result)
             if (checkout != null)
                 handlerHolder[index] = idleFunction;
             else
@@ -245,7 +245,6 @@ function prepareHandler(eventName, reqMidWare, position) {
         return handlersIndex;
     }
 
-    // console.log(reqMidWare);
     var indexList = [];
     var disableList = [];
     var enableList = [];
@@ -306,7 +305,7 @@ function prepareHandler(eventName, reqMidWare, position) {
             var fontwareIndex = customFontWareIndex[enableMidWareName];
             if (fontwareIndex != null)
                 indexList.push(fontwareIndex);
-            else console.warn(`[warning] Can't find fontware by name '${enableMidWareName}'`)
+            else logger.warn(`[warning] Can't find fontware by name '${enableMidWareName}'`)
         }
         indexList.push(0);
     } else {
@@ -315,7 +314,7 @@ function prepareHandler(eventName, reqMidWare, position) {
             var backwareIndex = customBackWareIndex[enableMidWareName];
             if (backwareIndex != null)
                 indexList.push(backwareIndex);
-            else console.warn(`[warning] Can't find backware by name '${enableMidWareName}'`)
+            else logger.warn(`[warning] Can't find backware by name '${enableMidWareName}'`)
         }
 
         indexList = indexList.reverse();

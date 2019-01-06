@@ -4,6 +4,7 @@ const Middleware = require('./middleware');
 const generalSecretKey = require("../lib/generalKey");
 const loadConfigFromFile = require('../lib/configReader');
 const path = require('path');
+const logger = require('../lib/logger')
 var projectDir = __dirname.substr(0, __dirname.indexOf("node_modules"));
 if (projectDir == "") projectDir = path.join(__dirname, "../");
 var defaultConfig = loadConfigFromFile();
@@ -28,7 +29,7 @@ class ModuleManager {
         newInstance.host = host;
         newInstance.prefix = prefix;
         newInstance.baseURI = defaultConfig.base_uri || "http://" + host + ":" + port;
-        console.log()
+        logger.info()
         newInstance.config = {
             isDevMode: true,
             enableRESTFul: false,
@@ -157,7 +158,7 @@ class ModuleManager {
                         if (serviceConfig != null) Object.assign(config, serviceConfig);
                         routePackage(this.app, config);
                     } catch (err) {
-                        console.error(
+                        logger.error(
                             `Hyron do not support for service define like '${moduleName}' yet`
                         );
                     }
@@ -183,7 +184,7 @@ class ModuleManager {
 
         if (typeof callback != "function") {
             callback = () => {
-                console.log(
+                logger.info(
                     `\nServer started at : http://${this.host}:${this.port}...`
                 );
             };
@@ -205,7 +206,7 @@ function registerMiddleware(name, isFontware, meta, config) {
             meta = require(meta);
             return registerMiddleware(name, isFontware, meta, config);
         } catch (err) {
-            console.warn(`[warning] Can't load plugins '${name}' because ${err.message}`)
+            logger.warn(`[warning] Can't load plugins '${name}' because ${err.message}`)
         }
     } else throw new TypeError(`metadata of plugins '${name}' must be object or string`)
 

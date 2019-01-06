@@ -1,3 +1,4 @@
+const logger = require('../lib/logger')
 const {
     getAllowMethod
 } = require('./supportedMethod');
@@ -12,7 +13,7 @@ const {
  */
 function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
     if (typeof routeConfig == "boolean" || typeof routeConfig == "function") {
-        console.error(
+        logger.error(
             `[warning] Don't support for config type at ${methodPath}`
         );
     }

@@ -9,6 +9,7 @@ const prepareConfigModel = require('./configParser');
 const prepareEventName = require('../lib/eventNameCretor');
 const httpEventWrapper = require('./eventWapper');
 const statusCode = require('../type/StatusCode')
+const logger = require('../lib/logger')
 const {
     isSupported
 } = require('./supportedMethod')
@@ -64,14 +65,14 @@ class RouterFactory {
         var event = this.getEvent(method, uriPath);
 
         if (event != null) {
-            console.log(`${method} ${req.url} \x1b[32m${statusCode.OK}\x1b[0m`)
+            logger.info(`${method} ${req.url} \x1b[32m${statusCode.OK}\x1b[0m`)
             event(req, res);
         } else {
             var err = new HTTPMessage(
                 404, // not found
                 `Can't find router at ${uriPath}`
             );
-            console.log(`${method} ${req.url} \x1b[31m${statusCode.NOT_FOUND}\x1b[0m`)
+            logger.info(`${method} ${req.url} \x1b[31m${statusCode.NOT_FOUND}\x1b[0m`)
             handleResult(err, res, this.config.isDevMode);
 
         }
@@ -108,7 +109,7 @@ class RouterFactory {
      * @memberof RouterFactory
      */
     registerRoutesGroup(prefix, moduleName, handlePackage) {
-        console.log(`\n\n\x1b[36mLockup service : ${moduleName} \x1b[0m`)
+        logger.info(`\n\n\x1b[36mLockup service : ${moduleName} \x1b[0m`)
         var requestConfig = handlePackage.requestConfig();
 
         var instance = new handlePackage();
@@ -167,7 +168,7 @@ class RouterFactory {
         var isDevMode = this.config.isDevMode;
         // Executer will call each request
 
-        console.log("-> event : " + eventName);
+        logger.info("-> event : " + eventName);
         // store listener
 
         this.listener.set(
