@@ -65,14 +65,12 @@ class RouterFactory {
         var event = this.getEvent(method, uriPath);
 
         if (event != null) {
-            logger.info(`${method} ${req.url} \x1b[32m${statusCode.OK}\x1b[0m`)
             event(req, res);
         } else {
             var err = new HTTPMessage(
                 404, // not found
                 `Can't find router at ${uriPath}`
             );
-            logger.info(`${method} ${req.url} \x1b[31m${statusCode.NOT_FOUND}\x1b[0m`)
             handleResult(err, res, this.config.isDevMode);
 
         }
