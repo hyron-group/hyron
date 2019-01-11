@@ -37,12 +37,13 @@ function inheritanceFromAppConfig(data, appConfig, methodPath) {}
 
 function loadFromRouteConfig(data, routeConfig, methodPath) {
     if (typeof routeConfig == "string" ||
-        routeConfig.constructor.name == "Array") {
+        routeConfig instanceof Array) {
         routeConfig = {
             method: routeConfig
         }
-    } else if (routeConfig.constructor.name != "Object") {
-        return
+    }
+    if (routeConfig.constructor.name != "Object") {
+        return;
     }
     prepareMethod(data, routeConfig.method, methodPath);
 
