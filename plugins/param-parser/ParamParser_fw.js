@@ -3,20 +3,21 @@ const queryParser = require("./lib/queryParser");
 const multiPartParser = require("./lib/multipartParser");
 const rawBodyParser = require("./lib/rawBodyParser");
 const urlEncodedParser = require("./lib/urlEncodedParser");
+const dynamicUrl = require('../../lib/dynamicURL');
 var handleHolder = {};
 
 function handle(req, res, prev) {
     return new Promise((resolve, reject) => {
         var eventName = this.$eventName;
         var paramParser = handleHolder[eventName];
-        if(paramParser==null) paramParser = onCreate.call(this);
+        if (paramParser == null) paramParser = onCreate.call(this);
         paramParser(resolve, reject, req);
     });
 };
 
 function prepareHandle(eventName, argList) {
     var handle = function (resolve, reject, req) {
-        getDataFromRequest(argList, req, (data, err) => {
+        getDataFromRequest(req, (data, err) => {
             if (err != null) reject(err);
             var standardInput = resortDataIndex(data, argList);
             resolve(standardInput);
@@ -35,7 +36,7 @@ function onCreate(config) {
     return prepareHandle(eventName, argList)
 }
 
-function getDataFromRequest(argList, req, onComplete) {
+function getDataFromRequest(req, onComplete) {
     var method = req.method;
     if (!req.isREST) {
         if (isQueryParamType(method)) {
@@ -44,7 +45,7 @@ function getDataFromRequest(argList, req, onComplete) {
             getBodyData(req, onComplete);
         }
     } else {
-        getRestData(req, argList, onComplete);
+        getRestData(req, onComplete);
     }
 }
 
@@ -59,20 +60,18 @@ function getBodyData(req, onComplete) {
         onComplete(null);
     } else if (reqBodyType == "application/x-www-form-urlencoded") {
         urlEncodedParser(req, onComplete)
-    } else if (reqBodyType > "multipart" && reqBodyType < "multipart/z") {
+    } else if (reqBodyType >= "multipart" && reqBodyType < "multipart/z") {
         multiPartParser(req, onComplete);
     } else {
         rawBodyParser(req, onComplete)
     }
 }
 
-function getRestData(req, argList, onComplete) {
+function getRestData(req, onComplete) {
     var url = req.url;
     var eor = url.indexOf("?");
     if (eor == -1) eor = url.length;
-    var param = url.substring(url.lastIndexOf("/") + 1, eor);
-    var output = {};
-    output[argList[0]] = param;
+    var output = dynamicUrl.getParams(url.substr(0, eor));
     var method = req.method;
     var customOnComplete = data => {
         Object.assign(output, data);

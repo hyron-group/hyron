@@ -3,11 +3,11 @@ const hyron = require('../../index');
 var app = hyron.getInstance(5479);
 
 app.setting({
-    // style:'lisp'
+    style:'snake'
 })
 
 app.enableServices({
-    "" : "./test/demo"
+    "summary" : "./test/unit/apiDemo"
 })
 
 app.startServer();

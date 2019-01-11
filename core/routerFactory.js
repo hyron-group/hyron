@@ -6,13 +6,9 @@ const handleResult = require("./responseHandler");
 const path = require('../type/path');
 const HTTPMessage = require("../type/HttpMessage");
 const prepareConfigModel = require('./configParser');
-const prepareEventName = require('../lib/eventNameCretor');
+const completeUrl = require('../lib/completeUrl');
 const httpEventWrapper = require('./eventWapper');
-const statusCode = require('../type/StatusCode')
-const logger = require('../lib/logger')
-const {
-    isSupported
-} = require('./supportedMethod')
+const dynamicUrl = require('../lib/dynamicURL');
 
 
 /**
@@ -77,22 +73,22 @@ class RouterFactory {
     }
 
     getEvent(method, path) {
-        var eventName, execute, index;
+        var eventName, execute;
 
         if (
             (eventName = method + path) &&
-            (execute = this.listener.get(eventName)) != null ||
+            (execute = this.listener.get(eventName)) ||
 
-            (eventName = "REST-" + eventName) &&
-            (index = eventName.lastIndexOf('/')) &&
-            (index = index == -1 ? eventName.length : index) &&
-            (eventName = eventName.substr(0, index)) &&
-            (execute = this.listener.get(eventName)) != null &&
+            (eventName = dynamicUrl.getEventName(url)) &&
+            (execute = this.listener.get(eventName)) &&
             (req.isREST = true) ||
+
+            (eventName = "ALL" + path) &&
+            (execute = this.listener.get(eventName)) ||
 
             (path == "/") &&
             (eventName = method) &&
-            (execute = this.listener.get(eventName)) != null
+            (execute = this.listener.get(eventName))
         ) {
             return execute;
         }
@@ -107,13 +103,13 @@ class RouterFactory {
      * @memberof RouterFactory
      */
     registerRoutesGroup(prefix, moduleName, handlePackage) {
-        logger.info(`\n\n\x1b[36mLockup service : ${moduleName} \x1b[0m`)
+        logger.title(`\nLockup service : ${moduleName}`)
         var requestConfig = handlePackage.requestConfig();
 
         var instance = new handlePackage();
         if (requestConfig == null)
             throw new Error(
-                `Module ${moduleName} do not contain requestConfig() method to config router`
+                `Module ${moduleName} do not contain requestConfig() method`
             );
         var generalConfig = requestConfig.$all;
         delete requestConfig.$all;
@@ -122,32 +118,38 @@ class RouterFactory {
             var routeConfig = requestConfig[methodName];
             var methodPath = `${moduleName}/${methodName}`;
 
-            var configModel = prepareConfigModel(
-                methodPath,
-                routeConfig,
-                generalConfig,
-                this.config
-            );
+            var configModel =
+                prepareConfigModel(
+                    methodPath,
+                    routeConfig,
+                    generalConfig,
+                    this.config
+                );
             var mainHandle = instance[methodName] || configModel.handle;
 
             if (mainHandle == null) throw new Error(`Can't find main-handle for route ${methodName}`)
 
             configModel.method.forEach(entryMethodType => {
                 var tempModel = configModel;
-                var eventName = prepareEventName(
-                    configModel.enableREST,
-                    entryMethodType,
+                var url = completeUrl(
                     prefix,
                     moduleName,
                     methodName,
                     configModel.path,
                     this.config
                 );
-                path.build(this.config.baseURI, eventName, mainHandle);
+
+                if (configModel.params != null) {
+                    url = dynamicUrl.registerUrl(url + configModel.params);
+                    if (url == null)
+                        new Error(`URL ${url}/${configModel.params} at ${methodName} is not valid`);
+                }
+
+                url = entryMethodType + '/' + url;
+                path.build(this.config.baseURI, url, mainHandle);
                 tempModel.method = entryMethodType;
                 this.registerRouterByMethod(
-                    methodPath,
-                    eventName,
+                    url,
                     instance,
                     mainHandle,
                     tempModel
@@ -157,11 +159,7 @@ class RouterFactory {
     }
 
 
-    registerRouterByMethod(methodPath, eventName, instance, mainExecute, routeConfig) {
-        if (!isSupported(routeConfig.method))
-            throw new Error(
-                `Method '${routeConfig.method}' in ${methodPath} do not support yet`
-            );
+    registerRouterByMethod(eventName, instance, mainExecute, routeConfig) {
 
         var isDevMode = this.config.isDevMode;
         // Executer will call each request

@@ -2,32 +2,31 @@ const middleware = require('../core/middleware');
 const ModuleManager = require('../core/moduleManager');
 const crc = require('crc').crc16;
 
-function bind(handle, pluginsList) {
-    // var plugins = {};
-    // var eventName = crc(handle.toString()).toString(16);
+// function bind(...pluginsList) {
+//     var plugins = {};
+//     var eventName = crc(handle.toString()).toString(16);
 
-    // if (pluginsList != null)
-    //     var pluginsName = [];
-    // if (!pluginsList instanceof Array) throw new TypeError('bind args at index 1 should be a Array');
-
-    // for (var i = 0; i < pluginsList.length; i++) {
-
-    //     var {
-    //         fontware,
-    //         backware
-    //     } = pluginsList[i];
-    //     if (fontware != null) fontware.global = false;
-    //     if (backware != null) backware.global = false;
+//     for (var i = 0; i < pluginsList.length; i++) {
+//         var {
+//             fontware,
+//             backware
+//         } = pluginsList[i];
+//         if (fontware != null) fontware.global = false;
+//         if (backware != null) backware.global = false;
         
-    //     var pluginsName = `pl-${i}`;
-    //     plugins[pluginsName] = pluginsList[i];
-    //     pluginsName[i] = pluginsName;
-    // }
+//         var pluginsName = `pl-${i}`;
+//         plugins[pluginsName] = pluginsList[i];
+//         pluginsName[i] = pluginsName;
+//     }
 
-    // new ModuleManager().enablePlugins(plugins);
+//     new ModuleManager().enablePlugins(plugins);
 
-    // return eventWrapper;
-}
+//     return eventWrapper;
+// }
+
+// function eventWrapper(){
+
+// }
 
 function merge(...targetClass) {
     var finalMixinsClass = class Mixins {};

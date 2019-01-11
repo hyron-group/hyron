@@ -1,6 +1,5 @@
 const crc = require("crc");
 const parseTypeFilter = require("../lib/typeFilter");
-const logger = require('../lib/logger')
 const AsyncFunction = (async () => {}).constructor;
 
 var handlerHolder = [];
@@ -29,20 +28,16 @@ function getMiddleware(name) {
     return handlerHolder[indexOfHandle(name)];
 }
 
-function addMiddleware(name, isFont, meta, config) {
-    var isGlobal = meta.global || false;
-    var handle = meta.handle;
-    var onCreate = meta.onCreate;
-    var checkout = meta.checkout;
-    var typeFilter = meta.typeFilter;
+function addMiddleware(name, isFont, pluginsContent, config) {
+    var isGlobal = pluginsContent.global || false;
 
     var index = indexOfHandle(name);
     if (index == -1) {
         index = handlerHolder.length;
-        handle = eventWrapper(index, config, handle, onCreate, checkout, typeFilter);
+        handle = eventWrapper(index, config, pluginsContent);
         handlerHolder.push(handle);
     } else {
-        handlerHolder[index] = eventWrapper(index, config, handle, onCreate, checkout, typeFilter);
+        handlerHolder[index] = eventWrapper(index, config, pluginsContent);
     }
 
     if (isGlobal) {
@@ -53,9 +48,9 @@ function addMiddleware(name, isFont, meta, config) {
         else customBackWareIndex[name] = index;
     }
     logger.info(
-        `\x1b[36m-> Registered ${isFont ? "fontware" : "backware"} ${name} ${
+        `-> Registered ${isFont ? "fontware" : "backware"} ${name} ${
             isGlobal ? "as global" : ""
-        }\x1b[0m`
+        }`
     );
 }
 
@@ -63,7 +58,13 @@ function addMiddleware(name, isFont, meta, config) {
  * @description Used to define structure for middleware function
  * @returns formated middleware function
  */
-function eventWrapper(index, config, handle, onCreate, checkout, typeFilter) {
+function eventWrapper(index, config, pluginsContent) {
+    var {
+        handle,
+        onCreate,
+        checkout,
+        typeFilter
+    } = pluginsContent;
 
     var matchType = parseTypeFilter(typeFilter);
 
@@ -157,15 +158,20 @@ function runFunc(func, thisArgs, args, onComplete, onFailed) {
     if (func == null)
         onComplete(args[2]);
     if (result instanceof Promise || result instanceof AsyncFunction) {
-        result.then(data => {
-            args[2] = data;
-            result = func.apply(thisArgs, args);
-            onComplete(result);
-        })
+        result
+            .then(data => {
+                args[2] = data;
+                result = func.apply(thisArgs, args);
+                onComplete(result);
+            })
+            .catch(err => {
+                onFailed(err);
+            })
     } else {
         result = func.apply(thisArgs, args);
         onComplete(result);
     }
+
 }
 
 function runNextMiddleware(handlersIndex, args, thisArgs, onComplete, onFailed, i) {
@@ -215,7 +221,7 @@ function runFontWare(
         args,
         onComplete,
         onFailed,
-        "font"
+        true
     );
 }
 
@@ -234,12 +240,12 @@ function runBackWare(
         args,
         onComplete,
         onFailed,
-        "back"
+        false
     );
 }
 
-function prepareHandler(eventName, reqMidWare, position) {
-    eventName += position;
+function prepareHandler(eventName, reqMidWare, isFont) {
+    eventName += isFont ? "font" : "back";
     var handlersIndex = executesMidWareIndex[eventName];
     if (handlersIndex != null) {
         return handlersIndex;
@@ -250,14 +256,12 @@ function prepareHandler(eventName, reqMidWare, position) {
     var enableList = [];
     var disableAll = false;
 
-    var inFont = position == "font";
-
     for (var indexOfCurMiddleware in reqMidWare) {
-        var middleware = reqMidWare[indexOfCurMiddleware];
-        if (typeof middleware == "string") {
+        var middlewareMeta = reqMidWare[indexOfCurMiddleware];
+        if (typeof middlewareMeta == "string") {
             // prepare disable global middleware by name
-            if (middleware.charAt(0) == "!") {
-                var midwareName = middleware.substr(1);
+            if (middlewareMeta.charAt(0) == "!") {
+                var midwareName = middlewareMeta.substr(1);
                 var indexOfEnableMiddleware = reqMidWare.indexOf(midwareName);
                 if (midwareName == "*") disableAll = true;
                 else if (indexOfEnableMiddleware < indexOfCurMiddleware) {
@@ -265,22 +269,22 @@ function prepareHandler(eventName, reqMidWare, position) {
                 }
             }
             // prepare enable middleware by name
-            else enableList.push(middleware);
+            else enableList.push(middlewareMeta);
             // support embed middle handle in config
-        } else if (typeof middleware == "function") {
+        } else if (typeof middlewareMeta == "function") {
             var newMiddlewareName = crc
-                .crc32(middleware.toString())
+                .crc32(middlewareMeta.toString())
                 .toString(32);
 
             var newMiddlewareName = crc
-                .crc32(middleware.toString())
+                .crc32(middlewareMeta.toString())
                 .toString(32);
             var meta = {
-                handle: middleware,
+                handle: middlewareMeta,
                 global: false
             };
 
-            addMiddleware(newMiddlewareName, middleware, meta, inFont);
+            addMiddleware(newMiddlewareName, middlewareMeta, meta, isFont);
 
             enableList.push(newMiddlewareName);
         }
@@ -288,7 +292,7 @@ function prepareHandler(eventName, reqMidWare, position) {
 
     // add all global middleware
     if (!disableAll) {
-        if (inFont) indexList = Object.keys(globalFontWareIndex);
+        if (isFont) indexList = Object.keys(globalFontWareIndex);
         else indexList = Object.keys(globalBackWareIndex);
     }
 
@@ -299,7 +303,7 @@ function prepareHandler(eventName, reqMidWare, position) {
     }
 
     // enable some of middleware by config
-    if (inFont) {
+    if (isFont) {
         for (var indexOfCurMiddleware in enableList) {
             var enableMidWareName = enableList[indexOfCurMiddleware];
             var fontwareIndex = customFontWareIndex[enableMidWareName];

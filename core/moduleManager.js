@@ -4,9 +4,11 @@ const Middleware = require('./middleware');
 const generalSecretKey = require("../lib/generalKey");
 const loadConfigFromFile = require('../lib/configReader');
 const path = require('path');
-const logger = require('../lib/logger')
+
 var projectDir = __dirname.substr(0, __dirname.indexOf("node_modules"));
-if (projectDir == "") projectDir = path.join(__dirname, "../");
+if (projectDir == "") {
+    projectDir = path.join(__dirname, "../");
+};
 var defaultConfig = loadConfigFromFile();
 
 var instanceContainer = {};
@@ -29,14 +31,13 @@ class ModuleManager {
         newInstance.host = host;
         newInstance.prefix = prefix;
         newInstance.baseURI = defaultConfig.base_uri || "http://" + host + ":" + port;
-        logger.info()
+        console.log();
         newInstance.config = {
             isDevMode: true,
-            enableRESTFul: false,
             baseURI: newInstance.baseURI,
             secret: generalSecretKey(),
             poweredBy: "hyron",
-            timeout: 60000,
+            timeout: 10000,
         };
         loadPluginsFromConfig.call(newInstance);
         newInstance.routerFactory = new RouterFactory(newInstance.config);
@@ -47,18 +48,6 @@ class ModuleManager {
     }
 
     /**
-     *@description Setup app or its plugins with config
-     * @param {object} config
-     * @param {boolean} [config.isDevMode=true] if true, app will collect bug, log for development. Else, app will be optimized for performance
-     * @param {boolean} [config.style] format event name to target format. include : camel, snake, lisp, lower
-     * @param {boolean} [config.enableRESTFul=false] if true, app will support for REST-API. Enable REST method in requestConfig() method
-     * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
-     */
-    setting(config) {
-        if (typeof config == "object") Object.assign(this.config, config);
-    }
-
-    /**
      * @description Turn on addons for that instance
      * @param {Array.<function>} addonsList list of addons
      * @memberof ModuleManager
@@ -66,16 +55,12 @@ class ModuleManager {
     enableAddons(addonsList) {
         for (var i = 0; i < addonsList.length; i++) {
             var addonsHandle = addonsList[i];
-            if (typeof addonsHandle != 'function')
-                throw new TypeError(`addons at index ${i} must be a function`);
+
             if (typeof addonsHandle == 'string') {
-                try{
-                    addonsHandle = require(path.join(projectDir, addonsHandle))
-                } catch(err){}
-                try{
-                    // for installed addons 
-                    addonsHandle = require(addonsHandle)
-                } catch(err){}
+                addonsHandle = loadPackageByPath(addonsHandle);
+                if (addonsHandle == null)
+                    throw new ReferenceError(`Can't load addons at index '${i}'`);
+
             }
             addonsHandle.call(this);
         }
@@ -87,28 +72,69 @@ class ModuleManager {
      */
     enablePlugins(pluginsList) {
         if (pluginsList == null) return;
-        if (typeof pluginsList == "object")
-            Object.keys(pluginsList).forEach(name => {
-                var pluginConfig = defaultConfig[name];
-                var pluginsMeta = pluginsList[name];
-                if (typeof pluginsMeta == 'string') {
-                    try{
-                        // for default plugins or installed plugins
-                        pluginsMeta = require(pluginsMeta);
-                    } catch(err){}
-                    try{
-                        pluginsMeta = require(path.join(projectDir, pluginsMeta));
-                    } catch(err){}
-                    
+        if (pluginsList.constructor.name != "Object") {
+            throw new TypeError('enablePlugins args at index 0 must be Object');
+        }
+
+        Object.keys(pluginsList).forEach(name => {
+            var pluginConfig = defaultConfig[name];
+            var pluginsMeta = pluginsList[name];
+            if (typeof pluginsMeta == 'string') {
+                pluginsMeta = loadPackageByPath(pluginsMeta);
+                // console.log(pluginsMeta);
+                if (pluginsMeta == null)
+                    throw new ReferenceError(`Can't load plugins '${name}'`);
+            }
+            var fontwareMeta = pluginsMeta.fontware;
+            var backwareMeta = pluginsMeta.backware;
+            if (fontwareMeta != null)
+                registerMiddleware(name, true, fontwareMeta, pluginConfig);
+            if (backwareMeta != null)
+                registerMiddleware(name, false, backwareMeta, pluginConfig);
+        });
+    }
+
+
+    /**
+     * @description Register router with function packages
+     * @param {{moduleName:string,AbstractRouters}} moduleList a package of main handle contain business logic
+     */
+    enableServices(moduleList) {
+        if (moduleList == null) return;
+        if (moduleList.constructor.name == "object") {
+            throw new TypeError('enableServices args at index 0 must be Object');
+        }
+
+        Object.keys(moduleList).forEach(moduleName => {
+            // routePackage is path
+            var routePackage = moduleList[moduleName];
+            if (typeof routePackage == "string") {
+                routePackage = loadPackageByPath(routePackage);
+                if (routePackage == null)
+                    throw new ReferenceError(`Can't load service '${moduleName}'`);
+            }
+            if (routePackage.requestConfig == null) {
+                // not is a hyron service
+                try {
+                    var config = this.config;
+                    var serviceConfig = defaultConfig[moduleName];
+                    if (serviceConfig != null) Object.assign(config, serviceConfig);
+                    routePackage(this.app, config);
+                } catch (err) {
+                    console.log(err);
+                    logger.error(
+                        `Hyron do not support for service define like '${moduleName}' yet`
+                    );
                 }
-                var fontwareMeta = pluginsMeta.fontware;
-                var backwareMeta = pluginsMeta.backware;
-                if (fontwareMeta != null)
-                    registerMiddleware(name, true, fontwareMeta, pluginConfig);
-                if (backwareMeta != null)
-                    registerMiddleware(name, false, backwareMeta, pluginConfig);
-            });
-        else throw new TypeError('Type of plugins meta must be Object declare config of plugins')
+            } else {
+                // is as normal hyron service
+                this.routerFactory.registerRoutesGroup(
+                    this.prefix,
+                    moduleName,
+                    routePackage
+                );
+            }
+        });
     }
 
 
@@ -124,6 +150,17 @@ class ModuleManager {
     }
 
     /**
+     *@description Setup app or plugins with config
+     * @param {object} config
+     * @param {boolean} [config.isDevMode=true] if true, app will collect bug, log for development. Else, app will be optimized for performance
+     * @param {boolean} [config.style] format event name to target format. include : camel, snake, lisp, lower
+     * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
+     */
+    setting(config) {
+        if (typeof config == "object") Object.assign(this.config, config);
+    }
+
+    /**
      * @description Return set of instance created. It can be used by 3rth addons
      *
      * @static
@@ -133,45 +170,6 @@ class ModuleManager {
         return instanceContainer;
     }
 
-    /**
-     * @description Register router with function packages
-     * @param {{moduleName:string,AbstractRouters}} moduleList a package of main handle contain business logic
-     */
-    enableServices(moduleList) {
-        if (typeof moduleList == "object")
-            Object.keys(moduleList).forEach(moduleName => {
-                var routePackage = moduleList[moduleName];
-                if (typeof routePackage == "string") {
-                    try {
-                        routePackage = require(path.join(projectDir, routePackage));
-                    } catch(err){}
-                    try {
-                        // for installed service
-                        routePackage = require(routePackage);
-                    }catch(err){}
-                }
-                if (routePackage.requestConfig == null) {
-                    // not is a hyron service
-                    try {
-                        var config = this.config;
-                        var serviceConfig = defaultConfig[moduleName];
-                        if (serviceConfig != null) Object.assign(config, serviceConfig);
-                        routePackage(this.app, config);
-                    } catch (err) {
-                        logger.error(
-                            `Hyron do not support for service define like '${moduleName}' yet`
-                        );
-                    }
-                } else {
-                    // is as normal hyron service
-                    this.routerFactory.registerRoutesGroup(
-                        this.prefix,
-                        moduleName,
-                        routePackage
-                    );
-                }
-            });
-    }
 
     /**
      * @description start server
@@ -184,8 +182,8 @@ class ModuleManager {
 
         if (typeof callback != "function") {
             callback = () => {
-                logger.info(
-                    `\nServer started at : http://${this.host}:${this.port}...`
+                logger.success(
+                    `\nServer started at : http://${this.host}:${this.port}`
                 );
             };
         }
@@ -206,7 +204,7 @@ function registerMiddleware(name, isFontware, meta, config) {
             meta = require(meta);
             return registerMiddleware(name, isFontware, meta, config);
         } catch (err) {
-            logger.warn(`[warning] Can't load plugins '${name}' because ${err.message}`)
+            logger.warn(`Can't load plugins '${name}' because ${err.message}`)
         }
     } else throw new TypeError(`metadata of plugins '${name}' must be object or string`)
 
@@ -232,6 +230,19 @@ function loadPluginsFromConfig() {
             var backwareMeta = require(metaPath);
             registerMiddleware(name, false, backwareMeta, defaultConfig[name]);
         })
+}
+
+function loadPackageByPath(packLocation) {
+    var output;
+    try {
+        output = require(path.join(projectDir, packLocation));
+    } catch (err) {}
+    if (output == null)
+        try {
+            // for installed service
+            output = require(packLocation);
+        } catch (err) {}
+    return output;
 }
 
 

@@ -1,8 +1,7 @@
-var assert = require('assert')
-var hyron = require('../')
-var logger = require('../lib/logger')
-var sinon = require('sinon')
-var proxyquire = require('proxyquire')
+var assert = require('assert');
+var hyron = require('../');
+var sinon = require('sinon');
+var proxyquire = require('proxyquire');
 
 proxyquire = proxyquire.noCallThru().noPreserveCache()
 

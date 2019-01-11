@@ -1,8 +1,64 @@
-const logger = require('../lib/logger')
 const {
-    getAllowMethod
+    checkMethod
 } = require('./supportedMethod');
 
+
+
+function prepareMethod(data, method, funcPath) {
+    if (typeof method == "string") {
+        var standardMethod = method.toUpperCase();
+        checkMethod(standardMethod, funcPath);
+        data.method = [standardMethod];
+    } else if (method instanceof Array) {
+        method.forEach(curMethod => {
+            curMethod = curMethod.toUpperCase();
+            checkMethod(curMethod, funcPath);
+            data.method.push(curMethod.toUpperCase());
+        });
+    } else
+        throw new TypeError(
+            `Method '${data.method}' in '${funcPath}' isn't string or array`
+        );
+}
+
+function inheritanceFromGeneralConfig(data, generalConfig, methodPath) {
+    if (generalConfig == null) return;
+    if (data.method == null) {
+        if (generalConfig.method == null) method = ["GET"];
+        else data.method = generalConfig.method;
+    }
+    if (generalConfig.fontware != null)
+        data.fontware = data.fontware.concat(generalConfig.fontware);
+    if (generalConfig.backware != null)
+        data.backware = data.backware.concat(generalConfig.backware);
+}
+
+function inheritanceFromAppConfig(data, appConfig, methodPath) {}
+
+function loadFromRouteConfig(data, routeConfig, methodPath) {
+    if (typeof routeConfig == "string" ||
+        routeConfig.constructor.name == "Array") {
+        routeConfig = {
+            method: routeConfig
+        }
+    } else if (routeConfig.constructor.name != "Object") {
+        return
+    }
+    prepareMethod(data, routeConfig.method, methodPath);
+
+    if (routeConfig.fontware != null)
+        data.fontware = data.fontware.concat(routeConfig.fontware);
+    if (routeConfig.backware != null)
+        data.backware = data.backware.concat(routeConfig.backware);
+    if (routeConfig.plugins != null) {
+        data.fontware = data.fontware.concat(routeConfig.plugins);
+        data.backware = data.backware.concat(routeConfig.plugins);
+    }
+
+    data.path = routeConfig.path;
+    data.handle = routeConfig.handle;
+    data.params = routeConfig.params;
+}
 
 /**
  * @description used to creates a standardized config
@@ -12,87 +68,29 @@ const {
  * @param {object} appConfig
  */
 function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
-    if (typeof routeConfig == "boolean" || typeof routeConfig == "function") {
-        logger.error(
+    if (typeof routeConfig != "string" &&
+        routeConfig.constructor.name != "Array" &&
+        routeConfig.constructor.name != "Object") {
+        logger.warn(
             `[warning] Don't support for config type at ${methodPath}`
         );
     }
 
-    var method = [],
-        fontware = [],
-        backware = [],
-        plugins = [],
-        enableREST,
-        handle,
-        path;
-
-
-    function prepareMethod(type) {
-        if (typeof type == "string") {
-            type = type.toUpperCase();
-            if (type == "ALL") {
-                prepareMethod(getAllowMethod());
-                return;
-            } else
-                method.push(type);
-        } else if (type instanceof Array) {
-            type.forEach(curType => {
-                method.push(curType.toUpperCase());
-            });
-        } else if (typeof type == "object") prepareMethod(type.method);
-        else
-            throw new TypeError(
-                `Method ${method} in ${methodPath} isn't string or array`
-            );
-
+    var config = {
+        method: [],
+        fontware: [],
+        backware: [],
+        plugins: [],
+        handle: undefined,
+        path: undefined,
+        params: undefined
     }
 
-    function inheritanceFromGeneralConfig() {
-        if (generalConfig == null) return;
-        if (method == null) {
-            if (generalConfig.method == null) method = ["GET"];
-            else method = generalConfig.method;
-        }
-        if (enableREST == null) enableREST = generalConfig.enableREST;
-        if (generalConfig.fontware != null)
-            fontware = fontware.concat(generalConfig.fontware);
-        if (generalConfig.backware != null)
-            backware = backware.concat(generalConfig.backware);
-    }
+    loadFromRouteConfig(config, routeConfig, methodPath);
+    inheritanceFromGeneralConfig(config, generalConfig, methodPath);
+    inheritanceFromAppConfig(config, appConfig, methodPath);
 
-    function inheritanceFromAppConfig() {
-        if (enableREST == null) enableREST = appConfig.enableRESTFul;
-    }
-
-    function loadFromRouteConfig() {
-        prepareMethod(routeConfig);
-        if (typeof routeConfig != "object") return;
-        enableREST = routeConfig.enableREST;
-        if (routeConfig.fontware != null)
-            fontware = fontware.concat(routeConfig.fontware);
-        if (routeConfig.backware != null)
-            backware = backware.concat(routeConfig.backware);
-        if (routeConfig.plugins != null) {
-            fontware = fontware.concat(routeConfig.plugins);
-            backware = backware.concat(routeConfig.plugins);
-        }
-        path = routeConfig.path;
-        handle = routeConfig.handle;
-    }
-
-    loadFromRouteConfig();
-    inheritanceFromGeneralConfig();
-    inheritanceFromAppConfig();
-
-    return {
-        method,
-        enableREST,
-        fontware,
-        backware,
-        plugins,
-        handle,
-        path,
-    };
+    return config;
 }
 
 module.exports = prepareConfigModel;

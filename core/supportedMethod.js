@@ -20,8 +20,19 @@ function isSupported(method) {
     return SUPPORTED_METHOD.includes(method);
 }
 
-function getAllowMethod(){
+function getAllowMethod() {
     return SUPPORTED_METHOD;
 }
 
-module.exports = {isSupported, getAllowMethod};
+function checkMethod(method, location) {
+    if (!isSupported(method)) {
+        throw new TypeError(`method '${method}' in '${location}' is not valid`)
+
+    }
+}
+
+module.exports = {
+    isSupported,
+    getAllowMethod,
+    checkMethod
+};
