@@ -103,7 +103,7 @@ class RouterFactory {
      * @memberof RouterFactory
      */
     registerRoutesGroup(prefix, moduleName, handlePackage) {
-        logger.title(`\nLockup service : ${moduleName}`)
+        console.log(`\nLockup service : ${moduleName}`)
         var requestConfig = handlePackage.requestConfig();
 
         var instance = new handlePackage();
@@ -164,7 +164,7 @@ class RouterFactory {
         var isDevMode = this.config.isDevMode;
         // Executer will call each request
 
-        logger.info("-> event : " + eventName);
+        console.info("-> event : " + eventName);
         // store listener
 
         this.listener.set(

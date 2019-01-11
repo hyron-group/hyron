@@ -71,7 +71,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
     if (typeof routeConfig != "string" &&
         routeConfig.constructor.name != "Array" &&
         routeConfig.constructor.name != "Object") {
-        logger.warn(
+        console.warn(
             `[warning] Don't support for config type at ${methodPath}`
         );
     }

@@ -121,8 +121,7 @@ class ModuleManager {
                     if (serviceConfig != null) Object.assign(config, serviceConfig);
                     routePackage(this.app, config);
                 } catch (err) {
-                    console.log(err);
-                    logger.error(
+                    console.error(
                         `Hyron do not support for service define like '${moduleName}' yet`
                     );
                 }
@@ -182,7 +181,7 @@ class ModuleManager {
 
         if (typeof callback != "function") {
             callback = () => {
-                logger.success(
+                console.log(
                     `\nServer started at : http://${this.host}:${this.port}`
                 );
             };
@@ -204,7 +203,7 @@ function registerMiddleware(name, isFontware, meta, config) {
             meta = require(meta);
             return registerMiddleware(name, isFontware, meta, config);
         } catch (err) {
-            logger.warn(`Can't load plugins '${name}' because ${err.message}`)
+            console.warn(`Can't load plugins '${name}' because ${err.message}`)
         }
     } else throw new TypeError(`metadata of plugins '${name}' must be object or string`)
 

@@ -47,7 +47,7 @@ function addMiddleware(name, isFont, pluginsContent, config) {
         if (isFont) customFontWareIndex[name] = index;
         else customBackWareIndex[name] = index;
     }
-    logger.info(
+    console.info(
         `-> Registered ${isFont ? "fontware" : "backware"} ${name} ${
             isGlobal ? "as global" : ""
         }`
@@ -309,7 +309,7 @@ function prepareHandler(eventName, reqMidWare, isFont) {
             var fontwareIndex = customFontWareIndex[enableMidWareName];
             if (fontwareIndex != null)
                 indexList.push(fontwareIndex);
-            else logger.warn(`[warning] Can't find fontware by name '${enableMidWareName}'`)
+            else console.warn(`[warning] Can't find fontware by name '${enableMidWareName}'`)
         }
         indexList.push(0);
     } else {
@@ -318,7 +318,7 @@ function prepareHandler(eventName, reqMidWare, isFont) {
             var backwareIndex = customBackWareIndex[enableMidWareName];
             if (backwareIndex != null)
                 indexList.push(backwareIndex);
-            else logger.warn(`[warning] Can't find backware by name '${enableMidWareName}'`)
+            else console.warn(`[warning] Can't find backware by name '${enableMidWareName}'`)
         }
 
         indexList = indexList.reverse();
