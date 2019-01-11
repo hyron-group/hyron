@@ -23,7 +23,7 @@
   "main": "index.js",
   "name": "hyron",
   "scripts": {
-    "test": "nodemon ./test/benchmark/hyron.js"
+    "test": "nodemon ./test/performance/hyron.js"
   },
   "version": "2.1.5",
   "devDependencies": {

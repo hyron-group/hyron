@@ -58,7 +58,7 @@ class RouterFactory {
         var uriPath = getUriPath(req.url);
         var method = req.method;
 
-        var event = this.getEvent(method, uriPath);
+        var event = this.getEvent(method, uriPath, req);
 
         if (event != null) {
             event(req, res);
@@ -72,14 +72,14 @@ class RouterFactory {
         }
     }
 
-    getEvent(method, path) {
+    getEvent(method, path, req) {
         var eventName, execute;
 
         if (
             (eventName = method + path) &&
             (execute = this.listener.get(eventName)) ||
 
-            (eventName = dynamicUrl.getEventName(url)) &&
+            (eventName = method + dynamicUrl.getEventName(path)) &&
             (execute = this.listener.get(eventName)) &&
             (req.isREST = true) ||
 
