@@ -1,6 +1,4 @@
-const hyron = require('../');
+var b;
+var a = {...b};
 
-// var app = hyron.getInstance
-
-var app = require('express')();
-app.listen()
+console.log(a)

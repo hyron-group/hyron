@@ -35,18 +35,18 @@ class ModuleManager {
             host: "localhost",
             port: 3000,
             prefix: "",
+            isDevMode: true,
+            secret: generalSecretKey(),
+            ...defaultConfig[this.baseURI]
         };
 
         if (args.length == 1) {
             var arg0 = args[0];
             if (typeof args[0] == "object") {
-                // getInstance(cfg)
                 instanceConfig = arg0;
             } else if (typeof arg0 == "number") {
-                // getInstance(port)
                 instanceConfig.port = arg0;
             } else if (typeof arg0 == "string") {
-                // getInstance(baseURI)
                 var reg = /^(([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?)/g;
 
                 var match = reg.exec(arg0);
@@ -58,7 +58,7 @@ class ModuleManager {
                     port: match[5],
                     prefix: match[7]
                 }
-            } else throw new TypeError(`getInstance(..) argument at index 1 should be a port number, string base uri or object instance config`);
+            } else throw new TypeError(`getInstance(..) argument at index 0 should be a port number, string base uri or object instance config`);
         } else if (args.length > 1) {
             return getInstance({
                 port: args[0],
@@ -68,23 +68,18 @@ class ModuleManager {
             })
         }
 
-        var runtimeConfig = {
-            isDevMode: true,
-            baseURI: newInstance.baseURI,
-            secret: generalSecretKey(),
-        };
-
-
         Object.assign(newInstance, {
-            config: runtimeConfig,
-            ...instanceConfig,
-            routerFactory: new RouterFactory(runtimeConfig),
+            addons:{},
+            plugins:{},
+            service:{},
+            config: instanceConfig,
+            routerFactory: new RouterFactory(instanceConfig),
             app: http.createServer(),
         });
         loadAddonsFromConfig.call(newInstance);
         loadPluginsFromConfig.call(newInstance);
 
-        instanceContainer[newInstance.baseURI] = newInstance;
+        instanceContainer[instanceConfig.baseURI] = newInstance;
         return newInstance;
     }
 
@@ -98,6 +93,9 @@ class ModuleManager {
     setting(config) {
         if (typeof config == "object")
             Object.assign(this.config, config);
+
+        this.enableAddons(this.addons);
+        this.enableServices(this.services);
     }
 
     /**
@@ -117,19 +115,18 @@ class ModuleManager {
      * @memberof ModuleManager
      */
     enableAddons(addonsList) {
-        if (addonsList == null) return;
+        if(addonsList==null) return;
         if (addonsList.constructor.name != "Object") {
             throw new TypeError('enableAddons(..) args at index 0 must be Object');
         }
+
+        Object.assign(this.addons, addonsList);
 
         for (var addonsName in addonsList) {
             var addonsHandle = addonsList[addonsName];
 
             if (typeof addonsHandle == 'string') {
                 addonsHandle = loadPackageByPath(addonsHandle);
-                if (addonsHandle == null)
-                    throw new ReferenceError(`Can't load addons at index '${i}'`);
-
             }
             addonsHandle.call(this, defaultConfig[addonsName]);
         }
@@ -145,14 +142,13 @@ class ModuleManager {
             throw new TypeError('enablePlugins(..) args at index 0 must be Object');
         }
 
+        Object.assign(this.plugins, pluginsList);
+
         Object.keys(pluginsList).forEach(name => {
             var pluginConfig = defaultConfig[name];
             var pluginsMeta = pluginsList[name];
             if (typeof pluginsMeta == 'string') {
                 pluginsMeta = loadPackageByPath(pluginsMeta);
-                // console.log(pluginsMeta);
-                if (pluginsMeta == null)
-                    throw new ReferenceError(`Can't load plugins '${name}'`);
             }
             var fontwareMeta = pluginsMeta.fontware;
             var backwareMeta = pluginsMeta.backware;
@@ -170,17 +166,18 @@ class ModuleManager {
      */
     enableServices(moduleList) {
         if (moduleList == null) return;
-        if (moduleList.constructor.name == "object") {
+        this.services = moduleList;
+        if (moduleList.constructor.name != "Object") {
             throw new TypeError('enableServices(..) args at index 0 must be Object');
         }
+
+        Object.assign(this.services, moduleList);
 
         Object.keys(moduleList).forEach(moduleName => {
             // routePackage is path
             var routePackage = moduleList[moduleName];
             if (typeof routePackage == "string") {
                 routePackage = loadPackageByPath(routePackage);
-                if (routePackage == null)
-                    throw new ReferenceError(`Can't load service '${moduleName}'`);
             }
             if (routePackage.requestConfig == null) {
                 // not is a hyron service
@@ -221,6 +218,10 @@ class ModuleManager {
      * @param {function} callback a function will be call when server started
      */
     startServer(callback) {
+        var {
+            host,
+            port
+        } = this.config;
         this.app.on("request", (req, res) => {
             this.routerFactory.triggerRouter(req, res);
         });
@@ -228,12 +229,12 @@ class ModuleManager {
         if (typeof callback != "function") {
             callback = () => {
                 console.log(
-                    `\nServer started at : http://${this.host}:${this.port}`
+                    `\nServer started at : http://${host}:${port}`
                 );
             };
         }
 
-        this.app.listen(this.port, this.host, callback);
+        this.app.listen(port, host, callback);
         return this.app;
     }
 
@@ -284,13 +285,14 @@ function loadPluginsFromConfig() {
 function loadPackageByPath(packLocation) {
     var output;
     try {
+        // for client service
         output = require(path.join(projectDir, packLocation));
-    } catch (err) {}
-    if (output == null)
-        try {
+    } catch (err) {
+        if (output == null)
             // for installed service
             output = require(packLocation);
-        } catch (err) {}
+    }
+
     return output;
 }
 
