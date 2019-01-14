@@ -1,12 +1,19 @@
 const http2 = require('http2');
+const fs = require('fs');
 
-module.exports = function () {
-    if(this.config.protocols=="http2"){
-        console.log('enable http2 server')
-        var secure = {
-            key:this.config.key,
-            cert:this.config.cert
-        };
-        this.app = http2.createServer(secure);
+module.exports = function (options) {
+    if (this.config.protocols == "http2") {
+        var key = this.config.key;
+        var cert = this.config.cert;
+        if (key != null && cert != null) {
+            key = fs.readFileSync(key);
+            cert = fs.readFileSync(cert);
+            var http2Options = {
+                key,
+                cert,
+                ...options
+            }
+            this.app = http2.createSecureServer(http2Options);
+        } else this.app = http2.createServer();
     }
 }
