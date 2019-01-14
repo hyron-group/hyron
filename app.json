@@ -1,0 +1,15 @@
+{
+    "base_url" : "https://localhost:3000/demo",
+    "setting": {
+        "style" : "lisp"
+    },
+    "plugins": {
+        "java-lang":"java-lang",
+        "param-checker":"param-checker",
+        "stringer":"stringer"
+    },
+    "services":{
+        "user":"./services/user/router.js",
+        "product": "./services/product/router.js"
+    }
+}

@@ -125,9 +125,7 @@ class RouterFactory {
                     generalConfig,
                     this.config
                 );
-            var mainHandle = instance[methodName] || configModel.handle;
-
-            if (mainHandle == null) throw new Error(`Can't find main-handle for route ${methodName}`)
+            var mainHandle = configModel.handle || instance[methodName];
 
             configModel.method.forEach(entryMethodType => {
                 var tempModel = configModel;
@@ -166,6 +164,10 @@ class RouterFactory {
 
         console.info("-> event : " + eventName);
         // store listener
+
+        if (mainExecute == null) {
+            throw new ReferenceError(`main-handle of '${eventName}' has not been set`);
+        }
 
         this.listener.set(
             eventName,

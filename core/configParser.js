@@ -5,6 +5,7 @@ const {
 
 
 function prepareMethod(data, method, funcPath) {
+    if(method==null) return;
     if (typeof method == "string") {
         var standardMethod = method.toUpperCase();
         checkMethod(standardMethod, funcPath);
@@ -17,15 +18,15 @@ function prepareMethod(data, method, funcPath) {
         });
     } else
         throw new TypeError(
-            `Method '${data.method}' in '${funcPath}' isn't string or array`
+            `Method '${method}' in '${funcPath}' isn't string or array`
         );
 }
 
 function inheritanceFromGeneralConfig(data, generalConfig, methodPath) {
     if (generalConfig == null) return;
-    if (data.method == null) {
-        if (generalConfig.method == null) method = ["GET"];
-        else data.method = generalConfig.method;
+    if (data.method.length==0) {
+        if (generalConfig.method == null) data.method = ["GET"];
+        else prepareMethod(data, generalConfig.method, methodPath);
     }
     if (generalConfig.fontware != null)
         data.fontware = data.fontware.concat(generalConfig.fontware);

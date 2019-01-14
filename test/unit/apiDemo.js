@@ -7,10 +7,14 @@ module.exports = class Demo {
             "": "all",
             testGetParams: "get",
             testPostParams: "post",
-            testPlugins: ["get", "post", "get"],
+            testPlugins: ["get", "post"],
             testRest: {
-                method: "get",
-                params: "/:var1"
+                params: "/:var1/:var2"
+            },
+            testPath : "get",
+            testUpload : {
+                method : "post",
+                params : "/:id/:to"
             }
         };
     }
@@ -35,17 +39,17 @@ module.exports = class Demo {
         return this.$stringer.get("txt_demo_string");
     }
 
-    testRest(var1) {
-        return var1;
+    testRest(var1, var2) {
+        return var1+var2;
     }
 
     testPath() {
+        var path = require('../../type/path');
         var data = [
-            require('../../type/path').findURL(new Demo().upload),
-            require('../../type/path').findURL(this.upload),
-            require('../../type/path').findURL('upload'),
+            path.findURL(new Demo().upload),
+            path.findURL(this.upload),
+            path.findURL('/upload'),
         ]
-        console.log(this.upload)
         return data;
     }
 

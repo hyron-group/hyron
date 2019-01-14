@@ -19,32 +19,92 @@ var instanceContainer = {};
 class ModuleManager {
     /**
      * @description Get an instance of server app. It can be used to listen to client request at special host and post
-     * @static
-     * @param {number} [port=3000] port number of server app listen in
-     * @param {string} [host=localhost] address of server app listen in
-     * @param {string} prefix of app instance. It is used when you have multi app instance, make listener hold on : http://host:port/[prefix]
+     * 
+     * ### Overload :
+     * - getInstance(port:number)
+     * - getInstance(baseURI:string)
+     * - getInstance(cfg:object)
+     * - getInstance(port:number, host:string, prefix:string, protocols:string)
      * @returns {ModuleManager}
      */
-    static getInstance(port = 3000, host = "localhost", prefix = "") {
+    static getInstance(...args) {
         var newInstance = new ModuleManager();
-        newInstance.port = port;
-        newInstance.host = host;
-        newInstance.prefix = prefix;
-        newInstance.baseURI = defaultConfig.base_uri || "http://" + host + ":" + port;
-        console.log();
-        newInstance.config = {
-            isDevMode: true,
-            baseURI: newInstance.baseURI,
-            secret: generalSecretKey(),
-            poweredBy: "hyron",
-            timeout: 10000,
+        var instanceConfig = {
+            baseURI: "http://localhost:3000/",
+            protocols: "http",
+            host: "localhost",
+            port: 3000,
+            prefix: "",
         };
+
+        if (args.length == 1) {
+            var arg0 = args[0];
+            if (typeof args[0] == "object") {
+                // getInstance(cfg)
+                instanceConfig = arg0;
+            } else if (typeof arg0 == "number") {
+                // getInstance(port)
+                instanceConfig.port = arg0;
+            } else if (typeof arg0 == "string") {
+                // getInstance(baseURI)
+                var reg = /^(([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?)/g;
+
+                var match = reg.exec(arg0);
+
+                instanceConfig = {
+                    baseURI: match[1],
+                    protocols: match[2],
+                    host: match[3],
+                    port: match[5],
+                    prefix: match[7]
+                }
+            } else throw new TypeError(`getInstance(..) argument at index 1 should be a port number, string base uri or object instance config`);
+        } else if (args.length > 1) {
+            return getInstance({
+                port: args[0],
+                host: args[1],
+                prefix: args[2],
+                protocols: args[3]
+            })
+        }
+
+
+        Object.assign(newInstance, {
+            config: {
+                isDevMode: true,
+                baseURI: newInstance.baseURI,
+                secret: generalSecretKey(),
+            },
+            ...instanceConfig,
+            routerFactory: new RouterFactory(newInstance.config),
+            app: http.createServer(),
+        });
         loadPluginsFromConfig.call(newInstance);
-        newInstance.routerFactory = new RouterFactory(newInstance.config);
-        newInstance.app = http.createServer();
 
         instanceContainer[newInstance.baseURI] = newInstance;
-        return instanceContainer[newInstance.baseURI];
+        return newInstance;
+    }
+
+    /**
+     *@description Setup app or plugins with config
+     * @param {object} config
+     * @param {boolean} [config.isDevMode=true] if is true, app will collect bug, log for development. Else, app will be optimized for performance
+     * @param {boolean} [config.style] format event name to target format. include : camel, snake, lisp, lower
+     * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
+     */
+    setting(config) {
+        if (typeof config == "object") Object.assign(this.config, config);
+    }
+
+    /**
+     * @description Return config of app or it plugins
+     *
+     * @static
+     * @param {string} name name of app setting field or a installed plugin
+     * @returns {string|object} config value
+     */
+    static getConfig(name) {
+        return defaultConfig[name];
     }
 
     /**
@@ -134,29 +194,6 @@ class ModuleManager {
                 );
             }
         });
-    }
-
-
-    /**
-     * @description Return config of app or it plugins
-     *
-     * @static
-     * @param {string} name name of app setting field or a installed plugin
-     * @returns {string|object} config value
-     */
-    static getConfig(name) {
-        return defaultConfig[name];
-    }
-
-    /**
-     *@description Setup app or plugins with config
-     * @param {object} config
-     * @param {boolean} [config.isDevMode=true] if true, app will collect bug, log for development. Else, app will be optimized for performance
-     * @param {boolean} [config.style] format event name to target format. include : camel, snake, lisp, lower
-     * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
-     */
-    setting(config) {
-        if (typeof config == "object") Object.assign(this.config, config);
     }
 
     /**
