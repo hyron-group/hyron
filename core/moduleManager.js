@@ -68,17 +68,20 @@ class ModuleManager {
             })
         }
 
+        var runtimeConfig = {
+            isDevMode: true,
+            baseURI: newInstance.baseURI,
+            secret: generalSecretKey(),
+        };
+
 
         Object.assign(newInstance, {
-            config: {
-                isDevMode: true,
-                baseURI: newInstance.baseURI,
-                secret: generalSecretKey(),
-            },
+            config: runtimeConfig,
             ...instanceConfig,
-            routerFactory: new RouterFactory(newInstance.config),
+            routerFactory: new RouterFactory(runtimeConfig),
             app: http.createServer(),
         });
+        loadAddonsFromConfig.call(newInstance);
         loadPluginsFromConfig.call(newInstance);
 
         instanceContainer[newInstance.baseURI] = newInstance;
@@ -93,7 +96,8 @@ class ModuleManager {
      * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
      */
     setting(config) {
-        if (typeof config == "object") Object.assign(this.config, config);
+        if (typeof config == "object")
+            Object.assign(this.config, config);
     }
 
     /**
@@ -113,8 +117,13 @@ class ModuleManager {
      * @memberof ModuleManager
      */
     enableAddons(addonsList) {
-        for (var i = 0; i < addonsList.length; i++) {
-            var addonsHandle = addonsList[i];
+        if (addonsList == null) return;
+        if (addonsList.constructor.name != "Object") {
+            throw new TypeError('enableAddons(..) args at index 0 must be Object');
+        }
+
+        for (var addonsName in addonsList) {
+            var addonsHandle = addonsList[addonsName];
 
             if (typeof addonsHandle == 'string') {
                 addonsHandle = loadPackageByPath(addonsHandle);
@@ -122,7 +131,7 @@ class ModuleManager {
                     throw new ReferenceError(`Can't load addons at index '${i}'`);
 
             }
-            addonsHandle.call(this);
+            addonsHandle.call(this, defaultConfig[addonsName]);
         }
     }
 
@@ -133,7 +142,7 @@ class ModuleManager {
     enablePlugins(pluginsList) {
         if (pluginsList == null) return;
         if (pluginsList.constructor.name != "Object") {
-            throw new TypeError('enablePlugins args at index 0 must be Object');
+            throw new TypeError('enablePlugins(..) args at index 0 must be Object');
         }
 
         Object.keys(pluginsList).forEach(name => {
@@ -162,7 +171,7 @@ class ModuleManager {
     enableServices(moduleList) {
         if (moduleList == null) return;
         if (moduleList.constructor.name == "object") {
-            throw new TypeError('enableServices args at index 0 must be Object');
+            throw new TypeError('enableServices(..) args at index 0 must be Object');
         }
 
         Object.keys(moduleList).forEach(moduleName => {
@@ -244,6 +253,10 @@ function registerMiddleware(name, isFontware, meta, config) {
         }
     } else throw new TypeError(`metadata of plugins '${name}' must be object or string`)
 
+}
+
+function loadAddonsFromConfig() {
+    this.enableAddons(defaultConfig.addons);
 }
 
 function loadPluginsFromConfig() {
