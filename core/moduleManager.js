@@ -3,12 +3,8 @@ const RouterFactory = require("./routerFactory");
 const Middleware = require('./middleware');
 const generalSecretKey = require("../lib/generalKey");
 const loadConfigFromFile = require('../lib/configReader');
+const homeDir = require('../lib/homeDir');
 const path = require('path');
-
-var projectDir = __dirname.substr(0, __dirname.indexOf("node_modules"));
-if (projectDir == "") {
-    projectDir = path.join(__dirname, "../");
-};
 var defaultConfig = loadConfigFromFile();
 
 var instanceContainer = {};
@@ -17,6 +13,13 @@ var instanceContainer = {};
  * This class is used to setup & run a hyron server app
  */
 class ModuleManager {
+
+    static build(path) {
+        const appLoader = require('./appLoader');
+        appLoader(path);
+    }
+
+
     /**
      * @description Get an instance of server app. It can be used to listen to client request at special host and post
      * 
@@ -69,9 +72,9 @@ class ModuleManager {
         }
 
         Object.assign(newInstance, {
-            addons:{},
-            plugins:{},
-            service:{},
+            addons: {},
+            plugins: {},
+            service: {},
             config: instanceConfig,
             routerFactory: new RouterFactory(instanceConfig),
             app: http.createServer(),
@@ -115,7 +118,7 @@ class ModuleManager {
      * @memberof ModuleManager
      */
     enableAddons(addonsList) {
-        if(addonsList==null) return;
+        if (addonsList == null) return;
         if (addonsList.constructor.name != "Object") {
             throw new TypeError('enableAddons(..) args at index 0 must be Object');
         }
@@ -286,7 +289,7 @@ function loadPackageByPath(packLocation) {
     var output;
     try {
         // for client service
-        output = require(path.join(projectDir, packLocation));
+        output = require(path.join(homeDir, packLocation));
     } catch (err) {
         if (output == null)
             // for installed service
