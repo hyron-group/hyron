@@ -1,10 +1,10 @@
 const hyron = require('../../index');
 
-var app = hyron.getInstance(null, "localhost");
+var app = hyron.getInstance(5479);
 
 app.setting({
     style:'lisp',
-    // protocols : "http2",
+    protocols : "https",
     key:'.temp/key.pem',
     cert:'.temp/cert.pem'
 });

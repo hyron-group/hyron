@@ -51,14 +51,14 @@ class ModuleManager {
             if (typeof arg0 == "object") {
                 Object.assign(instanceConfig, arg0);
                 instanceConfig.baseURI = getBaseURI(
-                    instanceConfig.protocol,
+                    instanceConfig.protocols,
                     instanceConfig.host,
                     instanceConfig.port,
                     instanceConfig.prefix);
             } else if (typeof arg0 == "number") {
                 instanceConfig.port = arg0;
                 instanceConfig.baseURI = getBaseURI(
-                    instanceConfig.protocol,
+                    instanceConfig.protocols,
                     instanceConfig.host,
                     arg0,
                     instanceConfig.prefix);
@@ -67,7 +67,7 @@ class ModuleManager {
                 var reg = /^(([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?)/g;
 
                 var match = reg.exec(arg0);
-
+                if (match == null) throw new TypeError("Cannot parse uri from getInstance(..) argument at index 0")
                 instanceConfig = {
                     baseURI: match[1],
                     protocols: match[2],
@@ -95,6 +95,7 @@ class ModuleManager {
         });
         loadAddonsFromConfig.call(newInstance);
         loadPluginsFromConfig.call(newInstance);
+        setupDefaultListener.call(newInstance);
 
         instanceContainer[instanceConfig.baseURI] = newInstance;
         return newInstance;
@@ -108,8 +109,17 @@ class ModuleManager {
      * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
      */
     setting(config) {
-        if (typeof config == "object")
-            Object.assign(this.config, config);
+        if (typeof config != "object") return;
+
+        Object.assign(this.config, config);
+
+        if (config.protocols || config.host || config.port || config.prefix) {
+            this.config.baseURI = getBaseURI(
+                this.config.protocols,
+                this.config.host,
+                this.config.port,
+                this.config.prefix);
+        }
 
         this.enableAddons(this.addons);
         this.enableServices(this.services);
@@ -197,12 +207,14 @@ class ModuleManager {
                 routePackage = loadPackageByPath(routePackage);
             }
             if (routePackage.requestConfig == null) {
-                // not is a hyron service
+                // is unofficial service
                 try {
-                    var config = this.config;
                     var serviceConfig = defaultConfig[moduleName];
-                    if (serviceConfig != null) Object.assign(config, serviceConfig);
-                    routePackage(this.app, config);
+                    var unofficialServiceConfig = {
+                        ...this.config,
+                        ...serviceConfig
+                    };
+                    routePackage(this.app, unofficialServiceConfig);
                 } catch (err) {
                     console.error(
                         `Hyron do not support for service define like '${moduleName}' yet`
@@ -237,25 +249,43 @@ class ModuleManager {
     startServer(callback) {
         var {
             host,
-            port
+            port,
         } = this.config;
         this.app.on("request", (req, res) => {
             this.routerFactory.triggerRouter(req, res);
         });
 
-        if (typeof callback != "function") {
-            callback = () => {
-                console.log(
-                    `\nServer started at : ${this.config.baseURI}`
-                );
-            };
-        }
-
-        this.app.listen(port, host, callback);
+        if (callback != null)
+            this.app.listen(port, host, callback);
+        else this.app.listen(port, host);
         return this.app;
     }
 
 
+}
+
+function setupDefaultListener() {
+
+    this.app.on("listening", () => {
+        var {
+            protocols,
+            host,
+            port,
+            prefix
+        } = this.config;
+
+        if (port == 0) {
+            var randomPort = this.app.address().port;
+            this.config.port = randomPort;
+            this.config.baseURI = getBaseURI(protocols, host, randomPort, prefix);
+        }
+    });
+
+    this.app.on("listening", () => {
+        console.log(
+            `\nServer started at : ${this.config.baseURI}`
+        );
+    })
 }
 
 
