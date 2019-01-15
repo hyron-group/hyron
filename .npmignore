@@ -11,3 +11,4 @@ CODE_OF_CONDUCT.md
 package-lock.json
 string/
 .log/
+.temp/
