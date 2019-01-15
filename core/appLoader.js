@@ -18,10 +18,11 @@ function loadFromFile(path) {
         var missingServices = getMissingPackage(appMeta.services);
 
         var missingPackages = [...missingAddons, ...missingPlugins, missingServices];
-        console.log(`missing (${missingPackages.length}) : ${missingPackages}`);
+        console.warn(`Missing (${missingPackages.length}) : ${missingPackages}`);
         if (missingPackages.length == 0) {
             registerInstance(appMeta);
         } else {
+            console.log("Installing missing package ...");
             Promise.all([
                 downloadJobs(missingAddons),
                 downloadJobs(missingPlugins),
@@ -78,40 +79,48 @@ function getMissingPackage(meta) {
     return missingPackage;
 }
 
-function downloadMissingPackage(url, onComplete) {
-    process.stdout.write("-> installing : " + url);
-
-    child_process.exec(`yarn add ${url}`, (err, sto, ste) => {
-        if (err == null) {
-            process.stdout.write(" [success]\n");
-            // get installed package name
-            var reg = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
-            var match = reg.exec(sto);
-            var packageName;
-            if (match != null)
-                packageName = match[2];
-            onComplete(packageName);
-        } else throw err;
+function downloadMissingPackage(url) {
+    return new Promise((resolve, reject) => {
+        child_process.exec(`yarn add ${url}`, (err, sto, ste) => {
+            if (err == null) {
+                // get installed package name
+                var reg = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
+                var match = reg.exec(sto);
+                var packageName;
+                if (match != null)
+                    packageName = match[2];
+                resolve(packageName);
+            } else reject(err);
+        });
     });
 }
 
 function downloadJobs(packageList) {
-    var counter = Object.keys(packageList).length;
     var realPackagesName = {};
+    var jobs = [];
+
     for (var packageName in packageList) {
-        downloadMissingPackage(packageList[packageName], (realName) => {
-            realPackagesName[packageName] = realName;
-            counter--;
-        })
+        jobs.push(
+            downloadMissingPackage(packageList[packageName])
+            .then((realName) => {
+                console.log("installed : "+realName);
+                realPackagesName[packageName] = realName;
+            }))
     }
 
-    return new Promise((resolve) => {
-        while (counter > 0) setTimeout(() => {
-            if (counter == 0) {
-                resolve(realPackagesName);
-            }
-        }, 1000);
+    return new Promise(resolve => {
+        return Promise.all(jobs).then(() => {
+            resolve(realPackagesName);
+        }).catch(err=>{
+            console.log("has problem : "+err.message);
+        });
     })
 }
+
+downloadJobs({
+    param_checker: "@hyron/param-checker",
+    stringer: "@hyron/stringer",
+    hyron_cli: "https://github.com/hyron-group/hyron-cli.git"
+})
 
 module.exports = loadFromFile;
