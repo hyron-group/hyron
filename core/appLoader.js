@@ -117,10 +117,10 @@ function downloadJobs(packageList) {
     })
 }
 
-downloadJobs({
-    param_checker: "@hyron/param-checker",
-    stringer: "@hyron/stringer",
-    hyron_cli: "https://github.com/hyron-group/hyron-cli.git"
-})
+// downloadJobs({
+//     param_checker: "@hyron/param-checker",
+//     stringer: "@hyron/stringer",
+//     hyron_cli: "https://github.com/hyron-group/hyron-cli.git"
+// })
 
 module.exports = loadFromFile;
