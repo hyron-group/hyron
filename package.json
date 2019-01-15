@@ -2,6 +2,7 @@
   "dependencies": {
     "busboy": "^0.2.14",
     "crc": "^3.8.0",
+    "hyron-cli": "https://github.com/hyron-group/hyron-cli.git",
     "ini": "^1.3.5"
   },
   "repository": {

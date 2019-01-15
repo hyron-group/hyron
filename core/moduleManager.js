@@ -4,6 +4,9 @@ const Middleware = require('./middleware');
 const generalSecretKey = require("../lib/generalKey");
 const loadConfigFromFile = require('../lib/configReader');
 const homeDir = require('../lib/homeDir');
+const {
+    getBaseURI
+} = require('../lib/completeUrl');
 const path = require('path');
 var defaultConfig = loadConfigFromFile();
 
@@ -33,11 +36,11 @@ class ModuleManager {
     static getInstance(...args) {
         var newInstance = new ModuleManager();
         var instanceConfig = {
-            baseURI: "http://localhost:3000/",
             protocols: "http",
             host: "localhost",
             port: 3000,
             prefix: "",
+            baseURI: "http://localhost:3000",
             isDevMode: true,
             secret: generalSecretKey(),
             ...defaultConfig[this.baseURI]
@@ -45,10 +48,21 @@ class ModuleManager {
 
         if (args.length == 1) {
             var arg0 = args[0];
-            if (typeof args[0] == "object") {
-                instanceConfig = arg0;
+            if (typeof arg0 == "object") {
+                Object.assign(instanceConfig, arg0);
+                instanceConfig.baseURI = getBaseURI(
+                    instanceConfig.protocol,
+                    instanceConfig.host,
+                    instanceConfig.port,
+                    instanceConfig.prefix);
             } else if (typeof arg0 == "number") {
                 instanceConfig.port = arg0;
+                instanceConfig.baseURI = getBaseURI(
+                    instanceConfig.protocol,
+                    instanceConfig.host,
+                    arg0,
+                    instanceConfig.prefix);
+
             } else if (typeof arg0 == "string") {
                 var reg = /^(([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?)/g;
 
@@ -63,11 +77,11 @@ class ModuleManager {
                 }
             } else throw new TypeError(`getInstance(..) argument at index 0 should be a port number, string base uri or object instance config`);
         } else if (args.length > 1) {
-            return getInstance({
-                port: args[0],
-                host: args[1],
-                prefix: args[2],
-                protocols: args[3]
+            return ModuleManager.getInstance({
+                port: args[0] || instanceConfig.port,
+                host: args[1] || instanceConfig.host,
+                prefix: args[2] || instanceConfig.prefix,
+                protocols: args[3] || instanceConfig.protocols,
             })
         }
 
@@ -197,7 +211,7 @@ class ModuleManager {
             } else {
                 // is as normal hyron service
                 this.routerFactory.registerRoutesGroup(
-                    this.prefix,
+                    this.config.prefix,
                     moduleName,
                     routePackage
                 );
@@ -232,7 +246,7 @@ class ModuleManager {
         if (typeof callback != "function") {
             callback = () => {
                 console.log(
-                    `\nServer started at : http://${host}:${port}`
+                    `\nServer started at : ${this.config.baseURI}`
                 );
             };
         }

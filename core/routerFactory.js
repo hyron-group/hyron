@@ -6,7 +6,7 @@ const handleResult = require("./responseHandler");
 const path = require('../type/path');
 const HTTPMessage = require("../type/HttpMessage");
 const prepareConfigModel = require('./configParser');
-const completeUrl = require('../lib/completeUrl');
+const {prepareEventName} = require('../lib/completeUrl');
 const httpEventWrapper = require('./eventWapper');
 const dynamicUrl = require('../lib/dynamicURL');
 
@@ -129,7 +129,7 @@ class RouterFactory {
 
             configModel.method.forEach(entryMethodType => {
                 var tempModel = configModel;
-                var url = completeUrl(
+                var url = prepareEventName(
                     prefix,
                     moduleName,
                     methodName,

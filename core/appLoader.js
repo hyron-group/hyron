@@ -79,7 +79,7 @@ function getMissingPackage(meta) {
     return missingPackage;
 }
 
-function downloadMissingPackage(url) {
+function downloadMissingPackage(name, url) {
     return new Promise((resolve, reject) => {
         child_process.exec(`yarn add ${url}`, (err, sto, ste) => {
             if (err == null) {
@@ -89,7 +89,7 @@ function downloadMissingPackage(url) {
                 var packageName;
                 if (match != null)
                     packageName = match[2];
-                resolve(packageName);
+                resolve(name, packageName);
             } else reject(err);
         });
     });
@@ -101,10 +101,10 @@ function downloadJobs(packageList) {
 
     for (var packageName in packageList) {
         jobs.push(
-            downloadMissingPackage(packageList[packageName])
-            .then((realName) => {
-                console.log("installed : "+realName);
-                realPackagesName[packageName] = realName;
+            downloadMissingPackage(packageName, packageList[packageName])
+            .then((displayName, realName) => {
+                console.log("installed : "+displayName);
+                realPackagesName[displayName] = realName;
             }))
     }
 
@@ -117,10 +117,10 @@ function downloadJobs(packageList) {
     })
 }
 
-// downloadJobs({
-//     param_checker: "@hyron/param-checker",
-//     stringer: "@hyron/stringer",
-//     hyron_cli: "https://github.com/hyron-group/hyron-cli.git"
-// })
+downloadJobs({
+    param_checker: "@hyron/param-checker",
+    stringer: "@hyron/stringer",
+    hyron_cli: "https://github.com/hyron-group/hyron-cli.git"
+})
 
 module.exports = loadFromFile;
