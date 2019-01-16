@@ -12,41 +12,49 @@ var homeDir = require('../lib/homeDir');
 function loadFromFile(buildPath) {
     var appMeta = require(path.join(homeDir, buildPath));
     if (appMeta instanceof Array) {
-        appMeta.forEach((childPath) => {
-            loadFromFile(childPath);
+        appMeta.forEach((child) => {
+            if (typeof child == "string")
+                loadFromFile(child);
+            else if (typeof child == "object") {
+                loadFromObject(child);
+            }
         });
     } else if (appMeta instanceof Object) {
-        var missingAddons = getMissingPackage(appMeta.addons);
-        var missingPlugins = getMissingPackage(appMeta.plugins);
-        var missingServices = getMissingPackage(appMeta.services);
+        loadFromObject(appMeta)
+    }
+}
 
-        var missingPackages = [
-            ...Object.keys(missingAddons),
-            ...Object.keys(missingPlugins),
-            ...Object.keys(missingServices),
-        ];
-        if (missingPackages.length == 0) {
+function loadFromObject(appMeta){
+    var missingAddons = getMissingPackage(appMeta.addons);
+    var missingPlugins = getMissingPackage(appMeta.plugins);
+    var missingServices = getMissingPackage(appMeta.services);
+
+    var missingPackages = [
+        ...Object.keys(missingAddons),
+        ...Object.keys(missingPlugins),
+        ...Object.keys(missingServices),
+    ];
+    if (missingPackages.length == 0) {
+        registerInstance(appMeta);
+    } else {
+        console.warn(`Missing (${missingPackages.length}) : ${missingPackages}`);
+        console.log("Installing missing package ...");
+        Promise.all([
+            downloadJobs(missingAddons),
+            downloadJobs(missingPlugins),
+            downloadJobs(missingServices),
+        ]).then((downloadedAddons,
+            downloadedPlugins,
+            downloadedServices) => {
+            applyChange(appMeta.addons, downloadedAddons);
+            applyChange(appMeta.plugins, downloadedPlugins);
+            applyChange(appMeta.services, downloadedServices);
+
+            console.log("All package downloaded !\n");
+            console.log('------------------------\n')
+
             registerInstance(appMeta);
-        } else {
-            console.warn(`Missing (${missingPackages.length}) : ${missingPackages}`);
-            console.log("Installing missing package ...");
-            Promise.all([
-                downloadJobs(missingAddons),
-                downloadJobs(missingPlugins),
-                downloadJobs(missingServices),
-            ]).then((downloadedAddons,
-                downloadedPlugins,
-                downloadedServices) => {
-                applyChange(appMeta.addons, downloadedAddons);
-                applyChange(appMeta.plugins, downloadedPlugins);
-                applyChange(appMeta.services, downloadedServices);
-
-                console.log("All package downloaded !\n");
-                console.log('------------------------\n')
-
-                registerInstance(appMeta);
-            })
-        }
+        })
     }
 }
 
