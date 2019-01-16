@@ -1,13 +1,16 @@
 var hyron = require('./moduleManager');
 var child_process = require('child_process');
 var fs = require('fs');
+var path = require('path');
+var homeDir = require('../lib/homeDir');
+
 
 (() => {
     child_process.execSync("npm i -g yarn");
 })()
 
-function loadFromFile(path) {
-    var appMeta = require(path);
+function loadFromFile(buildPath) {
+    var appMeta = require(path.join(homeDir, buildPath));
     if (appMeta instanceof Array) {
         appMeta.forEach((childPath) => {
             loadFromFile(childPath);
@@ -17,13 +20,17 @@ function loadFromFile(path) {
         var missingPlugins = getMissingPackage(appMeta.plugins);
         var missingServices = getMissingPackage(appMeta.services);
 
-        var missingPackages = [...missingAddons, ...missingPlugins, missingServices];
-        console.warn(`Missing (${missingPackages.length}) : ${missingPackages}`);
+        var missingPackages = [
+            ...Object.keys(missingAddons),
+            ...Object.keys(missingPlugins),
+            ...Object.keys(missingServices),
+        ];
         if (missingPackages.length == 0) {
-            registerInstance(appMeta);
+            return registerInstance(appMeta);
         } else {
+            console.warn(`Missing (${missingPackages.length}) : ${missingPackages}`);
             console.log("Installing missing package ...");
-            Promise.all([
+            return Promise.all([
                 downloadJobs(missingAddons),
                 downloadJobs(missingPlugins),
                 downloadJobs(missingServices),
@@ -61,7 +68,7 @@ function registerInstance(appMeta) {
 
 function getMissingPackage(meta) {
     const npmPackage = JSON.parse(fs.readFileSync('package.json').toString());
-    const dependencies = {
+    var dependencies = {
         ...npmPackage.dependencies,
         ...npmPackage.devDependencies,
         ...npmPackage.peerDependencies,
@@ -70,17 +77,19 @@ function getMissingPackage(meta) {
     var installedPackage = Object.keys(dependencies);
     var missingPackage = {};
     for (var packageName in meta) {
+        var packageLink = meta[packageName];
         if (!installedPackage.includes(packageName) &&
-            !packageName.startsWith(/[.\/]+/)) {
+            !installedPackage.includes(packageLink) &&
+            !/^[\.\/]+/.test(packageLink)) {
             missingPackage[packageName] = meta[packageName];
         }
     }
-    if (Object.keys(missingPackage).length == 0) return null;
     return missingPackage;
 }
 
 function downloadMissingPackage(name, url) {
     return new Promise((resolve, reject) => {
+        console.log(`lockup '${name}'`);
         child_process.exec(`yarn add ${url}`, (err, sto, ste) => {
             if (err == null) {
                 // get installed package name
@@ -103,7 +112,7 @@ function downloadJobs(packageList) {
         jobs.push(
             downloadMissingPackage(packageName, packageList[packageName])
             .then((displayName, realName) => {
-                console.log("installed : "+displayName);
+                console.log("installed : " + displayName);
                 realPackagesName[displayName] = realName;
             }))
     }
@@ -111,16 +120,11 @@ function downloadJobs(packageList) {
     return new Promise(resolve => {
         return Promise.all(jobs).then(() => {
             resolve(realPackagesName);
-        }).catch(err=>{
-            console.log("has problem : "+err.message);
+        }).catch(err => {
+            console.log("has problem : " + err.message);
         });
     })
 }
 
-downloadJobs({
-    param_checker: "@hyron/param-checker",
-    stringer: "@hyron/stringer",
-    hyron_cli: "https://github.com/hyron-group/hyron-cli.git"
-})
 
 module.exports = loadFromFile;

@@ -1,15 +1,13 @@
 {
-    "base_url" : "https://localhost:3000/demo",
+    "base_url": "https://localhost:3000/demo",
     "setting": {
-        "style" : "lisp"
+        "style": "lisp"
     },
     "plugins": {
-        "java-lang":"java-lang",
-        "param-checker":"param-checker",
-        "stringer":"stringer"
+        "stringer": "@hyron/stringer"
     },
-    "services":{
-        "user":"./services/user/router.js",
-        "product": "./services/product/router.js"
+    "services": {
+        "methods": "./test/performance/testCase",
+        "summary": "./test/unit/apiDemo"
     }
 }
