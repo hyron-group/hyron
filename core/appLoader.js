@@ -14,7 +14,7 @@ function loadFromFile(buildPath) {
     if (appMeta instanceof Array) {
         appMeta.forEach((childPath) => {
             loadFromFile(childPath);
-        })
+        });
     } else if (appMeta instanceof Object) {
         var missingAddons = getMissingPackage(appMeta.addons);
         var missingPlugins = getMissingPackage(appMeta.plugins);
@@ -26,11 +26,11 @@ function loadFromFile(buildPath) {
             ...Object.keys(missingServices),
         ];
         if (missingPackages.length == 0) {
-            return registerInstance(appMeta);
+            registerInstance(appMeta);
         } else {
             console.warn(`Missing (${missingPackages.length}) : ${missingPackages}`);
             console.log("Installing missing package ...");
-            return Promise.all([
+            Promise.all([
                 downloadJobs(missingAddons),
                 downloadJobs(missingPlugins),
                 downloadJobs(missingServices),
@@ -48,7 +48,6 @@ function loadFromFile(buildPath) {
             })
         }
     }
-    throw new TypeError(`can't load hyron build file`);
 }
 
 function applyChange(meta, changedMeta) {

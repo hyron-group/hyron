@@ -1,3 +1,3 @@
 const hyron = require('../../index');
 
-var app = hyron.build('./app.json');
+var app = hyron.build('./test/appInstance.json');
