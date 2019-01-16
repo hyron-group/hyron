@@ -26,7 +26,7 @@ module.exports = function (options) {
         if (cert != null)
             http2Options.cert = fs.readFileSync(cert);
 
-        this.config.protocols = "https";
+        this.protocols = "https";
         
         this.setServer(this.host, this.port, null);
         this.initServer(spdy.createServer(http2Options));
