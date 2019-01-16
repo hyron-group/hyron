@@ -74,7 +74,6 @@ class RouterFactory {
 
     getEvent(method, path, req) {
         var eventName, execute;
-
         if (
             (eventName = method + path) &&
             (execute = this.listener.get(eventName)) ||

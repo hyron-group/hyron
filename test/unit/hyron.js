@@ -7,7 +7,8 @@ app.setting({
 })
 
 app.enableServices({
-    "summary" : "./test/unit/apiDemo"
+    "methods" : "./test/performance/testCase",
+    "summary" : "./test/unit/apiDemo",
 })
 
 app.startServer();
