@@ -100,7 +100,7 @@ class ModuleManager {
         loadAddonsFromConfig.call(newInstance);
         loadPluginsFromConfig.call(newInstance);
 
-        newInstance.initServer(serverConfig, http.createServer());
+        newInstance.initServer(http.createServer());
         newInstance.routerFactory = new RouterFactory(instanceConfig);
 
 
@@ -241,8 +241,8 @@ class ModuleManager {
         return instanceContainer;
     }
 
-    initServer(serverCfg, defaultServer) {
-        var key = serverCfg.host + ":" + serverCfg.port;
+    initServer(defaultServer) {
+        var key = this.host + ":" + this.port;
         var server = serverContainer[key];
         if (server != null) {
             this.app = server;
@@ -253,6 +253,10 @@ class ModuleManager {
         this.app = defaultServer;
     }
 
+    setServer(host, port, server) {
+        var key = host + ":" + port;
+        return serverContainer[key] = server;
+    }
 
     /**
      * @description start server
@@ -261,7 +265,7 @@ class ModuleManager {
     startServer(callback) {
         var host = this.host;
         var port = this.port;
-        
+
         if (this.app.running) return this.app;
 
         this.app.on("request", (req, res) => {

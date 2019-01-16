@@ -1,23 +1,12 @@
 [{
     "base_url": "http://localhost:3000/demo",
     "setting": {
-        "style": "lisp"
+        "style": "lisp",
+        "protocols":"https"
     },
     "plugins": {
         "stringer": "@hyron/stringer"
     },
-    "services": {
-        "summary": "./test/unit/apiDemo"
-    }
-},
-{
-    "base_url": "http://localhost:3000/test",
-    "services": {
-        "methods": "./test/performance/testCase"
-    }
-},
-{
-    "base_url": "http://localhost:3002/test2",
     "services": {
         "summary": "./test/unit/apiDemo"
     }

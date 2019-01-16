@@ -1,2 +1,11 @@
+var a = {b:'c'};
 
-var match = /^[.\/]+/;
+function f(){
+    return [a.b];
+}
+
+var k = f();
+k[0] = "d";
+
+
+console.log(a);
