@@ -1,16 +1,23 @@
-var sto = `
-success Saved lockfile.
-success Saved 5 new dependencies.
-info Direct dependencies
-└─ hyron-cli@1.4.0
-info All dependencies
-├─ envinfo@6.0.1
-├─ fs-extra@7.0.1
-├─ hyron-cli@1.4.0
-├─ jsonfile@4.0.0
-└─ universalify@0.1.2
-`;
+const http2 = require('http2');
+const fs = require('fs');
+var options = {
+    key: fs.readFileSync('./.temp/key.pem'),
+    cert: fs.readFileSync('./.temp/cert.pem'),
+    allowHTTP1: true
+};
+var server = http2.createSecureServer(options, (req, res)=>{
+    console.log("req req")
+});
+server.on('stream', (stream, requestHeaders) => {
+    console.log(requestHeaders);
+    stream.write('hello ');
+    stream.end('world');
+});
 
-var reg = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
+server.on("sessionError",(socket)=>{
+    console.log("unknow protocol");
 
-console.log(reg.exec(sto)[2])
+})
+server.listen(8000, () => {
+    console.log("server started");
+});
