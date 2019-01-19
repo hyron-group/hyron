@@ -4,7 +4,7 @@ var app = hyron.getInstance(5479);
 
 app.setting({
     style:'lisp',
-    // protocols : "http2",
+    // protocol : "http2",
     key:'.temp/localhost.key',
     cert:'.temp/localhost.crt'
 });

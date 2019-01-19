@@ -1,7 +1,7 @@
 module.exports = {
     // 1XX : Informational response
     CONTINUE: 100,
-    SWITCHING_PROTOCOLS: 101,
+    SWITCHING_protocol: 101,
     PROCESSING: 102,
     EARLY_HINTS: 103,
 

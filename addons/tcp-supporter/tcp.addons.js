@@ -1,13 +1,10 @@
 const spdy = require('spdy');
 const fs = require('fs');
-const {
-    getBaseURI
-} = require('../../lib/completeUrl');
 
 
 module.exports = function (options) {
-    var protocols = this.config.protocols;
-    if (protocols == "http2" || protocols == "https") {
+    var protocol = this.config.protocol;
+    if (protocol == "http2" || protocol == "https") {
         var key = this.config.key;
         var cert = this.config.cert;
 
@@ -15,7 +12,7 @@ module.exports = function (options) {
             key: null,
             cert: null,
             spdy: {
-                protocols: ['h2', 'spdy/3.1'],
+                protocol: ['h2', 'spdy/3.1'],
                 plain: false,
             },
             ...options
@@ -26,7 +23,7 @@ module.exports = function (options) {
         if (cert != null)
             tcpCfg.cert = fs.readFileSync(cert);
 
-        this.protocols = "https";
+        this.protocol = "https";
         
         this.setServer(this.host, this.port, null);
         this.initServer(spdy.createServer(tcpCfg));

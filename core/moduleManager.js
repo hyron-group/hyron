@@ -2,14 +2,14 @@ const http = require("http");
 const RouterFactory = require("./routerFactory");
 const Middleware = require('./middleware');
 const generalSecretKey = require("../lib/generalKey");
-const loadConfigFromFile = require('../lib/configReader');
+const configReader = require('../lib/configReader');
 const homeDir = require('../lib/homeDir');
 const {
     getBaseURI
 } = require('../lib/completeUrl');
 const path = require('path');
-var defaultConfig = loadConfigFromFile();
 
+var defaultConfig = configReader();
 var instanceContainer = {};
 var serverContainer = {};
 
@@ -31,24 +31,26 @@ class ModuleManager {
      * - getInstance(port:number)
      * - getInstance(baseURI:string)
      * - getInstance(cfg:object)
-     * - getInstance(port:number, host:string, prefix:string, protocols:string)
+     * - getInstance(port:number, host:string, prefix:string, protocol:string)
      * @returns {ModuleManager}
      */
     static getInstance(...args) {
         var newInstance = new ModuleManager();
-        var instanceConfig = {
-            baseURI: "http://localhost:3000",
-            isDevMode: true,
-            secret: generalSecretKey(),
-            ...defaultConfig[this.baseURI]
-        };
 
         var serverConfig = {
-            protocols: "http",
+            protocol: "http",
             host: "localhost",
             port: 3000,
             prefix: "",
         }
+
+        var instanceConfig = {
+            isDevMode: true,
+            secret: generalSecretKey(),
+            ...configReader.getConfig(serverConfig + ":" + host);
+        };
+
+
 
         if (args.length == 1) {
             var arg0 = args[0];
@@ -63,7 +65,7 @@ class ModuleManager {
                 if (match == null)
                     throw new TypeError("Cannot parse uri from getInstance(..) argument at index 0")
                 serverConfig = {
-                    protocols: match[1],
+                    protocol: match[1],
                     host: match[2],
                     port: match[4],
                     prefix: match[6]
@@ -76,16 +78,11 @@ class ModuleManager {
                 port: args[0] || instanceConfig.port,
                 host: args[1] || instanceConfig.host,
                 prefix: args[2] || instanceConfig.prefix,
-                protocols: args[3] || instanceConfig.protocols,
+                protocol: args[3] || instanceConfig.protocol,
             })
         }
 
-        var baseURI = getBaseURI(
-            serverConfig.protocols,
-            serverConfig.host,
-            serverConfig.port,
-            serverConfig.prefix
-        );
+        var baseURI = getBaseURI(serverConfig);
 
         console.log(`\n\n--- ${baseURI} ---\n`);
 
@@ -117,8 +114,8 @@ class ModuleManager {
      */
     setting(config) {
         if (typeof config != "object") return;
-        if (config.protocols != null)
-            this.protocols = config.protocols;
+        if (config.protocol != null)
+            this.protocol = config.protocol;
 
         Object.assign(this.config, config);
         this.enableAddons(this.addons);
@@ -133,7 +130,7 @@ class ModuleManager {
      * @returns {string|object} config value
      */
     static getConfig(name) {
-        return defaultConfig[name];
+        return configReader.readConfig(name);
     }
 
     /**
@@ -153,9 +150,10 @@ class ModuleManager {
             var addonsHandle = addonsList[addonsName];
 
             if (typeof addonsHandle == 'string') {
-                addonsHandle = loadPackageByPath(addonsHandle);
+                addonsHandle = loadModuleByPath(addonsName, addonsHandle);
             }
-            addonsHandle.call(this, defaultConfig[addonsName]);
+            
+            addonsHandle.call(this, configReader.readConfig(addonsName));
         }
     }
 
@@ -171,45 +169,45 @@ class ModuleManager {
 
         Object.assign(this.plugins, pluginsList);
 
-        Object.keys(pluginsList).forEach(name => {
-            var pluginConfig = defaultConfig[name];
-            var pluginsMeta = pluginsList[name];
+        Object.keys(pluginsList).forEach(pluginName => {
+            var pluginConfig = configReader.readConfig(pluginName);
+            var pluginsMeta = pluginsList[pluginName];
             if (typeof pluginsMeta == 'string') {
-                pluginsMeta = loadPackageByPath(pluginsMeta);
+                pluginsMeta = loadModuleByPath(pluginName, pluginsMeta);
             }
             var fontwareMeta = pluginsMeta.fontware;
             var backwareMeta = pluginsMeta.backware;
             if (fontwareMeta != null)
-                registerMiddleware(name, true, fontwareMeta, pluginConfig);
+                registerMiddleware(pluginName, true, fontwareMeta, pluginConfig);
             if (backwareMeta != null)
-                registerMiddleware(name, false, backwareMeta, pluginConfig);
+                registerMiddleware(pluginName, false, backwareMeta, pluginConfig);
         });
     }
 
 
     /**
      * @description Register router with function packages
-     * @param {{moduleName:string,AbstractRouters}} moduleList a package of main handle contain business logic
+     * @param {{moduleName:string,AbstractRouters}} serviceList a package of main handle contain business logic
      */
-    enableServices(moduleList) {
-        if (moduleList == null) return;
-        this.services = moduleList;
-        if (moduleList.constructor.name != "Object") {
+    enableServices(serviceList) {
+        if (serviceList == null) return;
+        this.services = serviceList;
+        if (serviceList.constructor.name != "Object") {
             throw new TypeError('enableServices(..) args at index 0 must be Object');
         }
 
-        Object.assign(this.services, moduleList);
+        Object.assign(this.services, serviceList);
 
-        Object.keys(moduleList).forEach(moduleName => {
+        Object.keys(serviceList).forEach(serviceName => {
             // routePackage is path
-            var routePackage = moduleList[moduleName];
+            var routePackage = serviceList[serviceName];
             if (typeof routePackage == "string") {
-                routePackage = loadPackageByPath(routePackage);
+                routePackage = loadModuleByPath(serviceName, routePackage);
             }
             if (routePackage.requestConfig == null) {
                 // is unofficial service
                 try {
-                    var serviceConfig = defaultConfig[moduleName];
+                    var serviceConfig = configReader.readConfig(serviceName);
                     var unofficialServiceConfig = {
                         ...this.config,
                         ...serviceConfig
@@ -217,14 +215,14 @@ class ModuleManager {
                     routePackage(this.app, unofficialServiceConfig);
                 } catch (err) {
                     console.error(
-                        `Hyron do not support for service define like '${moduleName}' yet`
+                        `Hyron do not support for service define like '${serviceName}' yet`
                     );
                 }
             } else {
                 // is as normal hyron service
                 this.routerFactory.registerRoutesGroup(
                     this.prefix,
-                    moduleName,
+                    serviceName,
                     routePackage
                 );
             }
@@ -288,12 +286,13 @@ function setupDefaultListener(instance, server) {
             instance.port = randomPort;
         }
 
-        console.log(
-            `\nServer started at : ${
-                getBaseURI(instance.protocols, 
-                    instance.host, 
-                    instance.port)}`
-        );
+        var baseURI = getBaseURI({
+            protocol: instance.protocol,
+            host: instance.host,
+            port: instance.port
+        });
+
+        console.log(`\nServer started at : ${baseURI}`);
     });
 
 }
@@ -339,17 +338,18 @@ function loadPluginsFromConfig() {
         })
 }
 
-function loadPackageByPath(packLocation) {
+function loadModuleByPath(name, modulePath) {
     var output;
     try {
         // for client service
-        output = require(path.join(homeDir, packLocation));
+        output = require(path.join(homeDir, modulePath));
     } catch (err) {
         if (output == null)
             // for installed service
-            output = require(packLocation);
+            output = require(modulePath);
     }
 
+    configReader.readConfig(name, modulePath);
     return output;
 }
 

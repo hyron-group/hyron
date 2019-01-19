@@ -1,14 +1,8 @@
-const node_path = require('path');
+const fs = require('fs');
 
-module.constructor.prototype.require = function (path) {
-    path = node_path.join(__dirname, path);
-    var extension = path.substr(path.lastIndexOf('.')+1);
-    console.log("extension : "+extension);
-    if(extension == "java"){
+const yaml = require('yaml');
 
-    }
 
-    return this.constructor._load(path, this);
-}
+var res = yaml.parse(fs.readFileSync("./appcfg.yaml").toString());
 
-require('./hello.java');
+console.log(res);

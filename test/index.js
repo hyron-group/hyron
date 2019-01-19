@@ -1,1 +1,3 @@
-require('./unit/hyron');
+const hyron = require('../');
+require('express')
+hyron.build

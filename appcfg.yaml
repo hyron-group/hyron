@@ -1,0 +1,9 @@
+addons:
+    tcp-supporter: "../addons/tcp-supporter/tcp.addons"
+
+plugins:
+    param_parser: "../plugins/param-parser"
+    custom_type: "../plugins/custom-response"
+    ref-plug: <#addons.tcp-supporter>
+    $my-plug: 
+        key: "val"
