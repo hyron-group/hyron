@@ -1,8 +1,7 @@
 [{
     "base_url": "http://localhost:3000/demo",
     "setting": {
-        "style": "lisp",
-        "protocols":"http2"
+        "style": "lisp"
     },
     "plugins": {
         "stringer": "@hyron/stringer"

@@ -11,7 +11,7 @@ module.exports = function (options) {
         var key = this.config.key;
         var cert = this.config.cert;
 
-        var http2Options = {
+        var tcpCfg = {
             key: null,
             cert: null,
             spdy: {
@@ -22,13 +22,13 @@ module.exports = function (options) {
         }
 
         if (key != null)
-            http2Options.key = fs.readFileSync(key);
+            tcpCfg.key = fs.readFileSync(key);
         if (cert != null)
-            http2Options.cert = fs.readFileSync(cert);
+            tcpCfg.cert = fs.readFileSync(cert);
 
         this.protocols = "https";
         
         this.setServer(this.host, this.port, null);
-        this.initServer(spdy.createServer(http2Options));
+        this.initServer(spdy.createServer(tcpCfg));
     }
 }

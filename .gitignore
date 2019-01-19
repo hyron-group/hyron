@@ -4,4 +4,4 @@ node_modules/
 .github/
 yarn-error.log
 .vscode/
-.string/
+.strings/

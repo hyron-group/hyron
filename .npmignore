@@ -9,6 +9,6 @@ workflow.md
 CONTRIBUTING.md
 CODE_OF_CONDUCT.md
 package-lock.json
-string/
+strings/
 .log/
 .temp/

@@ -40,9 +40,9 @@ function loadFromObject(appMeta){
         console.warn(`Missing (${missingPackages.length}) : ${missingPackages}`);
         console.log("Installing missing package ...");
         Promise.all([
-            downloadJobs(missingAddons),
-            downloadJobs(missingPlugins),
-            downloadJobs(missingServices),
+            startDownload(missingAddons),
+            startDownload(missingPlugins),
+            startDownload(missingServices),
         ]).then((downloadedAddons,
             downloadedPlugins,
             downloadedServices) => {
@@ -102,7 +102,6 @@ function downloadMissingPackage(name, url) {
                 // get installed package name
                 var reg = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
                 var match = reg.exec(sto);
-                var packageName;
                 if (match != null)
                     packageName = match[2];
                 resolve(name, packageName);
@@ -111,7 +110,7 @@ function downloadMissingPackage(name, url) {
     });
 }
 
-function downloadJobs(packageList) {
+function startDownload(packageList) {
     var realPackagesName = {};
     var jobs = [];
 
