@@ -1,16 +1,14 @@
 var hyron = require('./moduleManager');
 var child_process = require('child_process');
 var fs = require('fs');
-var path = require('path');
-var homeDir = require('../lib/homeDir');
-
 
 (() => {
     child_process.execSync("npm i -g yarn");
 })()
 
 function loadFromFile(buildPath) {
-    var appMeta = require(path.join(homeDir, buildPath));
+    var fileData = fs.readFileSync(buildPath).toString();
+    var appMeta = JSON.parse(fileData);
     if (appMeta instanceof Array) {
         appMeta.forEach((child) => {
             if (typeof child == "string")
@@ -24,7 +22,7 @@ function loadFromFile(buildPath) {
     }
 }
 
-function loadFromObject(appMeta){
+function loadFromObject(appMeta) {
     var missingAddons = getMissingPackage(appMeta.addons);
     var missingPlugins = getMissingPackage(appMeta.plugins);
     var missingServices = getMissingPackage(appMeta.services);
