@@ -1,4 +1,3 @@
-const http = require("http");
 const {
     getUriPath
 } = require("../lib/queryParser");
@@ -7,53 +6,25 @@ const path = require('../type/path');
 const HTTPMessage = require("../type/HttpMessage");
 const prepareConfigModel = require('./configParser');
 const {prepareEventName} = require('../lib/completeUrl');
-const httpEventWrapper = require('./eventWapper');
+const httpEventWrapper = require('./eventWrapper');
 const dynamicUrl = require('../lib/dynamicURL');
+const configReader = require('../lib/configReader');
 
 
 /**
  * This class used to register event for http connection
  */
 class RouterFactory {
-    /**
-     *
-     * @param {http.Server} app a http app instance
-     *
-     * @typedef {object} RouterConfig
-     * @prop {boolean} isDevMode true if turn on develop mode to collect bug
-     * @prop {number} timeout max expired time for each request
-     *
-     * @param {RouterConfig} config
-     *
-     */
 
-    constructor(
-        config = {
-            isDevMode: true,
-            timeout: 10000
-        }
-    ) {
+    constructor(serverCfg) {
+        Object.assign(this, serverCfg);
         this.listener = new Map();
-        this.config = config;
     }
 
-    /**
-     * @description Used to get handle function by eventName
-     * @param {string} eventName name of listener
-     * @returns main handle function for this eventName
-     * @memberof RouterFactory
-     */
     getListener(eventName) {
         return this.listener.get(eventName);
     }
 
-    /**
-     * @description execute listener when has new request
-     * @param {*} req http request
-     * @param {*} res http response
-     * @returns
-     * @memberof RouterFactory
-     */
     triggerRouter(req, res) {
         var uriPath = getUriPath(req.url);
         var method = req.method;
@@ -67,7 +38,7 @@ class RouterFactory {
                 404, // not found
                 `Can't find router at ${uriPath}`
             );
-            handleResult(err, res, this.config.isDevMode);
+            handleResult(err, res, configReader.getConfig(isDevMode));
 
         }
     }
@@ -94,13 +65,6 @@ class RouterFactory {
 
     }
 
-    /**
-     * @description register for a package of handle function as routers
-     * @param {*} prefix parent path of current service. Used as host/[prefix]
-     * @param {*} moduleName parent path of current functions. Used as host/[prefix]/[module]  
-     * @param {*} handlePackage class package contain main handle function and it config
-     * @memberof RouterFactory
-     */
     registerRoutesGroup(prefix, moduleName, handlePackage) {
         console.log(`\nLockup service : ${moduleName}`)
         var requestConfig = handlePackage.requestConfig();
@@ -122,18 +86,17 @@ class RouterFactory {
                     methodPath,
                     routeConfig,
                     generalConfig,
-                    this.config
                 );
             var mainHandle = configModel.handle || instance[methodName];
 
             configModel.method.forEach(entryMethodType => {
                 var tempModel = configModel;
                 var url = prepareEventName(
-                    prefix,
+                    configReader.getConfig("style"),
+                    configModel.path,
+                    this.prefix,
                     moduleName,
                     methodName,
-                    configModel.path,
-                    this.config
                 );
 
                 if (configModel.params != null) {
@@ -143,7 +106,7 @@ class RouterFactory {
                 }
 
                 url = entryMethodType + '/' + url;
-                path.build(this.config.baseURI, url, mainHandle);
+                path.build(configReader.getConfig("base_uri"), url, mainHandle);
                 tempModel.method = entryMethodType;
                 this.registerRouterByMethod(
                     url,
@@ -158,7 +121,7 @@ class RouterFactory {
 
     registerRouterByMethod(eventName, instance, mainExecute, routeConfig) {
 
-        var isDevMode = this.config.isDevMode;
+        var isDevMode = configReader.readConfig("environment")=="dev";
         // Executer will call each request
 
         console.info("-> event : " + eventName);

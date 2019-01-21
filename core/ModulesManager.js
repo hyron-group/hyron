@@ -87,15 +87,16 @@ class ModuleManager {
         console.log(`\n\n--- ${serverConfig.baseURI} ---\n`);
 
 
-        Object.assign(newInstance, {
+        var summaryConfig = {
             ...serverConfig,
-            config: instanceConfig,
-        });
+            ...instanceConfig
+        };
+        Object.assign(newInstance, summaryConfig);
 
         newInstance.initServer(http.createServer());
-        newInstance.services = new ServicesManager(instanceConfig);
         newInstance.addons = new AddonsManager(newInstance);
-        newInstance.plugins = new PluginsManager(newInstance);
+        newInstance.plugins = PluginsManager;
+        newInstance.services = new ServicesManager(summaryConfig);
 
         loadModulesFromConfig.call(newInstance);
 
@@ -103,34 +104,15 @@ class ModuleManager {
         return newInstance;
     }
 
-    /**
-     * @description Setup app or plugins with config
-     * @param {object} config
-     * @param {boolean} [config.isDevMode=true] if is true, app will collect bug, log for development. Else, app will be optimized for performance
-     * @param {boolean} [config.style] format event name to target format. include : camel, snake, lisp, lower
-     * @param {string} [config.poweredBy=hyron] set poweredBy header for this app
-     */
     setting(config) {
         if (typeof config != "object") return;
         appConfigReader.setConfig(config);
     }
 
-    /**
-     * @description Return config of app or it plugins
-     *
-     * @static
-     * @param {string} name name of app setting field or a installed plugin
-     * @returns {string|object} config value
-     */
     static getConfig(name) {
         return appConfigReader.getConfig(name);
     }
 
-    /**
-     * @description Turn on addons for that instance
-     * @param {Array.<function>} addonsList list of addons
-     * @memberof ModuleManager
-     */
     enableAddons(addonsList) {
         if (addonsList == null) return;
         if (addonsList.constructor.name != "Object") {
@@ -139,11 +121,10 @@ class ModuleManager {
         for (var addonsName in addonsList) {
             var addonsHandle = addonsList[addonsName];
             if (typeof addonsHandle == 'string') {
-                addonsHandle = loadModuleByPath(addonsHandle);
+                addonsHandle = loadModuleByPath(addonsHandle, addonsName);
             }
 
             var addonsConfig = appConfigReader.getConfig(addonsName)
-
             this
                 .addons
                 .registerAddons(addonsName, addonsHandle, addonsConfig);
@@ -163,7 +144,7 @@ class ModuleManager {
         Object.keys(pluginsList).forEach(pluginName => {
             var pluginsMeta = pluginsList[pluginName];
             if (typeof pluginsMeta == "string") {
-                pluginsMeta = loadModuleByPath(pluginsMeta);
+                pluginsMeta = loadModuleByPath(pluginsMeta, pluginName);
             }
 
             if (typeof pluginsMeta != "object") {
@@ -176,8 +157,8 @@ class ModuleManager {
             } = pluginsMeta;
             var pluginConfig = appConfigReader.getConfig(pluginName);
 
-            this.plugins.addMiddleware(pluginName, true, fontware, pluginConfig);
-            this.plugins.addMiddleware(pluginName, false, backware, pluginConfig);
+            this.plugins.addMiddleware(pluginName, fontware, pluginConfig, true);
+            this.plugins.addMiddleware(pluginName, backware, pluginConfig, false);
         });
     }
 
@@ -196,7 +177,7 @@ class ModuleManager {
             // routePackage is path
             var routePackage = serviceList[serviceName];
             if (typeof routePackage == "string") {
-                routePackage = loadModuleByPath(routePackage);
+                routePackage = loadModuleByPath(routePackage, serviceName);
             }
 
             var serviceConfig = appConfigReader.getConfig(serviceName);
@@ -289,20 +270,21 @@ function setupDefaultListener(instance, server) {
 
 }
 
-function loadModuleByPath(modulePath) {
+function loadModuleByPath(modulePath, moduleName) {
     var output;
+    var location;
     try {
         // for local modules
-        var modulePath = path.join(homeDir, modulePath);
-        output = require(modulePath);
-        appConfigReader.readConfig(modulePath);
+        location = path.join(homeDir, modulePath);
+        output = require(location);
     } catch (err) {
-        if (output == null)
+        if (output == null) {
             // for installed modules
-            output = require(modulePath);
-        var installedPath = "node_modules/" + modulePath;
-        appConfigReader.readConfig(installedPath);
+            location = "node_modules/" + modulePath;
+            output = require(location);
+        }
     }
+    appConfigReader.readConfig(location, moduleName);
 
     return output;
 }

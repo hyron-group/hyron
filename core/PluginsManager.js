@@ -18,57 +18,53 @@ var backwareHandleIndex = {};
     handlerHolder[0] = syncFunc;
 })();
 
+function addMiddleware(name, meta, config, isFontware = true) {
+    if (meta == null) return;
+    var isGlobal = meta.global || false;
 
-class PluginsManager {
+    var index = indexOfHandle(name);
+    if (index == -1) {
+        index = handlerHolder.length;
+        var handle = eventWrapper(index, config, meta);
+        handlerHolder.push(handle);
+    } else {
+        handlerHolder[index] = eventWrapper(index, config, meta);
+    }
 
-    addMiddleware(name, isFontware, meta, config) {
-        if (meta == null) return;
-        var isGlobal = meta.global || false;
-
-        var index = indexOfHandle(name);
-        if (index == -1) {
-            index = handlerHolder.length;
-            var handle = eventWrapper(index, config, meta);
-            handlerHolder.push(handle);
-        } else {
-            handlerHolder[index] = eventWrapper(index, config, meta);
-        }
-
-        if (isGlobal) {
-            if (isFontware) globalFontWareIndex[index] = name;
-            else globalBackWareIndex[index] = name;
-        } else {
-            if (isFontware) customFontWareIndex[name] = index;
-            else customBackWareIndex[name] = index;
-        }
-        console.info(
-            `-> Registered ${isFontware ? "fontware" : "backware"} '${name}' ${
+    if (isGlobal) {
+        if (isFontware) globalFontWareIndex[index] = name;
+        else globalBackWareIndex[index] = name;
+    } else {
+        if (isFontware) customFontWareIndex[name] = index;
+        else customBackWareIndex[name] = index;
+    }
+    console.info(
+        `-> Registered ${isFontware ? "fontware" : "backware"} '${name}' ${
                     isGlobal ? "as global" : ""
                 }`
-        );
-    }
+    );
+}
 
-    runMiddleware(
-        eventName,
-        middlewareArgs,
-        onComplete,
-        onFailed,
-        isFontware
-    ) {
-        var {
-            reqMidWare,
-            thisArgs,
-            args
-        } = middlewareArgs;
+function runMiddleware(
+    eventName,
+    middlewareArgs,
+    onComplete,
+    onFailed,
+    isFontware
+) {
+    var {
+        reqMiddleware,
+        thisArgs,
+        args
+    } = middlewareArgs;
 
-        var handlersIndex = prepareHandlerIndex(eventName, reqMidWare, isFontware);
-        try {
-            runNextMiddleware(handlersIndex, args, thisArgs, onComplete, onFailed);
-        } catch (err) {
-            onFailed(err);
-        }
+    var handlersIndex = prepareHandlerIndex(eventName, reqMiddleware, isFontware);
+    try {
+        runNextMiddleware(handlersIndex, args, thisArgs, onComplete, onFailed);
+    } catch (err) {
+        onFailed(err);
     }
-};
+}
 
 
 
@@ -198,7 +194,7 @@ function runNextMiddleware(handlersIndex, args, thisArgs, onComplete, onFailed, 
     }
 }
 
-function registerAnonymousHandler(handle, isFontware) {
+function addAnonymousMiddleware(handle, isFontware) {
 
     var representName =
         isFontware ? "fw-" : "bw-" +
@@ -241,7 +237,7 @@ function parseRequireMiddleware(reqMidWare, isFontware) {
             else enableList.push(middlewareMeta);
             // support embed middle handle in config
         } else if (typeof middlewareMeta == "function") {
-            registerAnonymousHandler(middlewareMeta, isFontware);
+            addAnonymousMiddleware(middlewareMeta, isFontware);
         } else throw new TypeError(`middleware at ${i} should be a string name or function handle`)
     }
 
@@ -312,4 +308,13 @@ function prepareHandlerIndex(eventName, reqMidWare, isFontware) {
     return indexList;
 }
 
-module.exports = PluginsManager;
+function getMiddleware(name) {
+    return handlerHolder[indexOfHandle(name)];
+}
+
+module.exports = {
+    addMiddleware,
+    addAnonymousMiddleware,
+    runMiddleware,
+    getMiddleware
+};

@@ -4,6 +4,7 @@ addons:
 plugins:
     param_parser: "./plugins/param-parser"
     custom_type: "./plugins/custom-response"
-    # ref-plug: <#addons.tcp-supporter>
+
+ref-plug: <~./test/appInstance.json>
     # $my-plug:
     #     key: "val"

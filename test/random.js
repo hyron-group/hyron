@@ -1,8 +1,18 @@
-var crc = require('crc');
+var editor = require('../lib/objectEditor');
+
+var a = {
+    b: {
+        c: 'd'
+    }
+}
+
+editor.replaceValue(["b"], a, (v) => {
+    Object.freeze(v);
+
+})
 
 
-var k = "fw-" + crc
-        .crc24("handle".toString())
-        .toString(16);
+a.b.c = "e";
 
-console.log(k);
+
+console.log(a)

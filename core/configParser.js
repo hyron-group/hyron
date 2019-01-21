@@ -34,8 +34,6 @@ function inheritanceFromGeneralConfig(data, generalConfig, methodPath) {
         data.backware = data.backware.concat(generalConfig.backware);
 }
 
-function inheritanceFromAppConfig(data, appConfig, methodPath) {}
-
 function loadFromRouteConfig(data, routeConfig, methodPath) {
     if (typeof routeConfig == "string" ||
         routeConfig instanceof Array) {
@@ -62,14 +60,7 @@ function loadFromRouteConfig(data, routeConfig, methodPath) {
     data.params = routeConfig.params;
 }
 
-/**
- * @description used to creates a standardized config
- * @param {string} methodPath
- * @param {object} routeConfig
- * @param {object} generalConfig
- * @param {object} appConfig
- */
-function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
+function prepareConfigModel(methodPath, routeConfig, generalConfig) {
     if (typeof routeConfig != "string" &&
         routeConfig.constructor.name != "Array" &&
         routeConfig.constructor.name != "Object") {
@@ -90,7 +81,6 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig, appConfig) {
 
     loadFromRouteConfig(config, routeConfig, methodPath);
     inheritanceFromGeneralConfig(config, generalConfig, methodPath);
-    inheritanceFromAppConfig(config, appConfig, methodPath);
 
     return config;
 }
