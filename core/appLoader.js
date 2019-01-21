@@ -63,7 +63,12 @@ function applyChange(meta, changedMeta) {
 }
 
 function registerInstance(appMeta) {
-    var appInstance = hyron.getInstance(appMeta.base_url);
+    var server = appMeta.server;
+    var appInstance;
+    if(server==null){
+        server = appMeta.base_url;
+    }
+    var appInstance = hyron.getInstance(server);
     appInstance.setting(appMeta.setting);
     appInstance.enableAddons(appMeta.addons);
     appInstance.enablePlugins(appMeta.plugins);

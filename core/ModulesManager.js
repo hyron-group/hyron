@@ -7,7 +7,7 @@ const appConfigReader = require('../lib/configReader');
 const homeDir = require('../lib/homeDir');
 
 const {
-    getBaseURI
+    getBaseURL
 } = require('../lib/completeUrl');
 const path = require('path');
 
@@ -24,17 +24,6 @@ class ModuleManager {
         appLoader(path);
     }
 
-
-    /**
-     * @description Get an instance of server app. It can be used to listen to client request at special host and post
-     * 
-     * ### Overload :
-     * - getInstance(port:number)
-     * - getInstance(baseURI:string)
-     * - getInstance(cfg:object)
-     * - getInstance(port:number, host:string, prefix:string, protocol:string)
-     * @returns {ModuleManager}
-     */
     static getInstance(...args) {
         var newInstance = new ModuleManager();
 
@@ -63,7 +52,7 @@ class ModuleManager {
 
                 var match = reg.exec(arg0);
                 if (match == null)
-                    throw new TypeError("Cannot parse uri from getInstance(..) argument at index 0")
+                    throw new TypeError("Cannot parse url from getInstance(..) argument at index 0")
                 serverConfig = {
                     protocol: match[1],
                     host: match[2],
@@ -72,7 +61,7 @@ class ModuleManager {
                 }
             } else if (arg0 == null) {
                 return ModuleManager.getInstance(0);
-            } else throw new TypeError(`getInstance(..) argument at index 0 should be a port number, string base uri or object instance config`);
+            } else throw new TypeError(`getInstance(..) argument at index 0 should be a port number, string base url or object instance config`);
         } else if (args.length > 1) {
             return ModuleManager.getInstance({
                 port: args[0] || instanceConfig.port,
@@ -82,9 +71,9 @@ class ModuleManager {
             })
         }
 
-        serverConfig.baseURI = getBaseURI(serverConfig);
+        serverConfig.baseURL = getBaseURL(serverConfig);
 
-        console.log(`\n\n--- ${serverConfig.baseURI} ---\n`);
+        console.log(`\n\n--- ${serverConfig.baseURL} ---\n`);
 
 
         var summaryConfig = {
@@ -100,7 +89,7 @@ class ModuleManager {
 
         loadModulesFromConfig.call(newInstance);
 
-        instanceContainer[serverConfig.baseURI] = newInstance;
+        instanceContainer[serverConfig.baseURL] = newInstance;
         return newInstance;
     }
 
@@ -202,12 +191,6 @@ class ModuleManager {
         });
     }
 
-    /**
-     * @description Return set of instance created. It can be used by 3rth addons
-     *
-     * @static
-     * @returns {{baseURI:string,instance:ModuleManager}} instances created by getInstance()
-     */
     static getInstanceContainer() {
         return instanceContainer;
     }
@@ -259,13 +242,13 @@ function setupDefaultListener(instance, server) {
             instance.port = randomPort;
         }
 
-        var baseURI = getBaseURI({
+        var baseURL = getBaseURL({
             protocol: instance.protocol,
             host: instance.host,
             port: instance.port
         });
 
-        console.log(`\nServer started at : ${baseURI}`);
+        console.log(`\nServer started at : ${baseURL}`);
     });
 
 }

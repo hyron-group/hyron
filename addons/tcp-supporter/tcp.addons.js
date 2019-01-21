@@ -1,14 +1,14 @@
 const spdy = require('spdy');
 const fs = require('fs');
-const {getBaseURI} = require('../../lib/completeUrl')
+const {getBaseURL} = require('../../lib/completeUrl')
 
 
 function handle (options) {
     var protocol = this.protocol;
     if (protocol == "http2" || protocol == "https") {
         console.log("enable spdy")
-        var key = this.key;
-        var cert = this.cert;
+        var key = this.getConfig("key");
+        var cert = this.getConfig("cert");
 
         var tcpCfg = {
             key: null,
@@ -26,7 +26,7 @@ function handle (options) {
             tcpCfg.cert = fs.readFileSync(cert);
 
         this.protocol = "https";
-        this.baseURI = getBaseURI(this);
+        this.baseURL = getBaseURL(this);
         
         this.setServer(this.host, this.port, null);
         this.initServer(spdy.createServer(tcpCfg));
