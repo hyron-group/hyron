@@ -1,10 +1,12 @@
 const compare = require('performance-tools');
 
+var i = "!hcfiashca";
+
 compare.comparator({
-    v1 : ()=>{
-        return Math.round("3.43");
+    v2: () => {
+        return "asdasdsd"+i;
     },
-    v2 : ()=>{
-        return Math.floor("3.63");
-    }
+    v1: () => {
+        return `asdasdsd${i}`;
+    },
 })

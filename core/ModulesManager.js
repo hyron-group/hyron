@@ -1,15 +1,16 @@
 const http = require("http");
-const RouterFactory = require("./routerFactory");
-const Middleware = require('./middleware');
+const ServicesManager = require("./ServicesManager");
+const PluginsManager = require('./PluginsManager');
+const AddonsManager = require('./AddonsManager');
 const generalSecretKey = require("../lib/generalKey");
-const configReader = require('../lib/configReader');
+const appConfigReader = require('../lib/configReader');
 const homeDir = require('../lib/homeDir');
+
 const {
     getBaseURI
 } = require('../lib/completeUrl');
 const path = require('path');
 
-var defaultConfig = configReader();
 var instanceContainer = {};
 var serverContainer = {};
 
@@ -47,9 +48,8 @@ class ModuleManager {
         var instanceConfig = {
             isDevMode: true,
             secret: generalSecretKey(),
-            ...configReader.getConfig(serverConfig + ":" + host);
+            ...appConfigReader.getConfig(serverConfig.host + ":" + serverConfig.port)
         };
-
 
 
         if (args.length == 1) {
@@ -82,31 +82,29 @@ class ModuleManager {
             })
         }
 
-        var baseURI = getBaseURI(serverConfig);
+        serverConfig.baseURI = getBaseURI(serverConfig);
 
-        console.log(`\n\n--- ${baseURI} ---\n`);
+        console.log(`\n\n--- ${serverConfig.baseURI} ---\n`);
 
 
         Object.assign(newInstance, {
             ...serverConfig,
-            addons: {},
-            plugins: {},
-            service: {},
             config: instanceConfig,
         });
-        loadAddonsFromConfig.call(newInstance);
-        loadPluginsFromConfig.call(newInstance);
 
         newInstance.initServer(http.createServer());
-        newInstance.routerFactory = new RouterFactory(instanceConfig);
+        newInstance.services = new ServicesManager(instanceConfig);
+        newInstance.addons = new AddonsManager(newInstance);
+        newInstance.plugins = new PluginsManager(newInstance);
 
+        loadModulesFromConfig.call(newInstance);
 
-        instanceContainer[baseURI] = newInstance;
+        instanceContainer[serverConfig.baseURI] = newInstance;
         return newInstance;
     }
 
     /**
-     *@description Setup app or plugins with config
+     * @description Setup app or plugins with config
      * @param {object} config
      * @param {boolean} [config.isDevMode=true] if is true, app will collect bug, log for development. Else, app will be optimized for performance
      * @param {boolean} [config.style] format event name to target format. include : camel, snake, lisp, lower
@@ -114,12 +112,7 @@ class ModuleManager {
      */
     setting(config) {
         if (typeof config != "object") return;
-        if (config.protocol != null)
-            this.protocol = config.protocol;
-
-        Object.assign(this.config, config);
-        this.enableAddons(this.addons);
-        this.enableServices(this.services);
+        appConfigReader.setConfig(config);
     }
 
     /**
@@ -130,7 +123,7 @@ class ModuleManager {
      * @returns {string|object} config value
      */
     static getConfig(name) {
-        return configReader.readConfig(name);
+        return appConfigReader.getConfig(name);
     }
 
     /**
@@ -143,17 +136,17 @@ class ModuleManager {
         if (addonsList.constructor.name != "Object") {
             throw new TypeError('enableAddons(..) args at index 0 must be Object');
         }
-
-        Object.assign(this.addons, addonsList);
-
         for (var addonsName in addonsList) {
             var addonsHandle = addonsList[addonsName];
-
             if (typeof addonsHandle == 'string') {
-                addonsHandle = loadModuleByPath(addonsName, addonsHandle);
+                addonsHandle = loadModuleByPath(addonsHandle);
             }
-            
-            addonsHandle.call(this, configReader.readConfig(addonsName));
+
+            var addonsConfig = appConfigReader.getConfig(addonsName)
+
+            this
+                .addons
+                .registerAddons(addonsName, addonsHandle, addonsConfig);
         }
     }
 
@@ -163,24 +156,28 @@ class ModuleManager {
      */
     enablePlugins(pluginsList) {
         if (pluginsList == null) return;
-        if (pluginsList.constructor.name != "Object") {
+        if (typeof pluginsList != "object") {
             throw new TypeError('enablePlugins(..) args at index 0 must be Object');
         }
 
-        Object.assign(this.plugins, pluginsList);
-
         Object.keys(pluginsList).forEach(pluginName => {
-            var pluginConfig = configReader.readConfig(pluginName);
             var pluginsMeta = pluginsList[pluginName];
-            if (typeof pluginsMeta == 'string') {
-                pluginsMeta = loadModuleByPath(pluginName, pluginsMeta);
+            if (typeof pluginsMeta == "string") {
+                pluginsMeta = loadModuleByPath(pluginsMeta);
             }
-            var fontwareMeta = pluginsMeta.fontware;
-            var backwareMeta = pluginsMeta.backware;
-            if (fontwareMeta != null)
-                registerMiddleware(pluginName, true, fontwareMeta, pluginConfig);
-            if (backwareMeta != null)
-                registerMiddleware(pluginName, false, backwareMeta, pluginConfig);
+
+            if (typeof pluginsMeta != "object") {
+                throw new TypeError(`can't parse plugins '${pluginName}' metadata on type '${typeof pluginsMeta}'`);
+            }
+
+            var {
+                fontware,
+                backware
+            } = pluginsMeta;
+            var pluginConfig = appConfigReader.getConfig(pluginName);
+
+            this.plugins.addMiddleware(pluginName, true, fontware, pluginConfig);
+            this.plugins.addMiddleware(pluginName, false, backware, pluginConfig);
         });
     }
 
@@ -191,28 +188,23 @@ class ModuleManager {
      */
     enableServices(serviceList) {
         if (serviceList == null) return;
-        this.services = serviceList;
         if (serviceList.constructor.name != "Object") {
             throw new TypeError('enableServices(..) args at index 0 must be Object');
         }
-
-        Object.assign(this.services, serviceList);
 
         Object.keys(serviceList).forEach(serviceName => {
             // routePackage is path
             var routePackage = serviceList[serviceName];
             if (typeof routePackage == "string") {
-                routePackage = loadModuleByPath(serviceName, routePackage);
+                routePackage = loadModuleByPath(routePackage);
             }
+
+            var serviceConfig = appConfigReader.getConfig(serviceName);
+
             if (routePackage.requestConfig == null) {
                 // is unofficial service
                 try {
-                    var serviceConfig = configReader.readConfig(serviceName);
-                    var unofficialServiceConfig = {
-                        ...this.config,
-                        ...serviceConfig
-                    };
-                    routePackage(this.app, unofficialServiceConfig);
+                    routePackage(this.app, serviceConfig);
                 } catch (err) {
                     console.error(
                         `Hyron do not support for service define like '${serviceName}' yet`
@@ -220,7 +212,7 @@ class ModuleManager {
                 }
             } else {
                 // is as normal hyron service
-                this.routerFactory.registerRoutesGroup(
+                this.services.registerRoutesGroup(
                     this.prefix,
                     serviceName,
                     routePackage
@@ -267,7 +259,7 @@ class ModuleManager {
         if (this.app.running) return this.app;
 
         this.app.on("request", (req, res) => {
-            this.routerFactory.triggerRouter(req, res);
+            this.services.triggerRouter(req, res);
         });
 
         if (callback != null)
@@ -297,62 +289,28 @@ function setupDefaultListener(instance, server) {
 
 }
 
-
-function registerMiddleware(name, isFontware, meta, config) {
-    if (typeof meta == "object") {
-        Middleware.addMiddleware(name, isFontware, meta, config);
-    } else if (typeof meta == "string") {
-        try {
-            meta = require(meta);
-            return registerMiddleware(name, isFontware, meta, config);
-        } catch (err) {
-            console.warn(`Can't load plugins '${name}' because ${err.message}`)
-        }
-    } else throw new TypeError(`metadata of plugins '${name}' must be object or string`)
-
-}
-
-function loadAddonsFromConfig() {
-    this.enableAddons(defaultConfig.addons);
-}
-
-function loadPluginsFromConfig() {
-    var fontware = defaultConfig.fontware;
-    var backware = defaultConfig.backware;
-    var plugins = defaultConfig.plugins;
-
-    this.enablePlugins(plugins);
-
-    if (fontware != null)
-        Object.keys(fontware).forEach(name => {
-            var metaPath = fontware[name];
-            var fontwareMeta = require(metaPath);
-            registerMiddleware(name, true, fontwareMeta, defaultConfig[name]);
-        })
-
-    if (backware != null)
-        Object.keys(backware).forEach(name => {
-            var metaPath = backware[name];
-            var backwareMeta = require(metaPath);
-            registerMiddleware(name, false, backwareMeta, defaultConfig[name]);
-        })
-}
-
-function loadModuleByPath(name, modulePath) {
+function loadModuleByPath(modulePath) {
     var output;
     try {
-        // for client service
-        output = require(path.join(homeDir, modulePath));
+        // for local modules
+        var modulePath = path.join(homeDir, modulePath);
+        output = require(modulePath);
+        appConfigReader.readConfig(modulePath);
     } catch (err) {
         if (output == null)
-            // for installed service
+            // for installed modules
             output = require(modulePath);
+        var installedPath = "node_modules/" + modulePath;
+        appConfigReader.readConfig(installedPath);
     }
 
-    configReader.readConfig(name, modulePath);
     return output;
 }
 
+function loadModulesFromConfig() {
+    this.enableAddons(appConfigReader.getConfig("addons"));
+    this.enablePlugins(appConfigReader.getConfig("plugins"));
+}
 
 
 module.exports = ModuleManager;

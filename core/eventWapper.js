@@ -1,7 +1,7 @@
 const {
     runFontWare,
     runBackWare
-} = require("./middleware");
+} = require("./PluginsManager");
 const handleResult = require("./responseHandler");
 
 

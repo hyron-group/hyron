@@ -1,4 +1,4 @@
-var hyron = require('./moduleManager');
+var hyron = require('./ModulesManager');
 var child_process = require('child_process');
 var fs = require('fs');
 

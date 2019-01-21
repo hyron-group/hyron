@@ -1,12 +1,11 @@
-[{
-    "base_url": "http://localhost:3000/demo",
+{
+    "base_url": "http2://localhost:3000",
     "setting": {
         "style": "lisp"
     },
     "plugins": {
-        "stringer": "@hyron/stringer"
     },
     "services": {
-        "summary": "./test/unit/apiDemo"
+        "": "./test/performance/testCase"
     }
-}]
+}

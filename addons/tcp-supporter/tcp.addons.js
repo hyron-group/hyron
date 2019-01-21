@@ -5,6 +5,7 @@ const fs = require('fs');
 module.exports = function (options) {
     var protocol = this.config.protocol;
     if (protocol == "http2" || protocol == "https") {
+        console.log("enable spdy")
         var key = this.config.key;
         var cert = this.config.cert;
 
