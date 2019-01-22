@@ -17,7 +17,7 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 9.  **Dynamic data type** : Hyron supports default to allow load content from the request automatically whenever a new request is made. including uploading files and many other data types
 10. **Plugins-able** : Hyron is plugins system. So, you can install a plugins from another 3rth, management and reuse very easy, like addons, plugins, services
 
-# Release (22/1/2019)
+# Release
 
 -   restructure + refactor
 -   more power for appcfg.yaml
@@ -75,6 +75,8 @@ A router register on :
 See more at : https://hyron.gitbook.io/reference
 
 ## Contributing to Hyron
+
+Donate : paypal.me/thangdjw
 
 <b style="color : red"> Bug report</b> : https://goo.gl/forms/zhANKd3xLO0bD9Dy2
 
