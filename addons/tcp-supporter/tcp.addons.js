@@ -1,14 +1,15 @@
 const spdy = require('spdy');
 const fs = require('fs');
 const {getBaseURL} = require('../../lib/completeUrl')
+const ModuleManager = require('../../core/ModulesManager');
 
 
 function handle (options) {
     var protocol = this.protocol;
     if (protocol == "http2" || protocol == "https") {
         console.log("enable spdy")
-        var key = this.getConfig("key");
-        var cert = this.getConfig("cert");
+        var key = ModuleManager.getConfig("key");
+        var cert = ModuleManager.getConfig("cert");
 
         var tcpCfg = {
             key: null,
@@ -28,7 +29,7 @@ function handle (options) {
         this.protocol = "https";
         this.baseURL = getBaseURL(this);
         
-        this.setServer(this.host, this.port, null);
+        ModuleManager.setServer(this.host, this.port, null);
         this.initServer(spdy.createServer(tcpCfg));
     }
 }

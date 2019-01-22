@@ -4,21 +4,28 @@
 
 hyron is an extremely powerful framework that helps you develop an extremely fast and easy server app.
 
-# Feature
+# Features
 
--   **Create router from function** : You can make a normal javascript function become a router, just with few of line
--   **Easy to development** : With Hyron, you can keep your code more cleaner. Easy to management. A beginner can easy to start with it
--   **Plugins-able** : Hyron is plugins system. So, you can install a plugins from another 3rth, management and reuse very easy
--   **Support for RESTFul** : You can create a RestAPI with few of word
--   **High-Performance** : Hyron is 40% more efficient than ExpressJS (by rps with simple request)
--   **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
--   **Dynamic data type** : Hyron dynamic support for all data type from request
+1.  **Create router from function** : You can convert a normal function into a router. Hyron helps you avoid too much dependency on the platform. So you can easily switch from another framework
+2.  **Easily to manager source code** : The hyron is designed to minimize dependencies between components, and helps the architecture stay clear and clean. So you can easily pack, edit and manage content, even on a large scale
+3.  **High-Performance** : Hyron is 40% more efficient than ExpressJS (by rps with simple request)
+4.  **Easy to reuse** : With Hyron, you can help encapsulate your source very closely and flexibly, can be easily plugged, shared, and reused.
+5.  **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
+6.  **Separate setting** : With Hyron, you can separate all setting into file, called appcfg.yaml allow you easy to management configs
+7.  **Expanded config file** : Hyron allows you to do more with 'appcfg' files, such as inheriting from parent, internal references and external references, freezing fields, etc
+8.  **Build app from json file** : In addition to building with the traditional way, now you can easy to create and build a server with json file
+9.  **Dynamic data type** : Hyron supports default to allow load content from the request automatically whenever a new request is made. including uploading files and many other data types
+10. **Plugins-able** : Hyron is plugins system. So, you can install a plugins from another 3rth, management and reuse very easy, like addons, plugins, services
 
-# Release
+# Release (22/1/2019)
 
-- fix bug
-- support for string path for enableServices, enablePlugins and enableAddons
-
+-   restructure + refactor
+-   more power for appcfg.yaml
+-   more power for addons
+-   build app from json
+-   supported for rest api
+-   supported for https and http2
+-   fix bug
 
 # Example
 
@@ -28,14 +35,18 @@ This is simple example project to help you have interview about Hyron Framework
 
 ```js
 const hyron = require("hyron");
+hyron.build("./server.json");
+```
 
-var myApp = hyron.getInstance(3000, "localhost");
+**_server.json_**
 
-myApp.enableServices({
-    demo: "./SimpleApp"
-});
-
-myApp.startServer();
+```json
+{
+    "base_url": "http://localhost:3000",
+    "services": {
+        "demo": "./SimpleApp.js"
+    }
+}
 ```
 
 **_SimpleApp.js_**

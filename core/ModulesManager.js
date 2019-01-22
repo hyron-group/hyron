@@ -207,7 +207,7 @@ class ModuleManager {
         this.app = defaultServer;
     }
 
-    setServer(host, port, server) {
+    static setServer(host, port, server) {
         var key = host + ":" + port;
         return serverContainer[key] = server;
     }

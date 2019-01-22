@@ -1,18 +1,3 @@
-var editor = require('../lib/objectEditor');
+const hyron = require("../");
 
-var a = {
-    b: {
-        c: 'd'
-    }
-}
-
-editor.replaceValue(["b"], a, (v) => {
-    Object.freeze(v);
-
-})
-
-
-a.b.c = "e";
-
-
-console.log(a)
+hyron.build('./test/appInstance.json');
