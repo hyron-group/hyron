@@ -14,9 +14,9 @@
   "keywords": [
     "framework",
     "backend",
-    "plugins",
+    "clean",
     "api",
-    "module"
+    "micro-service"
   ],
   "license": "GPL-3.0",
   "main": "index.js",

@@ -76,7 +76,7 @@ See more at : https://hyron.gitbook.io/reference
 
 ## Contributing to Hyron
 
-Donate : paypal.me/thangdjw
+Donate : https://paypal.me/thangdjw
 
 <b style="color : red"> Bug report</b> : https://goo.gl/forms/zhANKd3xLO0bD9Dy2
 
