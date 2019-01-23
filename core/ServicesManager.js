@@ -5,7 +5,9 @@ const handleResult = require("./responseHandler");
 const path = require('../type/path');
 const HTTPMessage = require("../type/HttpMessage");
 const prepareConfigModel = require('./configParser');
-const {prepareEventName} = require('../lib/completeUrl');
+const {
+    prepareEventName
+} = require('../lib/completeUrl');
 const httpEventWrapper = require('./eventWrapper');
 const dynamicUrl = require('../lib/dynamicURL');
 const configReader = require('../lib/configReader');
@@ -19,6 +21,7 @@ class RouterFactory {
     constructor(serverCfg) {
         Object.assign(this, serverCfg);
         this.listener = new Map();
+        this.isDevMode = configReader.readConfig("environment") == "dev" || true;
     }
 
     getListener(eventName) {
@@ -38,7 +41,7 @@ class RouterFactory {
                 404, // not found
                 `Can't find router at ${uriPath}`
             );
-            handleResult(err, res, configReader.getConfig(isDevMode));
+            handleResult(err, res, this.isDevMode);
 
         }
     }
@@ -121,7 +124,6 @@ class RouterFactory {
 
     registerRouterByMethod(eventName, instance, mainExecute, routeConfig) {
 
-        var isDevMode = configReader.readConfig("environment")=="dev";
         // Executer will call each request
 
         console.info("-> event : " + eventName);
@@ -133,7 +135,8 @@ class RouterFactory {
 
         this.listener.set(
             eventName,
-            httpEventWrapper(isDevMode,
+            httpEventWrapper(
+                this.isDevMode,
                 eventName,
                 instance,
                 mainExecute,

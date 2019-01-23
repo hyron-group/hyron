@@ -35,7 +35,7 @@ class ModuleManager {
         }
 
         var instanceConfig = {
-            isDevMode: true,
+            environment: "dev",
             secret: generalSecretKey(),
             ...appConfigReader.getConfig(serverConfig.host + ":" + serverConfig.port)
         };

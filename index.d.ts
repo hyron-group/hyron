@@ -195,7 +195,6 @@ class ModuleManager {
      */
     enableServices(servicesList: { [name: string]: HyronService }): void;
 
-
     /**
      * Create server for this instance. This function called on instance have been initialized
      *
@@ -204,7 +203,6 @@ class ModuleManager {
      */
     initServer(server: Server): void;
 
-    
     /**
      * Edit a server from another instance by host and port as key
      *
@@ -215,7 +213,6 @@ class ModuleManager {
      */
     static setServer(host: string, port: number, server: Server): void;
 
-    
     /**
      * Start server on specialized information from instance
      *
