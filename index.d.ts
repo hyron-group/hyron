@@ -1,3 +1,17 @@
+enum SupportedMethod {
+    // query type
+    GET,
+    HEAD,
+    DELETE,
+    // body type
+    POST,
+    PUT,
+    PATCH,
+    // server type
+    PRIVATE,
+    ALL
+}
+
 import { ClientRequest, ServerResponse, Server } from "http";
 
 type Path = string;
@@ -16,23 +30,9 @@ interface Middleware {
     checkout: (done: onCompleteCheckout) => boolean;
     typeFilter: Array<any>;
 }
-interface Plugins {
+interface PluginsMeta {
     fontware: Middleware;
     backware: Middleware;
-}
-
-enum SupportedMethod {
-    // query type
-    GET,
-    HEAD,
-    DELETE,
-    // body type
-    POST,
-    PUT,
-    PATCH,
-    // server type
-    PRIVATE,
-    ALL
 }
 
 type mainExecuter = (...args) => any;
@@ -138,7 +138,7 @@ class ModuleManager {
     setting(config: object): void;
 
     /**
-     * Retrieve config by name.
+     * Retrieve config value for a key by name
      *
      * ### params
      * - **name** (string) : name of config
@@ -177,7 +177,7 @@ class ModuleManager {
      * ### params
      * - **pluginsList** (object) : object description about module name (string) and plugins metadata (object)
      */
-    enablePlugins(pluginsList: { [name: string]: Plugins }): void;
+    enablePlugins(pluginsList: { [name: string]: PluginsMeta }): void;
 
     /**
      * Enable services by descriptions contain linked to service module from root
