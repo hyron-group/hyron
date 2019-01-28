@@ -1,3 +1,2 @@
-const hyron = require("../");
-
-hyron.build('./test/appInstance.json');
+console.log("1"==1)
+console.log("1"===1)

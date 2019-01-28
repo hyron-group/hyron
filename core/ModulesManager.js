@@ -98,8 +98,15 @@ class ModuleManager {
         appConfigReader.setConfig(config);
     }
 
-    static getConfig(name) {
-        return appConfigReader.getConfig(name);
+    static getConfig(path, defaultValue) {
+        try {
+            var data = appConfigReader.getConfig(path);
+            if (data === undefined) data = defaultValue;
+
+            return data;
+        } catch (err) {
+            return defaultValue;
+        }
     }
 
     enableAddons(addonsList) {
@@ -185,7 +192,8 @@ class ModuleManager {
                 this.services.registerRoutesGroup(
                     this.prefix,
                     serviceName,
-                    routePackage
+                    routePackage,
+                    serviceConfig
                 );
             }
         });

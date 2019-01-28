@@ -68,11 +68,12 @@ class RouterFactory {
 
     }
 
-    registerRoutesGroup(prefix, moduleName, handlePackage) {
+    registerRoutesGroup(prefix, moduleName, handlePackage, config) {
         console.log(`\nLockup service : ${moduleName}`)
         var requestConfig = handlePackage.requestConfig();
 
         var instance = new handlePackage();
+        instance.$config = config;
         if (requestConfig == null)
             throw new Error(
                 `Module ${moduleName} do not contain requestConfig() method`
@@ -97,7 +98,7 @@ class RouterFactory {
                 var url = prepareEventName(
                     configReader.getConfig("style"),
                     configModel.path,
-                    this.prefix,
+                    prefix,
                     moduleName,
                     methodName,
                 );
