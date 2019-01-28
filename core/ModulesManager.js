@@ -4,12 +4,11 @@ const PluginsManager = require('./PluginsManager');
 const AddonsManager = require('./AddonsManager');
 const generalSecretKey = require("../lib/generalKey");
 const appConfigReader = require('../lib/configReader');
-const homeDir = require('../lib/homeDir');
+const loadModuleByPath = require('../lib/moduleLoader');
 
 const {
     getBaseURL
 } = require('../lib/completeUrl');
-const path = require('path');
 
 var instanceContainer = {};
 var serverContainer = {};
@@ -88,6 +87,7 @@ class ModuleManager {
         newInstance.services = new ServicesManager(summaryConfig);
 
         loadModulesFromConfig.call(newInstance);
+        AddonsManager.runGlobalAddons(newInstance);
 
         instanceContainer[serverConfig.baseURL] = newInstance;
         return newInstance;
@@ -115,22 +115,34 @@ class ModuleManager {
             throw new TypeError('enableAddons(..) args at index 0 must be Object');
         }
         for (var addonsName in addonsList) {
-            var addonsHandle = addonsList[addonsName];
-            if (typeof addonsHandle == 'string') {
-                addonsHandle = loadModuleByPath(addonsHandle, addonsName);
+            var addonsHandler = addonsList[addonsName];
+            if (typeof addonsHandler == 'string') {
+                addonsHandler = loadModuleByPath(addonsHandler, addonsName);
             }
 
             var addonsConfig = appConfigReader.getConfig(addonsName)
             this
                 .addons
-                .registerAddons(addonsName, addonsHandle, addonsConfig);
+                .registerAddons(addonsName, addonsHandler, addonsConfig);
         }
     }
 
-    /**
-     * @description Register plugins
-     * @param {{name:string,meta}} pluginsList
-     */
+    static enableGlobalAddons(addonsList){
+        if (addonsList == null) return;
+        if (addonsList.constructor.name != "Object") {
+            throw new TypeError('enableAddons(..) args at index 0 must be Object');
+        }
+        for (var addonsName in addonsList) {
+            var addonsHandler = addonsList[addonsName];
+            if (typeof addonsHandler == 'string') {
+                addonsHandler = loadModuleByPath(addonsHandler, addonsName);
+            }
+
+            var addonsConfig = appConfigReader.getConfig(addonsName)
+            AddonsManager.registerGlobalAddons(addonsHandler, addonsConfig);
+        }
+    }
+
     enablePlugins(pluginsList) {
         if (pluginsList == null) return;
         if (typeof pluginsList != "object") {
@@ -190,7 +202,6 @@ class ModuleManager {
             } else {
                 // is as normal hyron service
                 this.services.registerRoutesGroup(
-                    this.prefix,
                     serviceName,
                     routePackage,
                     serviceConfig
@@ -259,25 +270,6 @@ function setupDefaultListener(instance, server) {
         console.log(`\nServer started at : ${baseURL}`);
     });
 
-}
-
-function loadModuleByPath(modulePath, moduleName) {
-    var output;
-    var location;
-    try {
-        // for local modules
-        location = path.join(homeDir, modulePath);
-        output = require(location);
-    } catch (err) {
-        if (output == null) {
-            // for installed modules
-            location = "node_modules/" + modulePath;
-            output = require(location);
-        }
-    }
-    appConfigReader.readConfig(location, moduleName);
-
-    return output;
 }
 
 function loadModulesFromConfig() {

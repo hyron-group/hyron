@@ -41,7 +41,8 @@ function loadFromObject(appMeta) {
             startDownload(missingAddons),
             startDownload(missingPlugins),
             startDownload(missingServices),
-        ]).then((downloadedAddons,
+        ]).then((
+            downloadedAddons,
             downloadedPlugins,
             downloadedServices) => {
             applyChange(appMeta.addons, downloadedAddons);
@@ -49,12 +50,19 @@ function loadFromObject(appMeta) {
             applyChange(appMeta.services, downloadedServices);
 
             console.log("All package downloaded !\n");
-            console.log('------------------------\n')
+            console.log('------------------------\n');
 
-            registerInstance(appMeta);
+            if(appMeta.services!=null){
+                registerInstance(appMeta);
+            } else if(appMeta.addons!=null){
+                hyron.enableGlobalAddons(appMeta.addons);
+            }
+            
         })
     }
 }
+
+
 
 function applyChange(meta, changedMeta) {
     for (var changedField in changedMeta) {

@@ -21,7 +21,7 @@ class RouterFactory {
     constructor(serverCfg) {
         Object.assign(this, serverCfg);
         this.listener = new Map();
-        this.isDevMode = configReader.readConfig("environment") == "dev" || true;
+        this.isDevMode = configReader.readConfig("environment", "dev") != "production";
     }
 
     getListener(eventName) {
@@ -65,10 +65,9 @@ class RouterFactory {
         ) {
             return execute;
         }
+    };
 
-    }
-
-    registerRoutesGroup(prefix, moduleName, handlePackage, config) {
+    registerRoutesGroup(moduleName, handlePackage, config) {
         console.log(`\nLockup service : ${moduleName}`)
         var requestConfig = handlePackage.requestConfig();
 
@@ -98,7 +97,7 @@ class RouterFactory {
                 var url = prepareEventName(
                     configReader.getConfig("style"),
                     configModel.path,
-                    prefix,
+                    this.prefix,
                     moduleName,
                     methodName,
                 );
