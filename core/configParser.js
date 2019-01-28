@@ -1,6 +1,6 @@
 const {
     checkMethod
-} = require('./serviceManager/supportedMethod');
+} = require('./ServicesManager/supportedMethod');
 
 
 
