@@ -1,12 +1,15 @@
 const compare = require('performance-tools');
 
-var i = "!hcfiashca";
+var c = ['a', 'b', "c", "e", "f"];
 
 compare.comparator({
-    v2: () => {
-        return "asdasdsd"+i;
-    },
     v1: () => {
-        return `asdasdsd${i}`;
+        return c.indexOf('e') != -1;
+
     },
+    v2: () => {
+        return c.includes('e');
+    },
+}, {
+    round: 1000090
 })

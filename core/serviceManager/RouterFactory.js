@@ -1,16 +1,16 @@
 const {
     getUriPath
-} = require("../lib/queryParser");
+} = require("../../lib/queryParser");
 const handleResult = require("./responseHandler");
-const path = require('../type/path');
-const HTTPMessage = require("../type/HttpMessage");
-const prepareConfigModel = require('./configParser');
+const path = require('../../type/path');
+const HTTPMessage = require("../../type/HttpMessage");
+const prepareConfigModel = require('../configParser');
 const {
     prepareEventName
-} = require('../lib/completeUrl');
+} = require('../../lib/completeUrl');
 const httpEventWrapper = require('./eventWrapper');
-const dynamicUrl = require('../lib/dynamicURL');
-const configReader = require('../lib/configReader');
+const dynamicUrl = require('../../lib/dynamicURL');
+const configReader = require('../../lib/configReader');
 
 
 /**
@@ -140,8 +140,7 @@ class RouterFactory {
                 eventName,
                 instance,
                 mainExecute,
-                routeConfig.fontware,
-                routeConfig.backware)
+                routeConfig)
         );
     }
 

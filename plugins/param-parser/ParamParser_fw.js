@@ -4,20 +4,21 @@ const multiPartParser = require("./lib/multipartParser");
 const rawBodyParser = require("./lib/rawBodyParser");
 const urlEncodedParser = require("./lib/urlEncodedParser");
 const dynamicUrl = require('../../lib/dynamicURL');
+const cookie = require('cookie');
+
 var handleHolder = {};
 
 function handle(req, res, prev) {
     return new Promise((resolve, reject) => {
         var eventName = this.$eventName;
         var paramParser = handleHolder[eventName];
-        if (paramParser == null) paramParser = onCreate.call(this);
         paramParser(resolve, reject, req);
     });
 };
 
 function prepareHandle(eventName, argList) {
     var handle = function (resolve, reject, req) {
-        getDataFromRequest(req, (data, err) => {
+        getDataFromRequest(req, argsList, (data, err) => {
             if (err != null) reject(err);
             var standardInput = resortDataIndex(data, argList);
             resolve(standardInput);
@@ -29,29 +30,45 @@ function prepareHandle(eventName, argList) {
     return handle;
 }
 
-function onCreate(config) {
+function onCreate(cfg) {
     var eventName = this.$eventName;
     var executer = this.$executer;
     var argList = argumentParser(executer.toString());
     return prepareHandle(eventName, argList)
 }
 
-function getDataFromRequest(req, onComplete) {
-    var method = req.method;
-    if (!req.isREST) {
-        if (isQueryParamType(method)) {
-            getQueryData(req, onComplete);
-        } else if (isBodyParamType(method)) {
-            getBodyData(req, onComplete);
-        }
-    } else {
-        getRestData(req, onComplete);
-    }
+function getParamWrapper(req, argsList, onComplete){
+    
 }
 
-function getQueryData(req, onComplete) {
-    var data = queryParser(req.url);
-    onComplete(data);
+function getDataFromRequest(req, argsList, onComplete) {
+    var method = req.method;
+    var result = getQueryData(req);
+
+    var cookie = getCookieData(req);
+    if (cookie != null) Object.assign(result, cookie);
+
+    if (req.isREST) {
+        var restData = getRestData(req, onComplete);
+        Object.assign(result, restData);
+    }
+
+    if (isBodyParamType(method)) {
+        onComplete = (data) => {
+            Object.assign(result);
+            onComplete(data);
+        };
+        getBodyData(req, onComplete);
+    } else onComplete(result);
+}
+
+function getCookieData(req) {
+    var $cookie = cookie.parse(req.headers.cookie);
+    return {$cookie};
+}
+
+function getQueryData(req) {
+    return queryParser(req.url);
 }
 
 function getBodyData(req, onComplete) {
@@ -67,21 +84,12 @@ function getBodyData(req, onComplete) {
     }
 }
 
-function getRestData(req, onComplete) {
+function getRestData(req) {
     var url = req.url;
     var eor = url.indexOf("?");
     if (eor == -1) eor = url.length;
     var output = dynamicUrl.getParams(url.substr(0, eor));
-    var method = req.method;
-    var customOnComplete = data => {
-        Object.assign(output, data);
-        onComplete(output);
-    };
-    if (isBodyParamType(method)) {
-        getBodyData(req, customOnComplete);
-    } else if (isQueryParamType(method)) {
-        getQueryData(req, customOnComplete);
-    }
+    return output;
 }
 
 function isBodyParamType(method) {

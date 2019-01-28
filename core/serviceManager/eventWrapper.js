@@ -1,4 +1,4 @@
-const PluginsManager = require("./PluginsManager");
+const PluginsManager = require("../PluginsManager");
 const handleResult = require("./responseHandler");
 
 function httpEventWrapper(
@@ -6,19 +6,24 @@ function httpEventWrapper(
     eventName,
     instance,
     mainExecute,
-    reqFontware,
-    reqBackware
+    routeConfig
 ) {
+    var {
+        fontware,
+        backware
+    } = routeConfig;
+
     var generalThisArgs = {
         $executer: mainExecute,
         $eventName: eventName,
+        $requestConfig: routeConfig
     };
 
 
     function runBackwares(req, res, result, thisArgs) {
         PluginsManager.runMiddleware(
             eventName, {
-                reqMiddleware: reqBackware,
+                backware,
                 thisArgs,
                 args: [req, res, result]
             },
@@ -34,7 +39,7 @@ function httpEventWrapper(
     function runsFontwares(req, res, thisArgs) {
         PluginsManager.runMiddleware(
                 eventName, {
-                    reqMiddleware: reqFontware,
+                    fontware,
                     thisArgs,
                     args: [req, res]
                 },

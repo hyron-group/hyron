@@ -1,0 +1,177 @@
+const crc = require("crc");
+const runNextMiddleware = require('./middlewareRunner');
+const eventWrapper = require('./eventWrapper');
+const parseRequireMiddleware = require('./prepareRequireMiddleware');
+
+var handlerHolder = [];
+var customFontWareIndex = {};
+var customBackWareIndex = {};
+var globalFontWareIndex = {};
+var globalBackWareIndex = {};
+
+var fontwareHandleIndex = {};
+var backwareHandleIndex = {};
+
+(function registerSyncFunc() {
+    var syncFunc = function (req, res, prev) {
+        return prev;
+    };
+    handlerHolder[0] = syncFunc;
+})();
+
+function addMiddleware(name, meta, config, isFontware = true) {
+    if (meta == null) return;
+    var isGlobal = meta.global || false;
+
+    var index = indexOfHandle(name);
+    if (index == -1) {
+        index = handlerHolder.length;
+        var handle = eventWrapper(name, index, handlerHolder, config, meta);
+        handlerHolder.push(handle);
+    } else {
+        handlerHolder[index] = eventWrapper(name, index, handlerHolder, config, meta);
+    }
+
+    if (isGlobal) {
+        if (isFontware) globalFontWareIndex[index] = name;
+        else globalBackWareIndex[index] = name;
+    } else {
+        if (isFontware) customFontWareIndex[name] = index;
+        else customBackWareIndex[name] = index;
+    }
+    console.info(
+        `-> Registered ${isFontware ? "fontware" : "backware"} '${name}' ${
+                    isGlobal ? "as global" : ""
+                }`
+    );
+}
+
+function runMiddleware(
+    eventName,
+    middlewareArgs,
+    isFontware
+) {
+    var handlersIndex = prepareHandlerIndex(eventName, reqMiddleware, isFontware);
+    try {
+        runNextMiddleware(handlersIndex, handlerHolder, middlewareArgs);
+    } catch (err) {
+        onFailed(err);
+    }
+}
+
+function indexOfHandle(name) {
+    var keyIndex;
+
+    var fontWareKeys = Object.keys(globalFontWareIndex);
+    for (var i = 0; i < fontWareKeys.length; i++) {
+        keyIndex = fontWareKeys[i];
+        var val = globalFontWareIndex[keyIndex];
+        if (val == name) return keyIndex;
+    }
+
+    if ((keyIndex = customFontWareIndex[name]) != null) {
+        return keyIndex;
+    }
+
+    if ((keyIndex = customBackWareIndex[name]) != null) {
+        return keyIndex;
+    }
+
+    var backWareKeys = Object.keys(globalBackWareIndex);
+    for (var i = 0; i < backWareKeys.length; i++) {
+        keyIndex = backWareKeys[i];
+        var val = globalBackWareIndex[keyIndex];
+        if (val == name) return keyIndex;
+    }
+
+    return -1;
+}
+
+function addAnonymousMiddleware(handle, isFontware) {
+
+    var representName =
+        isFontware ? "fw-" : "bw-" +
+        crc
+        .crc24(handle.toString())
+        .toString(16);
+
+    var meta = {
+        handle: handle,
+        global: false
+    };
+
+    addMiddleware(representName, handle, meta, isFontware);
+
+    return representName;
+}
+
+function prepareHandlerIndex(eventName, reqMidWare, isFontware) {
+    var handlersIndex;
+
+    if (isFontware) {
+        handlersIndex = fontwareHandleIndex[eventName];
+    } else {
+        handlerHolder = backwareHandleIndex[eventName];
+    }
+    if (handlersIndex != null) {
+        return handlersIndex;
+    }
+
+    var indexList = [];
+
+    var {
+        disableList,
+        enableList,
+        disableAll
+    } = parseRequireMiddleware(reqMidWare, isFontware);
+
+
+    // add all global middleware
+    if (!disableAll) {
+        if (isFontware) indexList = Object.keys(globalFontWareIndex);
+        else indexList = Object.keys(globalBackWareIndex);
+    }
+
+    // disable global middleware by config
+    for (var i = 0; i < disableList.length; i++) {
+        var disableMidWareIndex = disableList[i];
+        indexList.splice(indexList.indexOf(disableMidWareIndex));
+    }
+
+    // enable middleware by config
+    for (var index in enableList) {
+        var enableMidWareName = enableList[index];
+        var middlewareIndex;
+        if (isFontware) {
+            middlewareIndex = customFontWareIndex[enableMidWareName];
+        } else {
+            middlewareIndex = customBackWareIndex[enableMidWareName];
+        }
+        if (middlewareIndex != null)
+            indexList.push(middlewareIndex);
+        else console.warn(`[warning] Can't find ${isFontware?"font":"back"}ware by name '${enableMidWareName}'`)
+    }
+
+    indexList = indexList.map(Number);
+
+    if (isFontware) {
+        indexList.push(0); // sync handler
+        fontwareHandleIndex[eventName] = indexList;
+    } else {
+        indexList = indexList.reverse();
+        backwareHandleIndex[eventName] = indexList;
+    }
+
+    return indexList;
+}
+
+function getMiddleware(name) {
+    return handlerHolder[indexOfHandle(name)];
+}
+
+module.exports = {
+    addMiddleware,
+    addAnonymousMiddleware,
+    runMiddleware,
+    getMiddleware
+};
