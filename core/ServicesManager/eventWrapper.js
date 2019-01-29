@@ -23,34 +23,35 @@ function httpEventWrapper(
     function runBackwares(req, res, result, thisArgs) {
         PluginsManager.runMiddleware(
             eventName, {
-                backware,
+                reqMiddleware: backware,
                 thisArgs,
-                args: [req, res, result]
-            },
-            data => {
-                handleResult(data, res, isDevMode);
-            },
-            err => {
-                handleResult(err, res, isDevMode);
-            }, false
+                args: [req, res, result],
+                onComplete(data) {
+                    handleResult(data, res, isDevMode);
+                },
+                onFailed(err) {
+                    handleResult(err, res, isDevMode);
+                },
+                isFontware: false
+            }
         )
     }
 
     function runsFontwares(req, res, thisArgs) {
         PluginsManager.runMiddleware(
-                eventName, {
-                    fontware,
-                    thisArgs,
-                    args: [req, res]
-                },
-                args => {
+            eventName, {
+                reqMiddleware: fontware,
+                thisArgs,
+                args: [req, res],
+                onComplete(args) {
                     var result = mainExecute.apply(thisArgs, args);
                     runBackwares(req, res, result, thisArgs);
                 },
-                err => {
+                onFailed(err) {
                     runBackwares(req, res, err, thisArgs);
-                }),
-            true
+                },
+                isFontware: true
+            })
     }
 
     return function httpEvent(req, res) {

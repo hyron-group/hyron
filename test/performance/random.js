@@ -1,15 +1,21 @@
 const compare = require('performance-tools');
 
-var c = ['a', 'b', "c", "e", "f"];
+function f(){
+    return this.a;
+}
+
+function g(a){
+    return a;
+}
 
 compare.comparator({
     v1: () => {
-        return c.indexOf('e') != -1;
-
+        this.a = "haha";
+        return f.call(this)
     },
     v2: () => {
-        return c.includes('e');
+        return g("hihi");
     },
 }, {
-    round: 1000090
+    round: 8000090
 })

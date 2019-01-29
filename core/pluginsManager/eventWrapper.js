@@ -1,8 +1,7 @@
 const parseTypeFilter = require("../../lib/typeFilter");
+const AsyncFunction = (async () => {}).constructor;
 
-var createdList = {};
-
-function eventWrapper(name, index, handlerHolder, config, pluginsMeta) {
+function eventWrapper(index, handlerHolder, pluginsMeta) {
     var {
         handle,
         onCreate,
@@ -12,58 +11,80 @@ function eventWrapper(name, index, handlerHolder, config, pluginsMeta) {
 
     var matchType = parseTypeFilter(typeFilter);
 
-    function onCompleteCheckout() {
+
+    function completeCheckout() {
         handlerHolder[index] = finalFunction;
     }
 
-    var finalFunction;
-
     if (handle == null) {
-        finalFunction = function (req, res, prev) {
+        function finalFunction(req, res, prev) {
             return prev;
         }
-    } else
-        finalFunction =
-        function (req, res, prev) {
-            return handle.call(this, req, res, prev, config);
+    } else if (matchType != null) {
+        function finalFunction(req, res, prev) {
+            if (!matchType(prev)) return prev;
+            return handle.call(this, req, res, prev);
         }
-
-    if (matchType != null) {
-        finalFunction =
-            function (req, res, prev) {
-                if (!matchType(prev)) return prev;
-                return handle.call(this, req, res, prev, config);
-            }
+    } else {
+        function finalFunction(req, res, prev) {
+            return handle.call(this, req, res, prev);
+        }
     }
 
-    if (checkout == null) checkout = function () {
-        onCompleteCheckout();
-        return false;
+    function onIdleResult(isChange, thisArgs, req, res, prev) {
+        if (isChange) {
+            console.log("isChange");
+            return initFunction.call(this, req, res, prev);
+        } else {
+            return finalFunction.call(this, req, res, prev);
+        }
     }
 
     function idleFunction(req, res, prev) {
-        var isChange = checkout.call(this, onCompleteCheckout);
-        if (isChange) onCreate.call(this, config);
-        else onCompleteCheckout();
-        return handle.call(this, req, res, prev, config);
-    };
+        console.log('idle')
 
-    if (onCreate != null) {
-        return function initFunction(req, res, prev) {
-            if(createdList[name]!=null){
-                onCreate.call(this, config);
-                createdList[name]=true;
-            }
-            var result = handle.call(this, req, res, prev, config);
-            if (checkout != null)
-                handlerHolder[index] = idleFunction;
-            else
-                onCompleteCheckout()
+        var isChange = checkout.call(this, completeCheckout);
+        console.log(isChange);
+        if (isChange instanceof Promise ||
+            isChange instanceof AsyncFunction) {
+            return isChange.then((isChangeAsync) => {
+                return onIdleResult(isChangeAsync, this, req, res, prev);
+            })
+        } else
+            return onIdleResult(isChange, this, req, res, prev);
+    }
 
+
+    if (checkout == null) {
+        function onInitResult(thisArgs, req, res, prev) {
+            var result = finalFunction.call(thisArgs, req, res, prev);
+            completeCheckout();
+            return result;
+        }
+
+    } else {
+        function onInitResult(thisArgs, req, res, prev) {
+            var result = finalFunction.call(thisArgs, req, res, prev);
+            handlerHolder[index] = idleFunction;
             return result;
         }
     }
-    return idleFunction;
+
+    function initFunction(req, res, prev) {
+        var initResult = onCreate.call(this);
+        if (initResult instanceof AsyncFunction) {
+            return initResult.then(() => {
+                return onInitResult(this, req, res, prev);
+            })
+        } else
+            return onInitResult(this, req, res, prev);
+    }
+
+    if (onCreate != null) {
+        return initFunction
+    } else {
+        return finalFunction;
+    }
 }
 
 module.exports = eventWrapper;

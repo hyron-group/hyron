@@ -6,19 +6,19 @@ const urlEncodedParser = require("./lib/urlEncodedParser");
 const dynamicUrl = require('../../lib/dynamicURL');
 const cookie = require('cookie');
 
-var handleHolder = {};
+var parserHolder = {};
 
 function handle(req, res, prev) {
     return new Promise((resolve, reject) => {
         var eventName = this.$eventName;
-        var paramParser = handleHolder[eventName];
+        var paramParser = parserHolder[eventName];
         paramParser(resolve, reject, req);
     });
 };
 
 function prepareHandle(eventName, argList) {
     var handle = function (resolve, reject, req) {
-        getDataFromRequest(req, argsList, (data, err) => {
+        getDataFromRequest(req, argList, (data, err) => {
             if (err != null) reject(err);
             var standardInput = resortDataIndex(data, argList);
             resolve(standardInput);
@@ -26,19 +26,28 @@ function prepareHandle(eventName, argList) {
     };
 
 
-    handleHolder[eventName] = handle;
+    parserHolder[eventName] = handle;
     return handle;
 }
 
-function onCreate(cfg) {
+function checkout() {
+    var eventName = this.$eventName;
+    console.log(parserHolder);
+    return parserHolder[eventName] == null;
+}
+
+function onCreate() {
+    console.log('onCreate');
     var eventName = this.$eventName;
     var executer = this.$executer;
     var argList = argumentParser(executer.toString());
-    return prepareHandle(eventName, argList)
+    var handler = prepareHandle(eventName, argList);
+    parserHolder[eventName] = handler;
+    console.log(parserHolder[eventName])
 }
 
-function getParamWrapper(req, argsList, onComplete){
-    
+function getParamWrapper(req, argsList, onComplete) {
+
 }
 
 function getDataFromRequest(req, argsList, onComplete) {
@@ -63,8 +72,12 @@ function getDataFromRequest(req, argsList, onComplete) {
 }
 
 function getCookieData(req) {
-    var $cookie = cookie.parse(req.headers.cookie);
-    return {$cookie};
+    var reqCookies = req.headers.cookie;
+    if (reqCookies == null) return;
+    var $cookie = cookie.parse(reqCookies);
+    return {
+        $cookie
+    };
 }
 
 function getQueryData(req) {
@@ -112,6 +125,7 @@ function resortDataIndex(data, argList) {
 
 module.exports = {
     onCreate,
+    checkout,
     handle,
     global: true
 }

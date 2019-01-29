@@ -19,12 +19,13 @@ hyron is an extremely powerful framework that helps you develop an extremely fas
 
 # Release
 
--   restructure + refactor
 -   more power for appcfg.yaml
 -   more power for addons
 -   build app from json
 -   supported for rest api
 -   supported for https and http2
+-   supported path in getConfig
+-   restructure + refactor
 -   fix bug
 
 # Example

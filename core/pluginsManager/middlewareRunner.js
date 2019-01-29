@@ -1,18 +1,17 @@
 const AsyncFunction = (async () => {}).constructor;
 
-function runMiddleware(func, middlewareParams) {
-
-    var {
-        args,
-        thisArgs,
-        onComplete,
-        onFailed
-    } = middlewareParams;
+function runFunction(
+    func,
+    thisArgs,
+    args,
+    onComplete,
+    onFailed) {
 
     var result = args[2];
 
     if (func == null)
-        onComplete(args[2]);
+        return onComplete(args[2]);
+
     if (result instanceof Promise || result instanceof AsyncFunction) {
         result
             .then(data => {
@@ -24,24 +23,41 @@ function runMiddleware(func, middlewareParams) {
                 onFailed(err);
             })
     } else {
-        result = func.apply(thisArgs, args);
-        onComplete(result);
+        try {
+            result = func.apply(thisArgs, args);
+            onComplete(result);
+        } catch (err) {
+            onFailed(err);
+        }
     }
 
 }
 
-function runNextMiddleware(handlersIndex, handlerHolder, middlewareParams, i = 0) {
+function runNextMiddleware(
+    handlersIndex,
+    handlerHolder,
+    thisArgs,
+    args,
+    onComplete,
+    onFailed,
+    i = 0) {
     var indexInStorage = handlersIndex[i];
     if (!args[1].finished) {
         if (indexInStorage != null) {
             var execute = handlerHolder[indexInStorage];
-            middlewareParams.onComplete = function skip(result) {
+            runFunction(execute, thisArgs, args, (result) => {
                 args[2] = result;
-                runNextMiddleware(handlersIndex, handlerHolder, middlewareParams, i + 1);
-            }
-            runMiddleware(execute, middlewareParams);
+                runNextMiddleware(
+                    handlersIndex, 
+                    handlerHolder, 
+                    thisArgs, 
+                    args, 
+                    onComplete, 
+                    onFailed, 
+                    i + 1);
+            }, onFailed);
         } else {
-            middlewareParams.onComplete(args[2]);
+            onComplete(args[2]);
         }
     }
 }

@@ -1,5 +1,5 @@
 const crc = require("crc");
-const runNextMiddleware = require('./middlewareRunner');
+const startRunMiddleware = require('./middlewareRunner');
 const eventWrapper = require('./eventWrapper');
 const parseRequireMiddleware = require('./prepareRequireMiddleware');
 
@@ -19,28 +19,28 @@ var backwareHandleIndex = {};
     handlerHolder[0] = syncFunc;
 })();
 
-function addMiddleware(name, meta, config, isFontware = true) {
+function addMiddleware(pluginsName, meta, isFontware = true) {
     if (meta == null) return;
     var isGlobal = meta.global || false;
 
-    var index = indexOfHandle(name);
+    var index = indexOfHandle(pluginsName);
     if (index == -1) {
         index = handlerHolder.length;
-        var handle = eventWrapper(name, index, handlerHolder, config, meta);
+        var handle = eventWrapper(index, handlerHolder, meta);
         handlerHolder.push(handle);
     } else {
-        handlerHolder[index] = eventWrapper(name, index, handlerHolder, config, meta);
+        handlerHolder[index] = eventWrapper(index, handlerHolder, meta);
     }
 
     if (isGlobal) {
-        if (isFontware) globalFontWareIndex[index] = name;
-        else globalBackWareIndex[index] = name;
+        if (isFontware) globalFontWareIndex[index] = pluginsName;
+        else globalBackWareIndex[index] = pluginsName;
     } else {
-        if (isFontware) customFontWareIndex[name] = index;
-        else customBackWareIndex[name] = index;
+        if (isFontware) customFontWareIndex[pluginsName] = index;
+        else customBackWareIndex[pluginsName] = index;
     }
     console.info(
-        `-> Registered ${isFontware ? "fontware" : "backware"} '${name}' ${
+        `-> Registered ${isFontware ? "fontware" : "backware"} '${pluginsName}' ${
                     isGlobal ? "as global" : ""
                 }`
     );
@@ -48,15 +48,18 @@ function addMiddleware(name, meta, config, isFontware = true) {
 
 function runMiddleware(
     eventName,
-    middlewareArgs,
-    isFontware
+    middlewareArgs
 ) {
+    var {
+        reqMiddleware,
+        thisArgs,
+        args,
+        onComplete,
+        onFailed,
+        isFontware
+    } = middlewareArgs;
     var handlersIndex = prepareHandlerIndex(eventName, reqMiddleware, isFontware);
-    try {
-        runNextMiddleware(handlersIndex, handlerHolder, middlewareArgs);
-    } catch (err) {
-        onFailed(err);
-    }
+    startRunMiddleware(handlersIndex, handlerHolder, thisArgs, args, onComplete, onFailed);
 }
 
 function indexOfHandle(name) {
@@ -87,20 +90,23 @@ function indexOfHandle(name) {
     return -1;
 }
 
-function addAnonymousMiddleware(handle, isFontware) {
-
-    var representName =
-        isFontware ? "fw-" : "bw-" +
+function getUniqueRepresentName(isFontware, handle) {
+    return isFontware ? "fw-" : "bw-" +
         crc
         .crc24(handle.toString())
         .toString(16);
+}
+
+function addAnonymousMiddleware(handle, isFontware) {
+
+    var representName = getUniqueRepresentName(isFontware, handle);
 
     var meta = {
-        handle: handle,
+        handle,
         global: false
     };
 
-    addMiddleware(representName, handle, meta, isFontware);
+    addMiddleware(representName, meta, isFontware);
 
     return representName;
 }
@@ -111,7 +117,7 @@ function prepareHandlerIndex(eventName, reqMidWare, isFontware) {
     if (isFontware) {
         handlersIndex = fontwareHandleIndex[eventName];
     } else {
-        handlerHolder = backwareHandleIndex[eventName];
+        handlersIndex = backwareHandleIndex[eventName];
     }
     if (handlersIndex != null) {
         return handlersIndex;
