@@ -1,8 +1,9 @@
-var a = {
-    b:"c",
-    c:"d"
-}
+const hyron = require('../');
 
-const cookie = require('cookie');
+var app = hyron.getInstance();
 
-console.log(cookie.serialize("data"))
+app.enableServices({
+    demo: class {
+        
+    }
+})

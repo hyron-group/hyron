@@ -1,4 +1,7 @@
-enum SupportedMethod {
+import { ClientRequest, ServerResponse, Server } from "http";
+import { AsyncFunc } from "mocha";
+
+declare enum SupportedMethod {
     // query type
     GET,
     HEAD,
@@ -12,53 +15,123 @@ enum SupportedMethod {
     ALL
 }
 
-import { ClientRequest, ServerResponse, Server } from "http";
-
+/**
+ * path to a resource from root
+ */
 type Path = string;
 
+/**
+ * contains processing functions that extend the functionality of the hyron, by allowing access and editing to the resources that the Hyron manages.
+ */
 type AddonsHandler = (config: object) => void;
 
 type onCompleteCheckout = () => void;
 interface Middleware {
+    /**
+     * This function will be called each time request has make
+     */
     handle: (
+        /**
+         * corresponding to the http ClientRequest
+         */
         req: ClientRequest,
+        /**
+         * corresponding to the http ServerResponse
+         */
         res: ServerResponse,
-        prev: any,
-        config: object
+        /**
+         * Value returned by previous plugins. or the mainHandler result if it is the first backware
+         */
+        prev: any
     ) => any;
-    onCreate: (config: object) => any;
-    checkout: (done: onCompleteCheckout) => boolean;
+    /**
+     * Called for the first time request of current instance. Used to init value or do something
+     */
+    onCreate: (config: object) => void | Promise<void>;
+    /**
+     * Used to detect changes. If result is true, then onCreate will be recalled
+     */
+    checkout: (done: onCompleteCheckout) => boolean | Promise<boolean>;
+    /**
+     * Which filter to use for the prev data type will be handled by this middleware. If not in the list, this middleware will be ignored
+     */
     typeFilter: Array<any>;
 }
 interface PluginsMeta {
+    /**
+     * Mark that middleware is called before mainHandler called when request has make
+     */
     fontware: Middleware;
+    /**
+     * Mark that middleware is called after mainHandler called when request has make
+     */
     backware: Middleware;
 }
 
-type mainExecuter = (...args) => any;
+/**
+ * Is the main function defined in the HyronService, which contains the main processing logic for a router
+ */
+type mainHandler = (...args) => any;
+
+/**
+ * Used to describe information about routers that will be registered processed by hyron
+ */
 interface RouterMeta {
+    /**
+     * Indicates which method this router will listen to
+     */
     method: SupportedMethod | Array<SupportedMethod>;
-    fontware: Array<string>;
-    backware: Array<string>;
+    /**
+     * Use to enable middleware or turn off global middleware if you add '!' at the beginning
+     */
+    fontware: Array<string | Function>;
+    /**
+     * Use to enable middleware or turn off global middleware if you add '!' at the beginning
+     */
+    backware: Array<string | Function>;
+    /**
+     * Use to enable plugins or turn off global plugins if you add '!' at the beginning
+     */
     plugins: Array<string>;
-    handle: mainExecuter;
+    /**
+     * Used to register mainHandler for this router. This method has a higher priority than the same name method in this service
+     */
+    handle: mainHandler;
+    /**
+     * Use to customize the path for this router. If this method has not been defined. This method should be limited to ensure the rigor of the application
+     */
     path: string;
+    /**
+     * Use to customize the path for this router. If this method has not been defined. This method should be limited to ensure the rigor of the application. a dynamic path is defined by the syntax /:param_name/
+     */
     params: string;
 }
 interface RequestConfig {
     [methodName: string]: string | RouterMeta;
 }
-class HyronService {
+export interface HyronService {
+    /**
+     * Used to indicate which routers will be listening for this service, and configure the information for them
+     */
     static requestConfig(): RequestConfig;
-    constructor(...args);
-    [methodName: string]: mainExecuter;
+    /**
+     * Used to initialize an instance, providing an interactive interface for other plugins. It is used as a regular javascript class
+     */
+    constructor(...args): any;
+    /**
+     * MainHandlers can be listened on the same name router declared in the requestConfig, or interactive interface for other services
+     */
+    [methodName: string]: mainHandler;
 }
 
-type unofficialService = (config: object) => void;
+/**
+ * The service is loosely managed by the hyron, since it is not yet complete. Therefore, features like addons, or plugins do not work on this service
+ */
+type unofficialService = (app: Server, config: object) => void;
 
 type onServerStarted = () => void;
 
-class ModuleManager {
+declare class ModuleManager {
     /**
      * Used to create servers with json file
      * If module is missing, hyron will auto install it
