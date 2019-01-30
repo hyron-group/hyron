@@ -25,6 +25,9 @@ type Path = string;
  */
 type AddonsHandler = (config: object) => void;
 
+/**
+ * end checkout of this middle, switch to the smallest optimal version
+ */
 type onCompleteCheckout = () => void;
 interface Middleware {
     /**
@@ -109,7 +112,7 @@ interface RouterMeta {
 interface RequestConfig {
     [methodName: string]: string | RouterMeta;
 }
-export interface HyronService {
+interface HyronService {
     /**
      * Used to indicate which routers will be listening for this service, and configure the information for them
      */
@@ -130,6 +133,8 @@ export interface HyronService {
 type unofficialService = (app: Server, config: object) => void;
 
 type onServerStarted = () => void;
+
+
 
 declare class ModuleManager {
     /**

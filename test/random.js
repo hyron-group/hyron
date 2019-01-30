@@ -1,9 +1,15 @@
-const hyron = require('../');
+// const hyron = require('../');
 
-var app = hyron.getInstance();
+// var app = hyron.getInstance();
 
-app.enableServices({
-    demo: class {
-        
-    }
-})
+// app.enableServices()
+
+
+/**
+ * @module foo
+
+ * @see {module:foo.example_type}
+
+ */
+function myFunction() {}
+
