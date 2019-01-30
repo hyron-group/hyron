@@ -54,11 +54,17 @@ const RESPONSE_HANDLE = {
     $sendDate(data, res) {
         res.sendDate(data);
     },
-    $status(data, res) {
-        res.statusCode = data;
+    $response(data, res){
+        data(res);
     },
     $timeout(data, res) {
         res.setTimeout(data);
+    },
+    $socket(data, res) {
+        data(res.socket);
+    },
+    $status(data, res) {
+        res.statusCode = data;
     },
     $type(data, res) {
         res.setHeader("Content-Type", data);

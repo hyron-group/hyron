@@ -1,10 +1,11 @@
 addons:
-    tcp-supporter: "./addons/tcp-supporter/tcp.addons.js"
+    tcp_supporter: "./addons/tcp-supporter/tcp.addons.js"
 
 plugins:
     param_parser: "./plugins/param-parser"
-    custom_type: "./plugins/custom-response"
+    custom_response: "./plugins/custom-response"
 
-ref-plug: <~./test/appInstance.json>
+ref-plug:
+    <~./test/appInstance.json>
     # $my-plug:
     #     key: "val"
