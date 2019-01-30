@@ -33,18 +33,15 @@ function eventWrapper(index, handlerHolder, pluginsMeta) {
 
     function onIdleResult(isChange, thisArgs, req, res, prev) {
         if (isChange) {
-            console.log("isChange");
-            return initFunction.call(this, req, res, prev);
+            return initFunction.call(thisArgs, req, res, prev);
         } else {
-            return finalFunction.call(this, req, res, prev);
+            return finalFunction.call(thisArgs, req, res, prev);
         }
     }
 
     function idleFunction(req, res, prev) {
-        console.log('idle')
 
         var isChange = checkout.call(this, completeCheckout);
-        console.log(isChange);
         if (isChange instanceof Promise ||
             isChange instanceof AsyncFunction) {
             return isChange.then((isChangeAsync) => {

@@ -1,9 +1,13 @@
-async function a(){
-    return 'a'
-};
+function a(b){
+    console.log("a:");
+}
 
-a().then((v)=>{
-    return "baaa"
-}).then(d=>{
-    console.log("data : "+d)
-})
+function b(c){
+    console.log("b:")
+}
+
+function c(v){
+    console.log("v:"+v)
+}
+
+a(b(c("hello world")))

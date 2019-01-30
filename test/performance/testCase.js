@@ -6,6 +6,7 @@ module.exports = class {
             getQueryType : "get",
             postRaw : "post",
             postUpload : "post",
+            getCookieData : "get",
             postUrlEncoding : "post",
             postMultipart : "post",
             restParams : {
@@ -24,7 +25,11 @@ module.exports = class {
     }
 
     getQueryType(args){
-        return args;
+        return JSON.stringify(args, null, 4);
+    }
+
+    getCookieData($cookie){
+        return $cookie;
     }
 
     postRaw($body){

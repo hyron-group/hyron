@@ -1,11 +1,25 @@
 const compare = require('performance-tools');
 
-function f(){
-    return this.a;
+function asn(){
+    return new Promise((resolve)=>{
+        setTimeout(()=>{
+            resolve("done");
+        }, 0)
+    })
 }
 
-function g(a){
-    return a;
+function asn2(cb){
+    setTimeout(() => {
+        cb("done")
+    }, 0);
+}
+
+await function f(){
+    return await asn;
+}
+
+await function g(a){
+    return asn2;
 }
 
 compare.comparator({
