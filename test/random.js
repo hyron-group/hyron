@@ -1,13 +1,8 @@
-function a(b){
-    console.log("a:");
+var a = {
+    b:"c",
+    c:"d"
 }
 
-function b(c){
-    console.log("b:")
-}
+const cookie = require('cookie');
 
-function c(v){
-    console.log("v:"+v)
-}
-
-a(b(c("hello world")))
+console.log(cookie.serialize("data"))

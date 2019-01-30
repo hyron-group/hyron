@@ -1,24 +1,84 @@
+const cookie = require('cookie');
+
 const RESPONSE_HANDLE = {
-    $type: (data, res) => {
-        res.setHeader("Content-Type", data);
+    $addTrailers(data, res) {
+        res.addTrailers(data);
     },
-    $data: (data, res) => {
-        res.write(data);
+    $cookie(data, res) {
+        var {
+            content,
+            options
+        } = data;
+        var serializeCookie = [];
+        for (var key in content) {
+            var val = content[key];
+            serializeCookie.push(cookie.serialize(key, val, options));
+        }
+        res.setHeader("Set-Cookie", serializeCookie);
     },
-    $status: (data, res) => {
-        res.statusCode = data;
+    $data(data, res) {
+        if (data instanceof Array) {
+            res.write.apply(null, data);
+        } else {
+            res.write(data);
+        }
     },
-    $headers: (data, res) => {
+    $end(data, res) {
+        if (data instanceof Array) {
+            res.end.apply(null, data);
+        } else res.end(data);
+    },
+
+    $headers(data, res) {
         for (var key in data) {
             res.setHeader(key, data[key]);
         }
     },
-    $message: (data, res) => {
+    $headersSent(data, res) {
+        res.headersSent(data);
+    },
+
+    $message(data, res) {
         res.statusMessage = data;
     },
-    $redirect: (data, res) => {
+    $redirect(data, res) {
         res.statusCode = 302;
         res.setHeader("Location", data);
+    },
+    $removeHeader(data, res) {
+        if (data != null)
+            data.forEach(field => {
+                res.removeHeader(field);
+            })
+    },
+    $sendDate(data, res) {
+        res.sendDate(data);
+    },
+    $status(data, res) {
+        res.statusCode = data;
+    },
+    $timeout(data, res) {
+        res.setTimeout(data);
+    },
+    $type(data, res) {
+        res.setHeader("Content-Type", data);
+    },
+    $writeHead(data, res) {
+        res.apply(null, data);
+    },
+    $writeProcessing(data, res) {
+        if (data)
+            res.writeProcessing();
+    },
+    $writeContinue(data, res) {
+        if (data)
+            res.writeContinue();
+    },
+    $onClose(data, res) {
+        res.on("close", data);
+    },
+    $onFinish(data, res) {
+        res.on("finish", data);
     }
 }
 
