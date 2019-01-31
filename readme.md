@@ -82,3 +82,5 @@ Donate : https://paypal.me/thangdjw
 <b style="color : red"> Bug report</b> : https://goo.gl/forms/zhANKd3xLO0bD9Dy2
 
 Check out [contributing guide](https://github.com/hyron-group/hyron/blob/master/CONTRIBUTING.md) to get an overview of how to contribute to Hyron.
+<script src="https://liberapay.com/thangdjw/widgets/button.js"></script>
+<noscript><a href="https://liberapay.com/thangdjw/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>
