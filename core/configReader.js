@@ -1,14 +1,14 @@
 const fs = require("fs");
 const yaml = require("yaml");
 const CONFIG_FILE_NAME = "appcfg.yaml";
-const objectEditor = require("./objectEditor");
+const objectEditor = require("../lib/objectEditor");
 
 var appConfig = {};
 
 function loadDefaultConfig() {
-    readConfig(`./node_modules/hyron`);
-    loadOrgzModulesConfig("./node_modules/@hyron");
-    readConfig("./");
+    loadConfig(`./node_modules/hyron`);
+    loadOrganizationModulesConfig("./node_modules/@hyron");
+    loadConfig("./");
 }
 
 function referenceField(map) {
@@ -69,13 +69,13 @@ function replaceSelfField(paths, val, map) {
     }
 }
 
-function loadOrgzModulesConfig(path) {
+function loadOrganizationModulesConfig(path) {
     try {
         var orgzModulesList = fs.readdirSync(path);
         if (orgzModulesList != null)
             orgzModulesList.forEach(moduleName => {
                 try {
-                    readConfig(moduleName, path + "/" + moduleName);
+                    loadConfig(moduleName, path + "/" + moduleName);
                 } catch (err) {
                     console.error("cant load module " + moduleName);
                 }
@@ -94,12 +94,12 @@ function setConfig(cfg) {
     Object.assign(appConfig, cfg);
 }
 
-function readConfig(path, moduleName) {
+function loadConfig(path, moduleName) {
     try {
         var pathStat = fs.statSync(path);
         if (pathStat.isFile()) {
             path = path.substr(0, path.lastIndexOf("\\"));
-            readConfig(path, moduleName);
+            loadConfig(path, moduleName);
         } else if (pathStat.isDirectory()) {
             var files = fs.readdirSync(path);
             if (files.includes(CONFIG_FILE_NAME)) {
@@ -121,6 +121,6 @@ loadDefaultConfig();
 
 module.exports = {
     getConfig,
-    readConfig,
+    loadConfig,
     setConfig
 };
