@@ -10,7 +10,7 @@ const {
 } = require('../../lib/completeUrl');
 const httpEventWrapper = require('./eventWrapper');
 const dynamicUrl = require('../../lib/dynamicURL');
-const configReader = require('../../lib/configReader');
+const moduleManager = require('../ModulesManager');
 
 
 /**
@@ -21,7 +21,7 @@ class RouterFactory {
     constructor(serverCfg) {
         Object.assign(this, serverCfg);
         this.listener = new Map();
-        this.isDevMode = configReader.readConfig("environment", "dev") != "production";
+        this.isDevMode = moduleManager.getConfig("environment", "dev") != "production";
     }
 
     getListener(eventName) {
@@ -95,7 +95,7 @@ class RouterFactory {
             configModel.method.forEach(entryMethodType => {
                 var tempModel = configModel;
                 var url = prepareEventName(
-                    configReader.getConfig("style"),
+                    moduleManager.getConfig("style"),
                     configModel.path,
                     this.prefix,
                     moduleName,
@@ -109,7 +109,7 @@ class RouterFactory {
                 }
 
                 url = entryMethodType + '/' + url;
-                path.build(configReader.getConfig("base_uri"), url, mainHandle);
+                path.build(moduleManager.getConfig("base_uri"), url, mainHandle);
                 tempModel.method = entryMethodType;
                 this.registerRouterByMethod(
                     url,
