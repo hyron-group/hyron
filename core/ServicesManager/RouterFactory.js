@@ -2,8 +2,8 @@ const {
     getUriPath
 } = require("../../lib/queryParser");
 const handleResult = require("./responseHandler");
-const path = require('../../type/path');
-const HTTPMessage = require("../../type/HttpMessage");
+const path = require('../../lib/path');
+const HTTPMessage = require("../../lib/HttpMessage");
 const prepareConfigModel = require('./configParser');
 const {
     prepareEventName
