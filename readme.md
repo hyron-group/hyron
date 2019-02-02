@@ -2,6 +2,8 @@
 
 # Introduction (beta)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5ff0dd832dbd404096785bfc098095b4)](https://app.codacy.com/app/thangdjw/hyron?utm_source=github.com&utm_medium=referral&utm_content=hyron-group/hyron&utm_campaign=Badge_Grade_Settings)
+
 hyron is an extremely powerful framework that helps you develop an extremely fast and easy server app.
 
 # Features
