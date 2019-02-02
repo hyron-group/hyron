@@ -22,48 +22,6 @@ function loadFromFile(buildPath) {
     }
 }
 
-function loadFromObject(appMeta) {
-    var missingAddons = getMissingPackage(appMeta.addons);
-    var missingPlugins = getMissingPackage(appMeta.plugins);
-    var missingServices = getMissingPackage(appMeta.services);
-
-    var missingPackages = [
-        ...Object.keys(missingAddons),
-        ...Object.keys(missingPlugins),
-        ...Object.keys(missingServices),
-    ];
-    if (missingPackages.length == 0) {
-        registerInstance(appMeta);
-    } else {
-        console.warn(`Missing (${missingPackages.length}) : ${missingPackages}`);
-        console.log("Installing missing package ...");
-        Promise.all([
-            startDownload(missingAddons),
-            startDownload(missingPlugins),
-            startDownload(missingServices),
-        ]).then((
-            downloadedAddons,
-            downloadedPlugins,
-            downloadedServices) => {
-            applyChange(appMeta.addons, downloadedAddons);
-            applyChange(appMeta.plugins, downloadedPlugins);
-            applyChange(appMeta.services, downloadedServices);
-
-            console.log("All package downloaded !\n");
-            console.log('------------------------\n');
-
-            if(appMeta.services!=null){
-                registerInstance(appMeta);
-            } else if(appMeta.addons!=null){
-                hyron.enableGlobalAddons(appMeta.addons);
-            }
-            
-        })
-    }
-}
-
-
-
 function applyChange(meta, changedMeta) {
     for (var changedField in changedMeta) {
         meta[changedField] = changedMeta[changedField];
@@ -141,6 +99,47 @@ function startDownload(packageList) {
             console.log("has problem : " + err.message);
         });
     })
+}
+
+
+function loadFromObject(appMeta) {
+    var missingAddons = getMissingPackage(appMeta.addons);
+    var missingPlugins = getMissingPackage(appMeta.plugins);
+    var missingServices = getMissingPackage(appMeta.services);
+
+    var missingPackages = [
+        ...Object.keys(missingAddons),
+        ...Object.keys(missingPlugins),
+        ...Object.keys(missingServices),
+    ];
+    if (missingPackages.length == 0) {
+        registerInstance(appMeta);
+    } else {
+        console.warn(`Missing (${missingPackages.length}) : ${missingPackages}`);
+        console.log("Installing missing package ...");
+        Promise.all([
+            startDownload(missingAddons),
+            startDownload(missingPlugins),
+            startDownload(missingServices),
+        ]).then((
+            downloadedAddons,
+            downloadedPlugins,
+            downloadedServices) => {
+            applyChange(appMeta.addons, downloadedAddons);
+            applyChange(appMeta.plugins, downloadedPlugins);
+            applyChange(appMeta.services, downloadedServices);
+
+            console.log("All package downloaded !\n");
+            console.log('------------------------\n');
+
+            if(appMeta.services!=null){
+                registerInstance(appMeta);
+            } else if(appMeta.addons!=null){
+                hyron.enableGlobalAddons(appMeta.addons);
+            }
+            
+        })
+    }
 }
 
 

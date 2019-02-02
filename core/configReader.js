@@ -5,15 +5,50 @@ const objectEditor = require("../lib/objectEditor");
 
 var appConfig = {};
 
-function loadDefaultConfig() {
-    loadConfig(`./node_modules/hyron`);
-    loadOrganizationModulesConfig("./node_modules/@hyron");
-    loadConfig("./");
+function replaceSelfField(paths, val, map) {
+    var match;
+
+    if ((match = /<#([\w\d\-.]+)>/g.exec(val))) {
+        var refPath = match[1];
+        var refVal = objectEditor.getValue(refPath, map);
+        objectEditor.replaceValue(paths, map, refVal);
+    }
+}
+
+function importValue(paths, val, map) {
+    var match;
+
+    if ((match = /<~([\w\d\-./]+)>/g.exec(val))) {
+        var importLocal = match[1];
+        var fileContent = fs.readFileSync(importLocal).toString();
+        var importContent;
+        try {
+            importContent = JSON.parse(fileContent);
+        } catch {
+            importContent = fileContent;
+        }
+        objectEditor.replaceValue(paths, map, importContent);
+    }
+}
+
+function lockAssignValue(paths, map) {
+    var key = paths[paths.length - 1];
+    if (/\$[\w\d.\-]*/.test(key)) {
+        objectEditor.replaceValue(
+            paths.slice(0, paths.length - 1),
+            map,
+            childMap => {
+                Object.freeze(childMap[key]);
+            }
+        );
+    }
 }
 
 function referenceField(map) {
     function ref(obj, paths = []) {
-        if (obj == null) return null;
+        if (obj == null) {
+            return null;
+        }
         for (var key in obj) {
             var curPaths = paths.concat(key);
             var val = obj[key];
@@ -30,68 +65,27 @@ function referenceField(map) {
     return ref(map);
 }
 
-function lockAssignValue(paths, map) {
-    var key = paths[paths.length - 1];
-    if (/\$[\w\d.\-]*/.test(key)) {
-        objectEditor.replaceValue(
-            paths.slice(0, paths.length - 1),
-            map,
-            childMap => {
-                Object.freeze(childMap[key]);
-            }
-        );
-    }
-}
-
-function importValue(paths, val, map) {
-    var match;
-
-    if ((match = /<~([\w\d\-./]+)>/g.exec(val))) {
-        var importLocal = match[1];
-        var fileContent = fs.readFileSync(importLocal).toString();
-        var importContent
-        try {
-            importContent = JSON.parse(fileContent);
-        } catch {
-            importContent = fileContent;
-        }
-        objectEditor.replaceValue(paths, map, importContent);
-    }
-}
-
-function replaceSelfField(paths, val, map) {
-    var match;
-
-    if ((match = /<#([\w\d\-.]+)>/g.exec(val))) {
-        var refPath = match[1];
-        var refVal = objectEditor.getValue(refPath, map);
-        objectEditor.replaceValue(paths, map, refVal);
-    }
-}
-
-function loadOrganizationModulesConfig(path) {
-    try {
-        var orgzModulesList = fs.readdirSync(path);
-        if (orgzModulesList != null)
-            orgzModulesList.forEach(moduleName => {
-                try {
-                    loadConfig(moduleName, path + "/" + moduleName);
-                } catch (err) {
-                    console.error("cant load module " + moduleName);
-                }
-            });
-    } catch(err){
-
-    }
-    
-}
-
 function getConfig(path) {
     return objectEditor.getValue(path, appConfig);
 }
 
 function setConfig(cfg) {
     Object.assign(appConfig, cfg);
+}
+
+function loadConfigFromModule(path, moduleName){
+    var files = fs.readdirSync(path);
+    if (files.includes(CONFIG_FILE_NAME)) {
+        var data = fs.readFileSync(path + "/" + CONFIG_FILE_NAME);
+        var cfg = yaml.parse(data.toString());
+        if (moduleName != null) {
+            var moduleCfg = {};
+            moduleCfg[moduleName] = cfg;
+            cfg = moduleCfg;
+        }
+        cfg = referenceField(cfg);
+        Object.assign(appConfig, cfg);
+    }
 }
 
 function loadConfig(path, moduleName) {
@@ -101,23 +95,33 @@ function loadConfig(path, moduleName) {
             path = path.substr(0, path.lastIndexOf("\\"));
             loadConfig(path, moduleName);
         } else if (pathStat.isDirectory()) {
-            var files = fs.readdirSync(path);
-            if (files.includes(CONFIG_FILE_NAME)) {
-                var data = fs.readFileSync(path + "/" + CONFIG_FILE_NAME);
-                var cfg = yaml.parse(data.toString());
-                if (moduleName != null) {
-                    var moduleCfg = {};
-                    moduleCfg[moduleName] = cfg;
-                    cfg = moduleCfg;
+            loadConfigFromModule(path, moduleName)
+        }
+    } catch (err) {
+        // skip if file not exist
+    }
+}
+
+function loadOrganizationModulesConfig(path) {
+    try {
+        var orgzModulesList = fs.readdirSync(path);
+        if (orgzModulesList != null){
+            orgzModulesList.forEach((moduleName) => {
+                try {
+                    loadConfig(moduleName, path + "/" + moduleName);
+                } catch (err) {
+                    console.error("cant load module " + moduleName);
                 }
-                cfg = referenceField(cfg);
-                Object.assign(appConfig, cfg);
-            }
+            });
         }
     } catch (err) {}
 }
 
-loadDefaultConfig();
+(function loadDefaultConfig() {
+    loadConfig("./node_modules/hyron");
+    loadOrganizationModulesConfig("./node_modules/@hyron");
+    loadConfig("./");
+})();
 
 module.exports = {
     getConfig,

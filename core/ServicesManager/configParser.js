@@ -22,7 +22,7 @@ function prepareMethod(data, method, funcPath) {
         );
 }
 
-function inheritanceFromGeneralConfig(data, generalConfig, methodPath) {
+function inheritFromGeneralConfig(data, generalConfig, methodPath) {
     if (generalConfig == null) return;
     if (data.method.length==0) {
         if (generalConfig.method == null) data.method = ["GET"];
@@ -41,7 +41,7 @@ function loadFromRouteConfig(data, routeConfig, methodPath) {
             method: routeConfig
         }
     }
-    if (routeConfig.constructor.name != "Object") {
+    if (routeConfig.constructor.name !== "Object") {
         return;
     }
     prepareMethod(data, routeConfig.method, methodPath);
@@ -61,9 +61,9 @@ function loadFromRouteConfig(data, routeConfig, methodPath) {
 }
 
 function prepareConfigModel(methodPath, routeConfig, generalConfig) {
-    if (typeof routeConfig != "string" &&
-        routeConfig.constructor.name != "Array" &&
-        routeConfig.constructor.name != "Object") {
+    if (typeof routeConfig !== "string" &&
+        routeConfig instanceof Array &&
+        routeConfig.constructor.name !== "Object") {
         console.warn(
             `[warning] Don't support for config type at ${methodPath}`
         );
@@ -80,7 +80,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig) {
     }
 
     loadFromRouteConfig(config, routeConfig, methodPath);
-    inheritanceFromGeneralConfig(config, generalConfig, methodPath);
+    inheritFromGeneralConfig(config, generalConfig, methodPath);
 
     return config;
 }

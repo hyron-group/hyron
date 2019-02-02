@@ -1,4 +1,4 @@
-import { ClientRequest, ServerResponse, Server } from "http";
+import { IncomingMessage, ServerResponse, Server } from "http";
 import { AsyncFunc } from "mocha";
 
 declare enum SupportedMethod {
@@ -35,9 +35,9 @@ interface Middleware {
      */
     handle: (
         /**
-         * corresponding to the http ClientRequest
+         * corresponding to the http IncomingMessage
          */
-        req: ClientRequest,
+        req: IncomingMessage,
         /**
          * corresponding to the http ServerResponse
          */

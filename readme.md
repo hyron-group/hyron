@@ -1,8 +1,10 @@
-<img src='https://i.imgur.com/mAjPWAu.png' width='240px'/>
+<div style = "text-align:center">
+    <img src='https://i.imgur.com/mAjPWAu.png' width='240px'/>
+</div>
 
 # Introduction (beta)
 
-hyron is an extremely powerful framework that helps you develop an extremely fast and easy server app.
+Hyron is an extremely powerful framework that helps you develop an extremely fast and easy server app.
 
 # Features
 
@@ -71,16 +73,16 @@ A router register on :
 
 > GET http://localhost:3000/demo/sayHello?yourName=[your_name]
 
-## Reference Document
+# Reference Document
 
 See more at : https://hyron.gitbook.io/reference
 
-## Contributing to Hyron
+# Contributing to Hyron
 
-Donate : https://paypal.me/thangdjw
+Check out [contributing guide](https://hyron.gitbook.io/reference/contribution) to get an overview of how to contribute to Hyron.
 
-<b style="color : red"> Bug report</b> : https://goo.gl/forms/zhANKd3xLO0bD9Dy2
+We will be happy to receive your small investment to help your business and product development take place more quickly and smoothly.
 
-Check out [contributing guide](https://github.com/hyron-group/hyron/blob/master/CONTRIBUTING.md) to get an overview of how to contribute to Hyron.
 <script src="https://liberapay.com/thangdjw/widgets/button.js"></script>
+
 <noscript><a href="https://liberapay.com/thangdjw/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>

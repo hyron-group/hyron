@@ -19,31 +19,41 @@ var backwareHandleIndex = {};
     handlerHolder[0] = syncFunc;
 })();
 
-function addMiddleware(pluginsName, meta, isFontware = true) {
-    if (meta == null) return;
-    var isGlobal = meta.global || false;
+function addMiddleware(pluginsName, pluginsMeta, isFontware) {
+    if (isFontware == null) {
+        var {
+            fontware, backware
+        } = pluginsMeta;
 
-    var index = indexOfHandle(pluginsName);
-    if (index == -1) {
-        index = handlerHolder.length;
-        var handle = eventWrapper(index, handlerHolder, meta);
-        handlerHolder.push(handle);
-    } else {
-        handlerHolder[index] = eventWrapper(index, handlerHolder, meta);
+        addMiddleware(pluginsName, fontware, true);
+        addMiddleware(pluginsName, backware, false);
     }
+    else {
+        if (pluginsMeta == null) return;
+        var isGlobal = pluginsMeta.global || false;
 
-    if (isGlobal) {
-        if (isFontware) globalFontWareIndex[index] = pluginsName;
-        else globalBackWareIndex[index] = pluginsName;
-    } else {
-        if (isFontware) customFontWareIndex[pluginsName] = index;
-        else customBackWareIndex[pluginsName] = index;
+        var index = indexOfHandle(pluginsName);
+        if (index == -1) {
+            index = handlerHolder.length;
+            var handle = eventWrapper(index, handlerHolder, pluginsMeta);
+            handlerHolder.push(handle);
+        } else {
+            handlerHolder[index] = eventWrapper(index, handlerHolder, pluginsMeta);
+        }
+
+        if (isGlobal) {
+            if (isFontware) globalFontWareIndex[index] = pluginsName;
+            else globalBackWareIndex[index] = pluginsName;
+        } else {
+            if (isFontware) customFontWareIndex[pluginsName] = index;
+            else customBackWareIndex[pluginsName] = index;
+        }
+        console.info(
+            `-> Registered ${isFontware ? "fontware" : "backware"} '${pluginsName}' ${
+                        isGlobal ? "as global" : ""
+                    }`
+        );
     }
-    console.info(
-        `-> Registered ${isFontware ? "fontware" : "backware"} '${pluginsName}' ${
-                    isGlobal ? "as global" : ""
-                }`
-    );
 }
 
 function runMiddleware(

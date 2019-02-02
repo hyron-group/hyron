@@ -21,17 +21,18 @@ class AddonsManager {
         handler.call(this.instance, config);
     }
 
-    registerGlobalAddons(name, handler, config) {
+    static registerGlobalAddons(name, handler, config) {
         globalAddons.push({
             handler,
             config
         });
+        console.log(`-> Registered addons '${name}' as global`);
     }
 
     static runGlobalAddons(instance) {
         globalAddons.forEach((addons)=>{
             var {handler, config} = addons;
-            addons.handler.call(instance, addons.config);
+            handler.call(instance, config);
         })
     }
 

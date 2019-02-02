@@ -34,9 +34,6 @@ const RESPONSE_HANDLE = {
             res.setHeader(key, data[key]);
         }
     },
-    $headersSent(data, res) {
-        res.headersSent(data);
-    },
 
     $message(data, res) {
         res.statusMessage = data;
@@ -52,7 +49,7 @@ const RESPONSE_HANDLE = {
             })
     },
     $sendDate(data, res) {
-        res.sendDate(data);
+        res.sendDate = data;
     },
     $response(data, res){
         data(res);

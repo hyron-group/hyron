@@ -86,7 +86,6 @@ class ModuleManager {
         newInstance.plugins = PluginsManager;
         newInstance.services = new ServicesManager(summaryConfig);
 
-        loadModulesFromConfig.call(newInstance);
         AddonsManager.runGlobalAddons(newInstance);
 
         instanceContainer[serverConfig.baseURL] = newInstance;
@@ -159,14 +158,9 @@ class ModuleManager {
                 throw new TypeError(`can't parse plugins '${pluginName}' metadata on type '${typeof pluginsMeta}'`);
             }
 
-            var {
-                fontware,
-                backware
-            } = pluginsMeta;
             var pluginConfig = appConfigReader.getConfig(pluginName);
 
-            this.plugins.addMiddleware(pluginName, fontware, pluginConfig, true);
-            this.plugins.addMiddleware(pluginName, backware, pluginConfig, false);
+            this.plugins.addMiddleware(pluginName, pluginsMeta, pluginConfig);
         });
     }
 
@@ -272,10 +266,33 @@ function setupDefaultListener(instance, server) {
 
 }
 
-function loadModulesFromConfig() {
-    this.enableAddons(appConfigReader.getConfig("addons"));
-    this.enablePlugins(appConfigReader.getConfig("plugins"));
+function loadGlobalAddons(){
+    var addonsList = ModuleManager.getConfig("addons");
+    if(addonsList!=null) {
+        for(var name in addonsList){
+            var modulePath = addonsList[name];
+            var config = ModuleManager.getConfig(name);
+            handler = loadModuleByPath(modulePath, name);
+            AddonsManager.registerGlobalAddons(name, handler, config);
+        }
+    }
 }
+
+function loadGlobalPlugins(){
+    var pluginsList = ModuleManager.getConfig("plugins");
+    if(pluginsList!=null) {
+        for(var name in pluginsList){
+            var modulePath = pluginsList[name];
+            var config = ModuleManager.getConfig(name);
+            pluginsMeta = loadModuleByPath(modulePath, name);
+            PluginsManager.addMiddleware(name, pluginsMeta, config)
+        }
+    }
+}
+
+(function loadModulesFromConfig() {
+    loadGlobalAddons();
+})();
 
 
 module.exports = ModuleManager;
