@@ -3,7 +3,7 @@ const ServicesManager = require("./ServicesManager");
 const PluginsManager = require('./PluginsManager');
 const AddonsManager = require('./AddonsManager');
 const generalSecretKey = require("../lib/generalKey");
-const appConfigReader = require('../lib/configReader');
+const configReader = require('./configReader');
 const loadModuleByPath = require('../lib/moduleLoader');
 
 const {
@@ -18,27 +18,41 @@ var serverContainer = {};
  */
 class ModuleManager {
 
+    constructor(serverConfig) {
+
+        var instanceUrl = getBaseURL(serverConfig);
+        console.log(`\n\n--- ${instanceUrl} ---\n`);
+        var instanceName = serverConfig.host + ":" + serverConfig.port;
+        var instanceConfig = {
+            secret: generalSecretKey(),
+            instanceName,
+            ...configReader.getConfig(instanceName)
+        };
+
+        Object.assign(this, serverConfig, instanceConfig);
+
+        prepareBaseUrl(this);
+
+        this.initServer(http.createServer());
+        this.addons = new AddonsManager(this);
+        this.plugins = PluginsManager;
+        this.services = new ServicesManager(serverConfig);
+
+        AddonsManager.runGlobalAddons(this);
+    }
+
     static build(path) {
         const appLoader = require('./appLoader');
         appLoader(path);
     }
 
     static getInstance(...args) {
-        var newInstance = new ModuleManager();
-
         var serverConfig = {
             protocol: "http",
             host: "localhost",
             port: 3000,
             prefix: "",
         }
-
-        var instanceConfig = {
-            environment: "dev",
-            secret: generalSecretKey(),
-            ...appConfigReader.getConfig(serverConfig.host + ":" + serverConfig.port)
-        };
-
 
         if (args.length == 1) {
             var arg0 = args[0];
@@ -47,59 +61,40 @@ class ModuleManager {
             } else if (typeof arg0 == "number") {
                 serverConfig.port = arg0;
             } else if (typeof arg0 == "string") {
-                var reg = /^([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?/g;
+                var reg = /^([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?/;
 
                 var match = reg.exec(arg0);
-                if (match == null)
+                if (match == null) {
                     throw new TypeError("Cannot parse url from getInstance(..) argument at index 0")
+                }
                 serverConfig = {
                     protocol: match[1],
                     host: match[2],
                     port: match[4],
                     prefix: match[6]
                 }
-            } else if (arg0 == null) {
-                return ModuleManager.getInstance(0);
             } else throw new TypeError(`getInstance(..) argument at index 0 should be a port number, string base url or object instance config`);
         } else if (args.length > 1) {
-            return ModuleManager.getInstance({
-                port: args[0] || instanceConfig.port,
-                host: args[1] || instanceConfig.host,
-                prefix: args[2] || instanceConfig.prefix,
-                protocol: args[3] || instanceConfig.protocol,
-            })
+            serverConfig = {
+                port: args[0] || serverConfig.port,
+                host: args[1] || serverConfig.host,
+                prefix: args[2] || serverConfig.prefix,
+                protocol: args[3] || serverConfig.protocol,
+            }
         }
-
-        serverConfig.baseURL = getBaseURL(serverConfig);
-
-        console.log(`\n\n--- ${serverConfig.baseURL} ---\n`);
-
-
-        var summaryConfig = {
-            ...serverConfig,
-            ...instanceConfig
-        };
-        Object.assign(newInstance, summaryConfig);
-
-        newInstance.initServer(http.createServer());
-        newInstance.addons = new AddonsManager(newInstance);
-        newInstance.plugins = PluginsManager;
-        newInstance.services = new ServicesManager(summaryConfig);
-
-        AddonsManager.runGlobalAddons(newInstance);
-
-        instanceContainer[serverConfig.baseURL] = newInstance;
+        var newInstance = new ModuleManager(serverConfig);
+        instanceContainer[newInstance.base_url] = newInstance;
         return newInstance;
     }
 
     setting(config) {
         if (typeof config != "object") return;
-        appConfigReader.setConfig(config);
+        configReader.setConfig(config);
     }
 
     static getConfig(path, defaultValue) {
         try {
-            var data = appConfigReader.getConfig(path);
+            var data = configReader.getConfig(path);
             if (data === undefined) data = defaultValue;
 
             return data;
@@ -119,14 +114,14 @@ class ModuleManager {
                 addonsHandler = loadModuleByPath(addonsHandler, addonsName);
             }
 
-            var addonsConfig = appConfigReader.getConfig(addonsName)
+            var addonsConfig = configReader.getConfig(addonsName)
             this
                 .addons
                 .registerAddons(addonsName, addonsHandler, addonsConfig);
         }
     }
 
-    static enableGlobalAddons(addonsList){
+    static enableGlobalAddons(addonsList) {
         if (addonsList == null) return;
         if (addonsList.constructor.name != "Object") {
             throw new TypeError('enableAddons(..) args at index 0 must be Object');
@@ -137,7 +132,7 @@ class ModuleManager {
                 addonsHandler = loadModuleByPath(addonsHandler, addonsName);
             }
 
-            var addonsConfig = appConfigReader.getConfig(addonsName)
+            var addonsConfig = configReader.getConfig(addonsName)
             AddonsManager.registerGlobalAddons(addonsHandler, addonsConfig);
         }
     }
@@ -158,7 +153,7 @@ class ModuleManager {
                 throw new TypeError(`can't parse plugins '${pluginName}' metadata on type '${typeof pluginsMeta}'`);
             }
 
-            var pluginConfig = appConfigReader.getConfig(pluginName);
+            var pluginConfig = configReader.getConfig(pluginName);
 
             this.plugins.addMiddleware(pluginName, pluginsMeta, pluginConfig);
         });
@@ -182,7 +177,7 @@ class ModuleManager {
                 routePackage = loadModuleByPath(routePackage, serviceName);
             }
 
-            var serviceConfig = appConfigReader.getConfig(serviceName);
+            var serviceConfig = configReader.getConfig(serviceName);
 
             if (routePackage.requestConfig == null) {
                 // is unofficial service
@@ -209,14 +204,18 @@ class ModuleManager {
     }
 
     initServer(defaultServer) {
-        var key = this.host + ":" + this.port;
-        var server = serverContainer[key];
+        var server = serverContainer[this.instanceName];
         if (server != null) {
             this.app = server;
             return;
         };
         setupDefaultListener(this, defaultServer);
-        serverContainer[key] = defaultServer;
+
+        configReader.setConfig({
+            base_url: this.base_url
+        })
+
+        serverContainer[this.instanceName] = defaultServer;
         this.app = defaultServer;
     }
 
@@ -254,45 +253,18 @@ function setupDefaultListener(instance, server) {
             var randomPort = server.address().port;
             instance.port = randomPort;
         }
-
-        var baseURL = getBaseURL({
-            protocol: instance.protocol,
-            host: instance.host,
-            port: instance.port
-        });
-
-        console.log(`\nServer started at : ${baseURL}`);
+        console.log(`\nServer started at : ${instance.base_url}`);
     });
 
 }
 
-function loadGlobalAddons(){
-    var addonsList = ModuleManager.getConfig("addons");
-    if(addonsList!=null) {
-        for(var name in addonsList){
-            var modulePath = addonsList[name];
-            var config = ModuleManager.getConfig(name);
-            handler = loadModuleByPath(modulePath, name);
-            AddonsManager.registerGlobalAddons(name, handler, config);
-        }
-    }
+function prepareBaseUrl(instance) {
+    instance.base_url = getBaseURL({
+        protocol: instance.protocol,
+        host: instance.host,
+        port: instance.port
+    });
 }
-
-function loadGlobalPlugins(){
-    var pluginsList = ModuleManager.getConfig("plugins");
-    if(pluginsList!=null) {
-        for(var name in pluginsList){
-            var modulePath = pluginsList[name];
-            var config = ModuleManager.getConfig(name);
-            pluginsMeta = loadModuleByPath(modulePath, name);
-            PluginsManager.addMiddleware(name, pluginsMeta, config)
-        }
-    }
-}
-
-(function loadModulesFromConfig() {
-    loadGlobalAddons();
-})();
 
 
 module.exports = ModuleManager;

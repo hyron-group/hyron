@@ -37,11 +37,11 @@ function getURL(query) {
     }
 }
 
-function findURL(func) {
-    if (func == null) return;
-    if (typeof func == "string") return getURL(func);
-    func = func.toString();
-    var identityKey = crc.crc16(func).toString(16);
+function findURL(query) {
+    if (query == null) return;
+    if (typeof query == "string") return getURL(query);
+    query = query.toString();
+    var identityKey = crc.crc16(query).toString(16);
     var completePath = cache[identityKey];
     if (completePath != null) {
         return completePath;
@@ -50,7 +50,7 @@ function findURL(func) {
             var instancePaths = pathHolder[curBaseUrl];
             for (var curPath in instancePaths) {
                 var curHandle = pathHolder[curBaseUrl][curPath];
-                if (curHandle.toString() == func) {
+                if (curHandle.toString() == query) {
                     completePath = curBaseUrl + curPath;
                     cache[identityKey] = completePath;
                     return completePath;
@@ -60,7 +60,29 @@ function findURL(func) {
     }
 }
 
+function getHandleOfURL(path, baseUrl) {
+    var matchBase;
+    if (baseUrl != null) {
+        matchBase = pathHolder[baseUrl]
+    } else {
+        var firstKey = Object.keys(pathHolder)[0];
+        matchBase = pathHolder[firstKey];
+    }
+
+    const ERR_NOT_FOUND_URL = new ReferenceError(`[error] do not found url : '${baseUrl+path}'`)
+
+    if (matchBase == null) {
+        throw ERR_NOT_FOUND_URL;
+    } else {
+        var handler = matchBase[path];
+        if (handler == null) throw ERR_NOT_FOUND_URL;
+
+        return handler;
+    }
+}
+
 module.exports = {
     build,
-    findURL
+    findURL,
+    getHandleOfURL
 };
