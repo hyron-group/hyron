@@ -1,12 +1,13 @@
 const parseTypeFilter = require("../../lib/typeFilter");
 const AsyncFunction = (async () => {}).constructor;
 
-function eventWrapper(index, handlerHolder, pluginsMeta) {
+function eventWrapper(index, handlerHolder, pluginsMeta, config) {
     var {
         handle,
         onCreate,
         checkout,
-        typeFilter
+        typeFilter,
+        global
     } = pluginsMeta;
 
     var matchType = parseTypeFilter(typeFilter);
@@ -23,11 +24,11 @@ function eventWrapper(index, handlerHolder, pluginsMeta) {
     } else if (matchType != null) {
         function finalFunction(req, res, prev) {
             if (!matchType(prev)) return prev;
-            return handle.call(this, req, res, prev);
+            return handle.call(this, req, res, prev, config);
         }
     } else {
         function finalFunction(req, res, prev) {
-            return handle.call(this, req, res, prev);
+            return handle.call(this, req, res, prev, config);
         }
     }
 
@@ -41,7 +42,7 @@ function eventWrapper(index, handlerHolder, pluginsMeta) {
 
     function idleFunction(req, res, prev) {
 
-        var isChange = checkout.call(this, completeCheckout);
+        var isChange = checkout.call(this, completeCheckout, config);
         if (isChange instanceof Promise ||
             isChange instanceof AsyncFunction) {
             return isChange.then((isChangeAsync) => {
@@ -68,7 +69,7 @@ function eventWrapper(index, handlerHolder, pluginsMeta) {
     }
 
     function initFunction(req, res, prev) {
-        var initResult = onCreate.call(this);
+        var initResult = onCreate.call(this, config);
         if (initResult instanceof AsyncFunction) {
             return initResult.then(() => {
                 return onInitResult(this, req, res, prev);

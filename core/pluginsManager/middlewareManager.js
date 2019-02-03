@@ -19,14 +19,14 @@ var backwareHandleIndex = {};
     handlerHolder[0] = syncFunc;
 })();
 
-function addMiddleware(pluginsName, pluginsMeta, isFontware) {
+function addMiddleware(pluginsName, pluginsMeta, config, isFontware) {
     if (isFontware == null) {
         var {
             fontware, backware
         } = pluginsMeta;
 
-        addMiddleware(pluginsName, fontware, true);
-        addMiddleware(pluginsName, backware, false);
+        addMiddleware(pluginsName, fontware, config, true);
+        addMiddleware(pluginsName, backware, config, false);
     }
     else {
         if (pluginsMeta == null) return;
@@ -35,10 +35,10 @@ function addMiddleware(pluginsName, pluginsMeta, isFontware) {
         var index = indexOfHandle(pluginsName);
         if (index == -1) {
             index = handlerHolder.length;
-            var handle = eventWrapper(index, handlerHolder, pluginsMeta);
+            var handle = eventWrapper(index, handlerHolder, pluginsMeta, config);
             handlerHolder.push(handle);
         } else {
-            handlerHolder[index] = eventWrapper(index, handlerHolder, pluginsMeta);
+            handlerHolder[index] = eventWrapper(index, handlerHolder, pluginsMeta, config);
         }
 
         if (isGlobal) {
@@ -116,7 +116,7 @@ function addAnonymousMiddleware(handle, isFontware) {
         global: false
     };
 
-    addMiddleware(representName, meta, isFontware);
+    addMiddleware(representName, meta, null, isFontware);
 
     return representName;
 }
