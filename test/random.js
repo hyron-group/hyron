@@ -1,15 +1,19 @@
-// const hyron = require('../');
+const type = require('../lib/typeFilter');
 
-// var app = hyron.getInstance();
+class D {
 
-// app.enableServices()
+}
+
+class E {
+
+}
 
 
-/**
- * @module foo
+var t = type([
 
- * @see {module:foo.example_type}
+    D,
+    "string"
+])
 
- */
-function myFunction() {}
+console.log(t.toString())
 
