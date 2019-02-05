@@ -12,7 +12,6 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
 
     var matchType = parseTypeFilter(typeFilter);
 
-
     function completeCheckout() {
         handlerHolder[index] = finalFunction;
     }
@@ -36,12 +35,11 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
         if (isChange) {
             return initFunction.call(thisArgs, req, res, prev);
         } else {
-            return finalFunction.call(thisArgs, req, res, prev);
+            return handle.call(this, req, res, prev, config);
         }
     }
 
     function idleFunction(req, res, prev) {
-
         var isChange = checkout.call(this, completeCheckout, config);
         if (isChange instanceof Promise ||
             isChange instanceof AsyncFunction) {
@@ -50,6 +48,13 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
             })
         } else
             return onIdleResult(isChange, this, req, res, prev);
+    }
+
+    if (matchType != null) {
+        function idleFunction(req, res, prev) {
+            if (!matchType(prev)) return prev;
+            idleFunction.call(this, req, res, prev);
+        }
     }
 
 

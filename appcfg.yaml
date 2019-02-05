@@ -4,8 +4,3 @@ addons:
 plugins:
     param_parser: "./plugins/param-parser"
     custom_response: "./plugins/custom-response"
-
-ref-plug:
-    <~./test/appInstance.json>
-    # $my-plug:
-    #     key: "val"

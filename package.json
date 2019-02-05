@@ -10,6 +10,15 @@
     "type": "github",
     "url": "https://github.com/hyron-group/hyron"
   },
+  "bugs": {
+    "url": "https://github.com/hyron-group/hyron/issues",
+    "email": "thangphung.work@gmail.com"
+  },
+  "author": {
+    "email": "thangphung.work@gmail.com",
+    "name": "Phung Duc Thang"
+  },
+  "homepage": "https://hyron.gitbook.io/reference",
   "deprecated": false,
   "description": "Build your server app faster and easier",
   "keywords": [
