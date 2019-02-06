@@ -23,7 +23,7 @@ type Path = string;
 /**
  * contains processing functions that extend the functionality of the hyron, by allowing access and editing to the resources that the Hyron manages.
  */
-type AddonsHandler = (config: object) => void;
+type AddonsMeta = (config: object) => void;
 
 /**
  * end checkout of this middle, switch to the smallest optimal version
@@ -239,7 +239,7 @@ declare class ModuleManager {
      * ### params
      * - **addonsList** (object) : object description about module name (string) and handler (function)
      */
-    enableAddons(addonsList: { [name: string]: AddonsHandler }): void;
+    enableAddons(addonsList: { [name: string]: AddonsMeta }): void;
 
     /**
      * Enable plugins by descriptions contain linked to plugins module from root
