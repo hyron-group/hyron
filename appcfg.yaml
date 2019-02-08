@@ -4,3 +4,8 @@ addons:
 plugins:
     param_parser: "./plugins/param-parser"
     custom_response: "./plugins/custom-response"
+
+
+demo:
+    key2: "val2"
+    $key: "hi Thang"

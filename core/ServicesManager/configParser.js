@@ -62,7 +62,7 @@ function loadFromRouteConfig(data, routeConfig, methodPath) {
 
 function prepareConfigModel(methodPath, routeConfig, generalConfig) {
     if (typeof routeConfig !== "string" &&
-        routeConfig instanceof Array &&
+        !routeConfig instanceof Array &&
         routeConfig.constructor.name !== "Object") {
         console.warn(
             `[warning] Don't support for config type at ${methodPath}`

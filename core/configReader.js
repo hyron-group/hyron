@@ -31,21 +31,34 @@ function importValue(paths, val, map) {
     }
 }
 
-function lockAssignValue(paths, map) {
+function inheritValue(paths, map) {
     var key = paths[paths.length - 1];
+    var allowedInherit = true;
     if (/\$[\w\d.\-]*/.test(key)) {
-        objectEditor.replaceValue(
-            paths.slice(0, paths.length - 1),
-            map,
-            childMap => {
-                Object.freeze(childMap[key]);
-            }
-        );
+        allowedInherit = false;
     }
+    objectEditor.replaceValue(
+        paths.slice(0, paths.length - 1),
+        map,
+        (entry) => {
+            if (!allowedInherit) {
+                try {
+                    var isExist = objectEditor
+                    .getValue(paths, appConfig) != null;
+
+                    if (isExist) {
+                        delete entry[key];
+                    }
+                } catch (err) {
+
+                }
+            }
+        }
+    );
 }
 
-function referenceField(map) {
-    function ref(obj, paths = []) {
+function parseConfig(map) {
+    function startParser(obj, paths = []) {
         if (obj == null) {
             return null;
         }
@@ -56,13 +69,13 @@ function referenceField(map) {
                 replaceSelfField(curPaths, val, map);
                 importValue(curPaths, val, map);
             } else {
-                ref(val, curPaths, map);
+                startParser(val, curPaths, map);
             }
-            lockAssignValue(curPaths, map);
+            inheritValue(curPaths, map);
         }
         return map;
     }
-    return ref(map);
+    return startParser(map);
 }
 
 function getConfig(path) {
@@ -73,18 +86,28 @@ function setConfig(cfg) {
     Object.assign(appConfig, cfg);
 }
 
-function loadConfigFromModule(path, moduleName){
+function loadConfigFromModule(path, moduleName) {
     var files = fs.readdirSync(path);
     if (files.includes(CONFIG_FILE_NAME)) {
         var data = fs.readFileSync(path + "/" + CONFIG_FILE_NAME);
         var cfg = yaml.parse(data.toString());
         if (moduleName != null) {
-            var moduleCfg = {};
-            moduleCfg[moduleName] = cfg;
-            cfg = moduleCfg;
+            var moduleConfig = {};
+            moduleConfig[moduleName] = cfg;
+            cfg = moduleConfig;
         }
-        cfg = referenceField(cfg);
-        Object.assign(appConfig, cfg);
+        cfg = parseConfig(cfg);
+        if (moduleName != null) {
+            console.log(appConfig);
+            objectEditor.replaceValue(
+                [moduleName],
+                appConfig,
+                (entry) => {
+                    Object.assign(entry, cfg[moduleName]);
+                });
+        } else {
+            Object.assign(appConfig, cfg);
+        }
     }
 }
 
@@ -98,6 +121,7 @@ function loadConfig(path, moduleName) {
             loadConfigFromModule(path, moduleName)
         }
     } catch (err) {
+        console.error(err.message)
         // skip if file not exist
     }
 }
@@ -105,7 +129,7 @@ function loadConfig(path, moduleName) {
 function loadOrganizationModulesConfig(path) {
     try {
         var orgzModulesList = fs.readdirSync(path);
-        if (orgzModulesList != null){
+        if (orgzModulesList != null) {
             orgzModulesList.forEach((moduleName) => {
                 try {
                     loadConfig(moduleName, path + "/" + moduleName);
@@ -114,7 +138,9 @@ function loadOrganizationModulesConfig(path) {
                 }
             });
         }
-    } catch (err) {}
+    } catch (err) {
+        console.error(err.message)
+    }
 }
 
 (function loadDefaultConfig() {

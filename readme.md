@@ -83,6 +83,4 @@ Check out [contributing guide](https://hyron.gitbook.io/reference/contribution) 
 
 We will be happy to receive your small investment to help your business and product development take place more quickly and smoothly.
 
-<script src="https://liberapay.com/thangdjw/widgets/button.js"></script>
-
-<noscript><a href="https://liberapay.com/thangdjw/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>
+[![](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/thangdjw/donate)

@@ -11,10 +11,11 @@ module.exports = class Demo {
             testRest: {
                 params: "/:var1/:var2"
             },
-            testPath : "get",
-            testUpload : {
-                method : "post",
-                params : "/:id/:to"
+            testConfig: "get",
+            testPath: "get",
+            testUpload: {
+                method: "post",
+                params: "/:id/:to"
             }
         };
     }
@@ -39,8 +40,12 @@ module.exports = class Demo {
         return this.$stringer.get("txt_demo_string");
     }
 
+    testConfig() {
+        return JSON.stringify(this.$config, null, 4);
+    }
+
     testRest(var1, var2) {
-        return var1+var2;
+        return var1 + var2;
     }
 
     testPath() {

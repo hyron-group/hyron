@@ -32,10 +32,11 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
     }
 
     function onIdleResult(isChange, thisArgs, req, res, prev) {
+
         if (isChange) {
             return initFunction.call(thisArgs, req, res, prev);
         } else {
-            return handle.call(this, req, res, prev, config);
+            return handle.call(thisArgs, req, res, prev, config);
         }
     }
 
@@ -46,8 +47,9 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
             return isChange.then((isChangeAsync) => {
                 return onIdleResult(isChangeAsync, this, req, res, prev);
             })
-        } else
+        } else {
             return onIdleResult(isChange, this, req, res, prev);
+        }
     }
 
     if (matchType != null) {
