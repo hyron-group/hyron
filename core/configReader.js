@@ -98,7 +98,6 @@ function loadConfigFromModule(path, moduleName) {
         }
         cfg = parseConfig(cfg);
         if (moduleName != null) {
-            console.log(appConfig);
             objectEditor.replaceValue(
                 [moduleName],
                 appConfig,
@@ -121,7 +120,7 @@ function loadConfig(path, moduleName) {
             loadConfigFromModule(path, moduleName)
         }
     } catch (err) {
-        console.error(err.message)
+        // console.error(err.message)
         // skip if file not exist
     }
 }
@@ -139,7 +138,7 @@ function loadOrganizationModulesConfig(path) {
             });
         }
     } catch (err) {
-        console.error(err.message)
+        // console.error(err.message)
     }
 }
 
