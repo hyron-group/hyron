@@ -44,7 +44,7 @@ function inheritValue(paths, map) {
             if (!allowedInherit) {
                 try {
                     var isExist = objectEditor
-                    .getValue(paths, appConfig) != null;
+                        .getValue(paths, appConfig) != null;
 
                     if (isExist) {
                         delete entry[key];
