@@ -1,31 +1,33 @@
 const AsyncFunction = (async () => {}).constructor;
-/**
- * @description This function used to handle basic result for response
- * @param {*} result result after handle success
- * @param {http.ServerResponse} res http response
- */
+
 function handingResult(result, res, isDevMode = false) {
-    if (typeof result == "string" || result instanceof Buffer || result == null) {
+    if (res.finished) return;
+
+    if (typeof result == "string" ||
+        result instanceof Buffer ||
+        result == null) {
         res.end(result);
-    } else if (result instanceof Promise || result instanceof AsyncFunction) {
+    } else if (result instanceof Promise ||
+        result instanceof AsyncFunction) {
         result
-            .then(val => {
-                res.end(handingResult(val, res, isDevMode))
+            .then((val) => {
+                handingResult(val, res, isDevMode);
             })
-            .catch(err => {
+            .catch((err) => {
                 handingError(err, res, isDevMode);
             });
     } else if (result instanceof Error) {
         handingError(result, res, isDevMode);
+    } else if (result.constructor.name == "Object") {
+        handleObject(res, data);
     } else res.end(result.toString());
 }
 
-/**
- * @description Used to handle error
- * @param {Error} error http error message
- * @param {http.ServerResponse} res http response
- * @param {boolean} isDevMode true if enable develop mode for log error
- */
+function handleObject(res, data) {
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify(data));
+}
+
 function handingError(error, res, isDevMode) {
     var message = error.message;
     var code = error.code;
@@ -34,7 +36,8 @@ function handingError(error, res, isDevMode) {
     if (isDevMode) {
         res.setHeader("Content-Type", "text/html");
         res.write(`<h3>${message}</h3>`);
-        res.write(error.stack);
+        var stack = error.stack;
+        res.write(stack.substr(stack.indexOf('at') || 0));
     } else res.write(message);
     res.end();
 }

@@ -6,6 +6,9 @@
     "spdy": "^4.0.0",
     "yaml": "^1.2.1"
   },
+  "directories": {
+    "doc": "https://hyron.gitbook.io/reference/"
+  },
   "repository": {
     "type": "github",
     "url": "https://github.com/hyron-group/hyron"
