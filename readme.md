@@ -1,23 +1,38 @@
 <div style = "text-align:center">
-    <img src='https://i.imgur.com/mAjPWAu.png' width='240px'/>
+    <img src='https://i.imgur.com/mAjPWAu.png' width='240px; margin:auto'/>
 </div>
 
 # Introduction (beta)
 
 Hyron is an extremely powerful framework that helps you develop an extremely fast and easy server app.
 
+
+```
+npm install hyron
+```
+
+![CircleCI](https://img.shields.io/circleci/project/github/hyron-group/hyron/master.svg?style=flat)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/488552ae62744dd7bf6bb34028adcc36)](https://www.codacy.com/app/thangdjw/hyron?utm_source=github.com&utm_medium=referral&utm_content=hyron-group/hyron&utm_campaign=Badge_Grade)
+![downloads](https://img.shields.io/npm/dm/hyron.svg?style=flat)
+![version](https://img.shields.io/npm/v/hyron.svg?style=flat)
+[![chat](https://img.shields.io/gitter/room/hyron-group/community.svg?style=flat)](https://gitter.im/Hyron-group/community)
+[![license](https://img.shields.io/npm/l/hyron.svg?style=flat)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![](http://img.shields.io/liberapay/patrons/thangdjw.svg?logo=liberapay)](https://liberapay.com/thangdjw/donate)
+
+
+
 # Features
 
-1.  **Create router from function** : You can convert a normal function into a router. Hyron helps you avoid too much dependency on the platform. So you can easily switch from another framework
-2.  **Easily to manager source code** : The hyron is designed to minimize dependencies between components, and helps the architecture stay clear and clean. So you can easily pack, edit and manage content, even on a large scale
-3.  **High-Performance** : Hyron is 40% more efficient than ExpressJS (by rps with simple request)
-4.  **Easy to reuse** : With Hyron, you can help encapsulate your source very closely and flexibly, can be easily plugged, shared, and reused.
-5.  **Easy to learn** : With Hyron, you do not need to know how Node Server work. Just write normal Javascript function.
-6.  **Separate setting** : With Hyron, you can separate all setting into file, called appcfg.yaml allow you easy to management configs
-7.  **Expanded config file** : Hyron allows you to do more with 'appcfg' files, such as inheriting from parent, internal references and external references, freezing fields, etc
-8.  **Build app from json file** : In addition to building with the traditional way, now you can easy to create and build a server with json file
-9.  **Dynamic data type** : Hyron supports default to allow load content from the request automatically whenever a new request is made. including uploading files and many other data types
-10. **Plugins-able** : Hyron is plugins system. So, you can install a plugins from another 3rth, management and reuse very easy, like addons, plugins, services
+1. **Easy to manage source code**, even with large applications. Hyron helps modules to be rigorously structured. Suitable for microservice architecture application development
+2. **High plug-in capability**, allowing you to develop individual modules and **reuse**
+3. **High sharing capacity**. Modules are designed to minimize dependency and increase flexibility.
+4. Get **help from the community**. Hyron allows you to **install** and **share**, **customize** modules easily
+5. Help your source code **independent of the platform**. It makes it easy to switch between platforms, ensuring that the source code is always intuitive
+6. **Easy to learn and use**. One of Hyron's top goals is to help the platform be accessible by a beginner
+7. **High performance**. Hyron has 40% higher initial performance than Express
+8. **Automation**, Hyron helps automate your application development process, and makes it easier for third party addons and plugins
+
+    [See more build-in feature](https://Hyron.gitbook.io/reference/api-reference/buildIn-features)
 
 # Release
 
@@ -75,7 +90,7 @@ A router register on :
 
 # Reference Document
 
-See more at : https://hyron.gitbook.io/reference
+For more detail, please read at : https://hyron.gitbook.io/reference
 
 # Contributing to Hyron
 
