@@ -86,8 +86,9 @@ module.exports = class {
 result :
 A router register on :
 
-> GET http://localhost:3000/demo/sayHello?yourName=[your_name]
-
+```http
+GET http://localhost:3000/demo/sayHello?yourName=[your_name]
+```
 # Reference Document
 
 For more detail, please read at : https://hyron.gitbook.io/reference
