@@ -7,7 +7,7 @@
     "yaml": "^1.2.1"
   },
   "directories": {
-    "doc": "https://hyron.gitbook.io/reference/"
+    "doc": "https://github.com/hyron-group/reference/blob/master/README.md"
   },
   "repository": {
     "type": "github",
