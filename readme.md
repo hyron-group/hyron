@@ -1,5 +1,5 @@
 <div style = "text-align:center">
-    <img src='https://i.imgur.com/mAjPWAu.png' width='240px; margin:auto'/>
+    <img src='https://i.imgur.com/mAjPWAu.png' style='width:240px; margin:auto'/>
 </div>
 
 # Introduction (beta)
@@ -32,7 +32,7 @@ npm install hyron
 7. **High performance**. Hyron has 40% higher initial performance than Express
 8. **Automation**, Hyron helps automate your application development process, and makes it easier for third party addons and plugins
 
-    [See more build-in feature](https://Hyron.gitbook.io/reference/api-reference/buildIn-features)
+    [See more build-in feature](https://hyron.gitbook.io/reference/buildin-features)
 
 # Release
 
