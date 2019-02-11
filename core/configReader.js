@@ -3,12 +3,16 @@ const yaml = require("yaml");
 const CONFIG_FILE_NAME = "appcfg.yaml";
 const objectEditor = require("../lib/objectEditor");
 
+const INHERIT_REG = /\$[\w\d.\-]*/;
+const SELF_REF_REG = /<#([\w\d\-.]+)>/g;
+const FOREIGN_REF_REG = /<~([\w\d\-./]+)>/g;
+
 var appConfig = {};
 
 function replaceSelfField(paths, val, map) {
     var match;
 
-    if ((match = /<#([\w\d\-.]+)>/g.exec(val))) {
+    if ((match = SELF_REF_REG.exec(val))) {
         var refPath = match[1];
         var refVal = objectEditor.getValue(refPath, map);
         objectEditor.replaceValue(paths, map, refVal);
@@ -18,7 +22,7 @@ function replaceSelfField(paths, val, map) {
 function importValue(paths, val, map) {
     var match;
 
-    if ((match = /<~([\w\d\-./]+)>/g.exec(val))) {
+    if ((match = FOREIGN_REF_REG.exec(val))) {
         var importLocal = match[1];
         var fileContent = fs.readFileSync(importLocal).toString();
         var importContent;
@@ -34,7 +38,7 @@ function importValue(paths, val, map) {
 function inheritValue(paths, map) {
     var key = paths[paths.length - 1];
     var allowedInherit = true;
-    if (/\$[\w\d.\-]*/.test(key)) {
+    if (INHERIT_REG.test(key)) {
         allowedInherit = false;
     }
     objectEditor.replaceValue(

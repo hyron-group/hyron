@@ -6,6 +6,8 @@ const generalSecretKey = require("../lib/generalKey");
 const configReader = require('./configReader');
 const loadModuleByPath = require('../lib/moduleLoader');
 
+const URI_REG = /^([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?/;
+
 const {
     getBaseURL
 } = require('../lib/completeUrl');
@@ -61,9 +63,8 @@ class ModuleManager {
             } else if (typeof arg0 == "number") {
                 serverConfig.port = arg0;
             } else if (typeof arg0 == "string") {
-                var reg = /^([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?/;
 
-                var match = reg.exec(arg0);
+                var match = URI_REG.exec(arg0);
                 if (match == null) {
                     throw new TypeError("Cannot parse url from getInstance(..) argument at index 0")
                 }

@@ -1,6 +1,8 @@
 var hyron = require('./ModulesManager');
 var child_process = require('child_process');
 var fs = require('fs');
+const RELATIVE_PATH_REG = /^[\.\/]+/;
+const INSTALLED_REG = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
 
 (() => {
     child_process.execSync("npm i -g yarn");
@@ -56,7 +58,7 @@ function getMissingPackage(meta) {
         var packageLink = meta[packageName];
         if (!installedPackage.includes(packageName) &&
             !installedPackage.includes(packageLink) &&
-            !/^[\.\/]+/.test(packageLink)) {
+            !RELATIVE_PATH_REG.test(packageLink)) {
             missingPackage[packageName] = meta[packageName];
         }
     }
@@ -69,8 +71,7 @@ function downloadMissingPackage(name, url) {
         child_process.exec(`yarn add ${url}`, (err, sto, ste) => {
             if (err == null) {
                 // get installed package name
-                var reg = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
-                var match = reg.exec(sto);
+                var match = INSTALLED_REG.exec(sto);
                 if (match != null)
                     packageName = match[2];
                 resolve(name, packageName);

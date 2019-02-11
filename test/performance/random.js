@@ -1,35 +1,21 @@
 const compare = require('performance-tools');
 
-function asn(){
-    return new Promise((resolve)=>{
-        setTimeout(()=>{
-            resolve("done");
-        }, 0)
-    })
-}
+var origin = `/user/:uid/class/:cid`;
+var ts = '/user/thangdjw/class/pt12354';
+var reg = new RegExp(`/user/([\\w\\d_\\-+]*)/class/([\\w\\d_\\-+]*)`);
 
-function asn2(cb){
-    setTimeout(() => {
-        cb("done")
-    }, 0);
-}
-
-await function f(){
-    return await asn;
-}
-
-await function g(a){
-    return asn2;
-}
+var static = ['user', 'class'];
 
 compare.comparator({
     v1: () => {
-        this.a = "haha";
-        return f.call(this)
+        return reg.test(ts);
     },
     v2: () => {
-        return g("hihi");
+        for (var i = 0; i < static.length; i++) {
+            if (ts.indexOf(static[i]) == -1) return false;
+        }
+        return true;
     },
 }, {
-    round: 8000090
+    round: 8000000
 })

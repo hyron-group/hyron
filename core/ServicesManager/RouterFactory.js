@@ -53,8 +53,7 @@ class RouterFactory {
             (execute = this.listener.get(eventName)) ||
 
             (eventName = method + dynamicUrl.getEventName(path)) &&
-            (execute = this.listener.get(eventName)) &&
-            (req.isREST = true) ||
+            (execute = this.listener.get(eventName)) ||
 
             (eventName = "ALL" + path) &&
             (execute = this.listener.get(eventName)) ||
