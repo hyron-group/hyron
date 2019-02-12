@@ -19,7 +19,7 @@ function parser(req, onComplete) {
         var output = passURLDecodedToVar(data);
         onComplete(output);
     });
-    req.on("error", err => {
+    req.on("error", (err) => {
         onComplete(null, err);
     });
 }

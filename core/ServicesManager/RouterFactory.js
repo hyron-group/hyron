@@ -68,7 +68,7 @@ class RouterFactory {
     };
 
     registerRoutesGroup(moduleName, handlePackage, config) {
-        console.info(chalk.blue.bold(`\nLockup Service : ${moduleName}`))
+        console.info(chalk.blue.bold(`\nLockup Service : ${moduleName}`));
         var requestConfig = handlePackage.requestConfig();
 
         var instance = new handlePackage();

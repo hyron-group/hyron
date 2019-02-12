@@ -30,7 +30,7 @@ var extractor = {
         } else if (reqBodyType >= "multipart" && reqBodyType < "multipart/z") {
             multiPartParser(req, onComplete);
         } else {
-            rawBodyParser(req, onComplete)
+            rawBodyParser(req, onComplete);
         }
     },
 }
@@ -75,25 +75,25 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
 
     if (argsList.includes("$headers")) {
         parserChain.push(function passHeaders(req, res, prev) {
-            Object.assign(data, req.headers)
+            Object.assign(data, req.headers);
         })
     }
 
     if (argsList.includes("$socket")) {
         parserChain.push(function passSocket(req, res, prev) {
-            Object.assign(data, req.socket)
+            Object.assign(data, req.socket);
         })
     }
 
     if (argsList.includes("$trailers")) {
         parserChain.push(function passTrailers(req, res, prev) {
-            Object.assign(data, req.trailers)
+            Object.assign(data, req.trailers);
         })
     }
 
     if (argsList.includes("$events")) {
         parserChain.push(function passTrailers(req, res, prev) {
-            Object.assign(data, req.on)
+            Object.assign(data, req.on);
         })
     }
 
@@ -148,7 +148,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
 function generalParserHandler(reqCfg, argsList) {
     return function (req, res, data, onComplete) {
         var parserChain = getExtractDataHandlers(reqCfg, argsList, onComplete);
-        parserChain.forEach(parser => {
+        parserChain.forEach((parser) => {
             parser(req, res, data);
         })
     }

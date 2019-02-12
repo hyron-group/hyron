@@ -46,7 +46,7 @@ const RESPONSE_HANDLE = {
     },
     $removeHeader(data, res) {
         if (data != null) {
-            data.forEach(field => {
+            data.forEach((field) => {
                 res.removeHeader(field);
             })
         }

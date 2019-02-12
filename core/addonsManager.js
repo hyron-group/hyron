@@ -32,7 +32,7 @@ class AddonsManager {
         globalAddons.forEach((addons)=>{
             var {handler, config} = addons;
             handler.call(instance, config);
-        })
+        });
     }
 
 }

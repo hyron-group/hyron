@@ -12,7 +12,7 @@ function prepareMethod(data, method, funcPath) {
         checkMethod(standardMethod, funcPath);
         data.method = [standardMethod];
     } else if (method instanceof Array) {
-        method.forEach(curMethod => {
+        method.forEach((curMethod) => {
             curMethod = curMethod.toUpperCase();
             checkMethod(curMethod, funcPath);
             data.method.push(curMethod.toUpperCase());
@@ -27,15 +27,18 @@ function prepareMethod(data, method, funcPath) {
 function inheritFromGeneralConfig(data, generalConfig, methodPath) {
     if (generalConfig == null) return;
     if (data.method.length == 0) {
-        if (generalConfig.method == null) data.method = ["GET"];
-        else {
+        if (generalConfig.method == null) {
+            data.method = ["GET"];
+        } else {
             prepareMethod(data, generalConfig.method, methodPath);
         }
     }
-    if (generalConfig.fontware != null)
+    if (generalConfig.fontware != null) {
         data.fontware = data.fontware.concat(generalConfig.fontware);
-    if (generalConfig.backware != null)
+    }
+    if (generalConfig.backware != null) {
         data.backware = data.backware.concat(generalConfig.backware);
+    }
 }
 
 function loadFromRouteConfig(data, routeConfig, methodPath) {
@@ -50,10 +53,12 @@ function loadFromRouteConfig(data, routeConfig, methodPath) {
     }
     prepareMethod(data, routeConfig.method, methodPath);
 
-    if (routeConfig.fontware != null)
+    if (routeConfig.fontware != null) {
         data.fontware = data.fontware.concat(routeConfig.fontware);
-    if (routeConfig.backware != null)
+    }
+    if (routeConfig.backware != null) {
         data.backware = data.backware.concat(routeConfig.backware);
+    }
     if (routeConfig.plugins != null) {
         data.fontware = data.fontware.concat(routeConfig.plugins);
         data.backware = data.backware.concat(routeConfig.plugins);

@@ -6,7 +6,7 @@ function getQuery(rawUrl) {
     var separateIndex = rawUrl.indexOf("?");
     if (separateIndex != -1) {
         queryBuffer = decodeURI(rawUrl.substr(separateIndex + 1)).split("&");
-        queryBuffer.forEach(entry => {
+        queryBuffer.forEach((entry) => {
             var pairSeparate = entry.indexOf("=");
             var key = entry.substr(0, pairSeparate);
             var val = entry.substr(pairSeparate + 1);

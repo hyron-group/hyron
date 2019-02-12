@@ -7,7 +7,7 @@ const ModuleManager = require("../../core/ModulesManager");
 const chalk = require("chalk");
 
 function changeToHTTPsCorrect(options){
-    console.log(chalk.gray("enable spdy"))
+    console.log(chalk.gray("enable spdy"));
     var key = ModuleManager.getConfig("key");
     var cert = ModuleManager.getConfig("cert");
 

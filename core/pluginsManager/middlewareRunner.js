@@ -7,12 +7,12 @@ function runFunction(func, thisArgs, args, onComplete, onFailed) {
 
     if (result instanceof Promise || result instanceof AsyncFunction) {
         result
-            .then(data => {
+            .then((data) => {
                 args[2] = data;
                 result = func.apply(thisArgs, args);
                 onComplete(result);
             })
-            .catch(err => {
+            .catch((err) => {
                 onFailed(err);
             });
     } else {

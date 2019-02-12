@@ -1,3 +1,3 @@
 const hyron = require("../");
-require("express")
+require("express");
 hyron.build("./test/appInstance.json");
