@@ -1,5 +1,30 @@
 const AsyncFunction = (async () => {}).constructor;
 
+
+function handleObject(res, data) {
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify(data));
+}
+
+function handingError(error, res, isDevMode) {
+    var message = error.message;
+    var code = error.code;
+    if (isNaN(code)) {
+        code = 403; // Forbidden
+    }
+    res.statusCode = code;
+    if (isDevMode) {
+        res.setHeader("Content-Type", "text/html");
+        res.write(`<h3>${message}</h3>`);
+        var stack = error.stack;
+        res.write(stack.substr(stack.indexOf("at") || 0));
+    } else {
+        res.write(message);
+    }
+    res.end();
+}
+
+
 function handingResult(result, res, isDevMode = false) {
     if (res.finished) return;
 
@@ -23,29 +48,6 @@ function handingResult(result, res, isDevMode = false) {
     } else {
         res.end(result.toString());
     }
-}
-
-function handleObject(res, data) {
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify(data));
-}
-
-function handingError(error, res, isDevMode) {
-    var message = error.message;
-    var code = error.code;
-    if (isNaN(code)) {
-        code = 403; // Forbidden
-    }
-    res.statusCode = code;
-    if (isDevMode) {
-        res.setHeader("Content-Type", "text/html");
-        res.write(`<h3>${message}</h3>`);
-        var stack = error.stack;
-        res.write(stack.substr(stack.indexOf("at") || 0));
-    } else {
-        res.write(message);
-    }
-    res.end();
 }
 
 module.exports = handingResult;

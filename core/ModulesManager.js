@@ -116,7 +116,7 @@ class ModuleManager {
                 addonsHandler = loadModuleByPath(addonsHandler, addonsName);
             }
 
-            var addonsConfig = configReader.getConfig(addonsName)
+            var addonsConfig = configReader.getConfig(addonsName);
             this
                 .addons
                 .registerAddons(addonsName, addonsHandler, addonsConfig);
