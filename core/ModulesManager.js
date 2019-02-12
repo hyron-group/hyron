@@ -231,7 +231,7 @@ class ModuleManager {
         if (server != null) {
             this.app = server;
             return;
-        };
+        }
         setupDefaultListener(this, defaultServer);
 
         configReader.setConfig({

@@ -9,6 +9,6 @@ function customRequire(path) {
 function handler(cfg) {
     console.log("java supporter");
     module.constructor.prototype.require = customRequire;
-};
+}
 
 module.exports = handler;

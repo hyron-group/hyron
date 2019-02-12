@@ -22,6 +22,6 @@ function parser(req, onComplete) {
     req.on("error", err => {
         onComplete(null, err);
     });
-};
+}
 
 module.exports = parser;

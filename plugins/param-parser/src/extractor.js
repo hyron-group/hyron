@@ -127,7 +127,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
     function done(req, res, data) {
         data = resortDataIndex(data, argsList);
         onComplete(data);
-    };
+    }
 
     if (isBodyParamType(method)) {
         parserChain.push(function parserBodyData(req, res, data) {

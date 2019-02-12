@@ -11,7 +11,7 @@ function handle(req, res, prev = {}) {
             resolve(data);
         })
     });
-};
+}
 
 function checkout() {
     var eventName = this.$eventName;
