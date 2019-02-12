@@ -57,6 +57,7 @@ function downloadMissingPackage(name, url) {
             if (err == null) {
                 // get installed package name
                 var match = INSTALLED_REG.exec(sto);
+                var packageName;
                 if (match != null) {
                     packageName = match[2];
                 }
@@ -127,7 +128,7 @@ function loadFromObject(appMeta) {
                 hyron.enableGlobalAddons(appMeta.addons);
             }
 
-        })
+        });
     }
 }
 

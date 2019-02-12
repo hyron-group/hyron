@@ -81,7 +81,7 @@ class RouterFactory {
         var generalConfig = requestConfig.$all;
         delete requestConfig.$all;
 
-        Object.keys(requestConfig).forEach(methodName => {
+        Object.keys(requestConfig).forEach((methodName) => {
             var routeConfig = requestConfig[methodName];
             var methodPath = `${moduleName}/${methodName}`;
 

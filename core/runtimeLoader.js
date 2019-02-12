@@ -10,7 +10,7 @@ function loadGlobalAddons(){
         for(var name in addonsList){
             var modulePath = addonsList[name];
             var config = ModuleManager.getConfig(name);
-            handler = loadModuleByPath(modulePath, name);
+            var handler = loadModuleByPath(modulePath, name);
             AddonsManager.registerGlobalAddons(name, handler, config);
         }
     }
