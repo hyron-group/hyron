@@ -46,7 +46,7 @@ function loadFromRouteConfig(data, routeConfig, methodPath) {
         routeConfig instanceof Array) {
         routeConfig = {
             method: routeConfig
-        }
+        };
     }
     if (routeConfig.constructor.name !== "Object") {
         return;

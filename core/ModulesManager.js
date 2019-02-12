@@ -95,7 +95,7 @@ class ModuleManager {
                     host: match[2],
                     port: match[4],
                     prefix: match[6]
-                }
+                };
             } else throw new TypeError(`getInstance(..) argument at index 0 should be a port number, string base url or object instance config`);
         } else if (args.length > 1) {
             serverConfig = {
@@ -155,7 +155,7 @@ class ModuleManager {
                 addonsHandler = loadModuleByPath(addonsHandler, addonsName);
             }
 
-            var addonsConfig = configReader.getConfig(addonsName)
+            var addonsConfig = configReader.getConfig(addonsName);
             AddonsManager.registerGlobalAddons(addonsHandler, addonsConfig);
         }
     }

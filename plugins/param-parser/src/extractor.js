@@ -33,7 +33,7 @@ var extractor = {
             rawBodyParser(req, onComplete);
         }
     },
-}
+};
 
 function resortDataIndex(data, argList) {
     if (data == null) return data;
@@ -137,7 +137,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
                 }
                 done(req, res, prev);
             });
-        })
+        });
     } else {
         parserChain.push(done);
     }

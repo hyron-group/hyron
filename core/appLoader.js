@@ -88,7 +88,7 @@ function startDownload(packageList) {
         }).catch((err) => {
             console.error(chalk.red("[error] has problem : " + err.message));
         });
-    })
+    });
 }
 
 

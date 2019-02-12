@@ -70,7 +70,7 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
         idleFunction = function (req, res, prev) {
             if (!matchType(prev)) return prev;
             idleFunction.call(this, req, res, prev);
-        }
+        };
     }
 
     var onInitResult;
