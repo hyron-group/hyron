@@ -12,7 +12,9 @@ var extractor = {
     paramsParser(req) {
         var url = req.url;
         var eor = url.indexOf("?");
-        if (eor == -1) eor = url.length;
+        if (eor == -1) {
+            eor = url.length;
+        }
         var output = dynamicUrl.getParams(url.substr(0, eor));
         return output;
     },
@@ -61,26 +63,26 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
         })
     }
 
-    if(argsList.includes("$headers")){
-        parserChain.push(function passHeaders(req, res, prev){
+    if (argsList.includes("$headers")) {
+        parserChain.push(function passHeaders(req, res, prev) {
             Object.assign(data, req.headers)
         })
     }
-    
-    if(argsList.includes("$socket")){
-        parserChain.push(function passSocket(req, res, prev){
+
+    if (argsList.includes("$socket")) {
+        parserChain.push(function passSocket(req, res, prev) {
             Object.assign(data, req.socket)
         })
     }
 
-    if(argsList.includes("$trailers")){
-        parserChain.push(function passTrailers(req, res, prev){
+    if (argsList.includes("$trailers")) {
+        parserChain.push(function passTrailers(req, res, prev) {
             Object.assign(data, req.trailers)
         })
     }
 
-    if(argsList.includes("$events")){
-        parserChain.push(function passTrailers(req, res, prev){
+    if (argsList.includes("$events")) {
+        parserChain.push(function passTrailers(req, res, prev) {
             Object.assign(data, req.on)
         })
     }
@@ -88,32 +90,36 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
     if (argsList.includes("$cookie")) {
         parserChain.push(function parserParamsData(req, res, data) {
             var cookieData = extractor.cookieParser(req);
-            if (cookieData != null)
+            if (cookieData != null) {
                 Object.assign(data, cookieData);
+            }
         })
     }
 
     if (params != null) {
         parserChain.push(function parserParamsData(req, res, data) {
             var paramsData = extractor.paramsParser(req);
-            if (paramsData != null)
+            if (paramsData != null) {
                 Object.assign(data, paramsData);
+            }
         })
     }
 
     if (isQueryParamType(method)) {
         parserChain.push(function parserQueryData(req, res, data) {
             var queryData = extractor.queryParser(req);
-            if (queryData != null)
+            if (queryData != null){
                 Object.assign(data, queryData);
+            }
         })
     }
 
     if (isBodyParamType(method)) {
         parserChain.push(function parserBodyData(req, res, data) {
             extractor.bodyParser(req, (bodyData) => {
-                if (bodyData != null)
+                if (bodyData != null){
                     Object.assign(data, bodyData);
+                }
                 done(req, res, data);
             });
         })

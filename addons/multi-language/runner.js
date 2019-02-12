@@ -9,6 +9,8 @@ const plMapping = {
 
 function getRunner(ext, path){
     var cmd = plMapping[ext];
-    if(cmd==null) return null;
+    if(cmd==null) {
+        return null;
+    }
 
 }

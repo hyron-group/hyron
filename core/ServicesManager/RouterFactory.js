@@ -73,10 +73,11 @@ class RouterFactory {
 
         var instance = new handlePackage();
         instance.$config = config;
-        if (requestConfig == null)
+        if (requestConfig == null) {
             throw new Error(
                 `Module ${moduleName} do not contain requestConfig() method`
             );
+        }
         var generalConfig = requestConfig.$all;
         delete requestConfig.$all;
 
@@ -107,8 +108,6 @@ class RouterFactory {
                     url = dynamicUrl
                         .registerUrl(url + params) +
                         params;
-                    if (url == null)
-                        new Error(`URL ${url}/${configModel.params} at ${methodName} is not valid`);
                 }
 
                 url = entryMethodType + "/" + url;

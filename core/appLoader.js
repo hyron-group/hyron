@@ -73,10 +73,13 @@ function downloadMissingPackage(name, url) {
             if (err == null) {
                 // get installed package name
                 var match = INSTALLED_REG.exec(sto);
-                if (match != null)
+                if (match != null) {
                     packageName = match[2];
+                }
                 resolve(name, packageName);
-            } else reject(err);
+            } else {
+                reject(err);
+            }
         });
     });
 }
@@ -94,10 +97,10 @@ function startDownload(packageList) {
             }))
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         return Promise.all(jobs).then(() => {
             resolve(realPackagesName);
-        }).catch(err => {
+        }).catch((err) => {
             console.error(chalk.red("[error] has problem : " + err.message));
         });
     })
@@ -134,12 +137,12 @@ function loadFromObject(appMeta) {
             console.log(chalk.green("All package downloaded !\n"));
             console.log("------------------------\n");
 
-            if(appMeta.services!=null){
+            if (appMeta.services != null) {
                 registerInstance(appMeta);
-            } else if(appMeta.addons!=null){
+            } else if (appMeta.addons != null) {
                 hyron.enableGlobalAddons(appMeta.addons);
             }
-            
+
         })
     }
 }

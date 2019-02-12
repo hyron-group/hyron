@@ -1,4 +1,6 @@
-const {addAnonymousMiddleware} = require("./middlewareManager");
+const {
+    addAnonymousMiddleware
+} = require("./middlewareManager");
 
 function parseRequireMiddleware(reqMidWare, isFontware) {
 
@@ -22,12 +24,16 @@ function parseRequireMiddleware(reqMidWare, isFontware) {
                 }
             }
             // prepare enable middleware by name
-            else enableList.push(middlewareMeta);
+            else {
+                enableList.push(middlewareMeta);
+            }
             // support embed middle handle in config
         } else if (typeof middlewareMeta == "function") {
             var representName = addAnonymousMiddleware(middlewareMeta, isFontware);
             enableList.push(representName);
-        } else throw new TypeError(`middleware at ${i} should be a string name or function handle`)
+        } else {
+            throw new TypeError(`middleware at ${i} should be a string name or function handle`);
+        }
     }
 
     return {

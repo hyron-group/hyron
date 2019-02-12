@@ -26,7 +26,9 @@ const RESPONSE_HANDLE = {
     $end(data, res) {
         if (data instanceof Array) {
             res.end.apply(null, data);
-        } else res.end(data);
+        } else {
+            res.end(data);
+        }
     },
 
     $headers(data, res) {
@@ -43,15 +45,16 @@ const RESPONSE_HANDLE = {
         res.setHeader("Location", data);
     },
     $removeHeader(data, res) {
-        if (data != null)
+        if (data != null) {
             data.forEach(field => {
                 res.removeHeader(field);
             })
+        }
     },
     $sendDate(data, res) {
         res.sendDate = data;
     },
-    $response(data, res){
+    $response(data, res) {
         data(res);
     },
     $timeout(data, res) {
@@ -70,12 +73,14 @@ const RESPONSE_HANDLE = {
         res.apply(null, data);
     },
     $writeProcessing(data, res) {
-        if (data)
+        if (data) {
             res.writeProcessing();
+        }
     },
     $writeContinue(data, res) {
-        if (data)
+        if (data) {
             res.writeContinue();
+        }
     },
     $onClose(data, res) {
         res.on("close", data);

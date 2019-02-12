@@ -6,6 +6,7 @@ const objectEditor = require("../lib/objectEditor");
 const INHERIT_REG = /\$[\w\d.\-]*/;
 const SELF_REF_REG = /<#([\w\d\-.]+)>/g;
 const FOREIGN_REF_REG = /<~([\w\d\-./]+)>/g;
+const chalk = require('chalk');
 
 var appConfig = {};
 
@@ -137,7 +138,7 @@ function loadOrganizationModulesConfig(path) {
                 try {
                     loadConfig(moduleName, path + "/" + moduleName);
                 } catch (err) {
-                    console.error("cant load module " + moduleName);
+                    console.error(chalk.red("[error] cant load module " + moduleName));
                 }
             });
         }

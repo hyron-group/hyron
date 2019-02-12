@@ -10,6 +10,8 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
         global
     } = pluginsMeta;
 
+    var finalFunction;
+
     var matchType = parseTypeFilter(typeFilter);
 
     function completeCheckout() {
@@ -17,16 +19,17 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
     }
 
     if (handle == null) {
-        function finalFunction(req, res, prev) {
+        finalFunction = function (req, res, prev) {
             return prev;
         }
     } else if (matchType != null) {
-        function finalFunction(req, res, prev) {
-            if (!matchType(prev)) return prev;
-            return handle.call(this, req, res, prev, config);
+        finalFunction = function (req, res, prev) {
+            return matchType(prev) ?
+                handle.call(this, req, res, prev, config) :
+                prev;
         }
     } else {
-        function finalFunction(req, res, prev) {
+        finalFunction = function (req, res, prev) {
             return handle.call(this, req, res, prev, config);
         }
     }
@@ -53,22 +56,23 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
     }
 
     if (matchType != null) {
-        function idleFunction(req, res, prev) {
+        idleFunction = function (req, res, prev) {
             if (!matchType(prev)) return prev;
             idleFunction.call(this, req, res, prev);
         }
     }
 
+    var onInitResult;
 
     if (checkout == null) {
-        function onInitResult(thisArgs, req, res, prev) {
+        onInitResult = function (thisArgs, req, res, prev) {
             var result = finalFunction.call(thisArgs, req, res, prev);
             completeCheckout();
             return result;
         }
 
     } else {
-        function onInitResult(thisArgs, req, res, prev) {
+        onInitResult = function (thisArgs, req, res, prev) {
             var result = finalFunction.call(thisArgs, req, res, prev);
             handlerHolder[index] = idleFunction;
             return result;
@@ -81,8 +85,9 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
             return initResult.then(() => {
                 return onInitResult(this, req, res, prev);
             })
-        } else
+        } else {
             return onInitResult(this, req, res, prev);
+        }
     }
 
     if (onCreate != null) {

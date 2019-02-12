@@ -6,7 +6,7 @@ const chalk = require("chalk");
 
 
 function prepareMethod(data, method, funcPath) {
-    if(method==null) return;
+    if (method == null) return;
     if (typeof method == "string") {
         var standardMethod = method.toUpperCase();
         checkMethod(standardMethod, funcPath);
@@ -17,17 +17,20 @@ function prepareMethod(data, method, funcPath) {
             checkMethod(curMethod, funcPath);
             data.method.push(curMethod.toUpperCase());
         });
-    } else
+    } else {
         throw new TypeError(
             `Method "${method}" in "${funcPath}" isn"t string or array`
         );
+    }
 }
 
 function inheritFromGeneralConfig(data, generalConfig, methodPath) {
     if (generalConfig == null) return;
-    if (data.method.length==0) {
+    if (data.method.length == 0) {
         if (generalConfig.method == null) data.method = ["GET"];
-        else prepareMethod(data, generalConfig.method, methodPath);
+        else {
+            prepareMethod(data, generalConfig.method, methodPath);
+        }
     }
     if (generalConfig.fontware != null)
         data.fontware = data.fontware.concat(generalConfig.fontware);

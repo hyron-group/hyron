@@ -51,7 +51,7 @@ function httpEventWrapper(
                     runBackwares(req, res, err, thisArgs);
                 },
                 isFontware: true
-            })
+            });
     }
 
     return function httpEvent(req, res) {
