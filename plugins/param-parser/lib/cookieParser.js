@@ -6,5 +6,6 @@ function getCookieData(reqCookies) {
             $cookie: cookie.parse(reqCookies)
         };
     }
+}
 
-    module.exports = getCookieData;
+module.exports = getCookieData;
