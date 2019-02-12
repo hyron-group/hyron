@@ -40,7 +40,7 @@ function parseRequireMiddleware(reqMidWare, isFontware) {
         disableList,
         enableList,
         disableAll
-    }
+    };
 }
 
 module.exports = parseRequireMiddleware;

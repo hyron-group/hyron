@@ -1,12 +1,12 @@
 const hyron = require("./ModulesManager");
-const child_process = require("child_process");
+const childProcess = require("child_process");
 const chalk = require("chalk");
 var fs = require("fs");
 const RELATIVE_PATH_REG = /^[\.\/]+/;
 const INSTALLED_REG = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
 
 (() => {
-    child_process.execSync("npm i -g yarn");
+    childProcess.execSync("npm i -g yarn");
 })();
 
 
@@ -53,7 +53,7 @@ function getMissingPackage(meta) {
 function downloadMissingPackage(name, url) {
     return new Promise((resolve, reject) => {
         console.info(chalk.cyanBright(`Lockup "${name}"`));
-        child_process.exec(`yarn add ${url}`, (err, sto, ste) => {
+        childProcess.exec(`yarn add ${url}`, (err, sto, ste) => {
             if (err == null) {
                 // get installed package name
                 var match = INSTALLED_REG.exec(sto);
@@ -79,7 +79,7 @@ function startDownload(packageList) {
             .then((displayName, realName) => {
                 console.log(chalk.green("Installed : " + displayName));
                 realPackagesName[displayName] = realName;
-            }))
+            }));
     }
 
     return new Promise((resolve) => {
@@ -145,7 +145,7 @@ function loadFromFile(buildPath) {
             }
         });
     } else if (appMeta instanceof Object) {
-        loadFromObject(appMeta)
+        loadFromObject(appMeta);
     }
 }
 

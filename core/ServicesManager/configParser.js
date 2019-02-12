@@ -86,7 +86,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig) {
         handle: undefined,
         path: undefined,
         params: undefined
-    }
+    };
 
     loadFromRouteConfig(config, routeConfig, methodPath);
     inheritFromGeneralConfig(config, generalConfig, methodPath);

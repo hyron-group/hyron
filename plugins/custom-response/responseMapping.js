@@ -88,6 +88,6 @@ const RESPONSE_HANDLE = {
     $onFinish(data, res) {
         res.on("finish", data);
     }
-}
+};
 
 module.exports = RESPONSE_HANDLE;

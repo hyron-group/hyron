@@ -2,7 +2,7 @@ const spdy = require("spdy");
 const fs = require("fs");
 const {
     getBaseURL
-} = require("../../lib/completeUrl")
+} = require("../../lib/completeUrl");
 const ModuleManager = require("../../core/ModulesManager");
 const chalk = require("chalk");
 
@@ -19,7 +19,7 @@ function changeToHTTPsCorrect(options){
             plain: false,
         },
         ...options
-    }
+    };
 
     if (key != null) {
         tcpCfg.key = fs.readFileSync(key);
@@ -38,7 +38,7 @@ function changeToHTTPsCorrect(options){
 function handle(options) {
     var protocol = this.protocol;
     if (protocol == "http2" || protocol == "https") {
-        changeToHTTPsCorrect.call(this, options)
+        changeToHTTPsCorrect.call(this, options);
     }
 }
 

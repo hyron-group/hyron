@@ -8,7 +8,7 @@ module.exports = function parser(req, onComplete) {
         output.$body = Buffer.concat(buf);
         onComplete(output);
     });
-    req.on("error", err => {
+    req.on("error", (err) => {
         onComplete(null, err);
     });
 };

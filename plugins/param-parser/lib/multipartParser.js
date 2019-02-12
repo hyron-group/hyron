@@ -4,7 +4,9 @@ const stringToObject = require("../../../lib/objectParser");
 
 function parserMultiPart(req, onComplete) {
     var data = {};
-    var busboy = new Busboy({ headers: req.headers });
+    var busboy = new Busboy({
+        headers: req.headers
+    });
     busboy.on(
         "field",
         (name, val, fieldTruncated, valTruncated, encoding, type) => {
@@ -14,7 +16,7 @@ function parserMultiPart(req, onComplete) {
 
     busboy.on("file", (field, file, name, encoding, type) => {
         var buf = [];
-        file.on("data", (chunk)=>{
+        file.on("data", (chunk) => {
             buf.push(chunk);
         });
         file.on("data", () => {

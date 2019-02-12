@@ -26,7 +26,7 @@ var extractor = {
         if (reqBodyType == null) {
             onComplete(null);
         } else if (reqBodyType == "application/x-www-form-urlencoded") {
-            urlEncodedParser(req, onComplete)
+            urlEncodedParser(req, onComplete);
         } else if (reqBodyType >= "multipart" && reqBodyType < "multipart/z") {
             multiPartParser(req, onComplete);
         } else {
@@ -38,7 +38,7 @@ var extractor = {
 function resortDataIndex(data, argList) {
     if (data == null) return data;
     var resortInput = [];
-    argList.forEach(key => {
+    argList.forEach((key) => {
         resortInput.push(data[key]);
     });
 
@@ -150,8 +150,8 @@ function generalParserHandler(reqCfg, argsList) {
         var parserChain = getExtractDataHandlers(reqCfg, argsList, onComplete);
         parserChain.forEach((parser) => {
             parser(req, res, prev);
-        })
-    }
+        });
+    };
 }
 
 module.exports = generalParserHandler;

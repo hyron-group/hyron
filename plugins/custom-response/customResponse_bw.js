@@ -15,4 +15,4 @@ function handle(req, res, prev) {
 module.exports = {
     handle,
     typeFilter: ["Object"],
-}
+};

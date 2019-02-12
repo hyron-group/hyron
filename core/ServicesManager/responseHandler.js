@@ -44,7 +44,7 @@ function handingResult(result, res, isDevMode = false) {
     } else if (result instanceof Error) {
         handingError(result, res, isDevMode);
     } else if (result.constructor.name == "Object") {
-        handleObject(res, data);
+        handleObject(res, result);
     } else {
         res.end(result.toString());
     }

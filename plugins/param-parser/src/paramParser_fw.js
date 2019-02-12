@@ -32,4 +32,4 @@ module.exports = {
     checkout,
     handle,
     global: true
-}
+};

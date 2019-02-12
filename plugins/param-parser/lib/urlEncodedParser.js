@@ -1,6 +1,6 @@
 function passURLDecodedToVar(decodedVar) {
     var output = {};
-    decodedVar.split("&").forEach(val => {
+    decodedVar.split("&").forEach((val) => {
         var dataPart = val.split("=");
         output[dataPart[0]] = dataPart[1];
     });

@@ -88,7 +88,7 @@ class ModuleManager {
 
                 var match = URI_REG.exec(arg0);
                 if (match == null) {
-                    throw new TypeError("Cannot parse url from getInstance(..) argument at index 0")
+                    throw new TypeError("Cannot parse url from getInstance(..) argument at index 0");
                 }
                 serverConfig = {
                     protocol: match[1],
@@ -103,7 +103,7 @@ class ModuleManager {
                 host: args[1] || serverConfig.host,
                 prefix: args[2] || serverConfig.prefix,
                 protocol: args[3] || serverConfig.protocol,
-            }
+            };
         }
         var newInstance = new ModuleManager(serverConfig);
         instanceContainer[newInstance.base_url] = newInstance;
@@ -166,7 +166,7 @@ class ModuleManager {
             throw new TypeError("enablePlugins(..) args at index 0 must be Object");
         }
 
-        Object.keys(pluginsList).forEach(pluginName => {
+        Object.keys(pluginsList).forEach((pluginName) => {
             var pluginsMeta = pluginsList[pluginName];
             if (typeof pluginsMeta == "string") {
                 pluginsMeta = loadModuleByPath(pluginsMeta, pluginName);
@@ -193,7 +193,7 @@ class ModuleManager {
             throw new TypeError("enableServices(..) args at index 0 must be Object");
         }
 
-        Object.keys(serviceList).forEach(serviceName => {
+        Object.keys(serviceList).forEach((serviceName) => {
             // routePackage is path
             var routePackage = serviceList[serviceName];
             if (typeof routePackage == "string") {

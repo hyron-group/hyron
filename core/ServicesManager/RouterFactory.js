@@ -67,11 +67,11 @@ class RouterFactory {
         }
     }
 
-    registerRoutesGroup(moduleName, handlePackage, config) {
+    registerRoutesGroup(moduleName, HandlePackage, config) {
         console.info(chalk.blue.bold(`\nLockup Service : ${moduleName}`));
-        var requestConfig = handlePackage.requestConfig();
+        var requestConfig = HandlePackage.requestConfig();
 
-        var instance = new handlePackage();
+        var instance = new HandlePackage();
         instance.$config = config;
         if (requestConfig == null) {
             throw new Error(
@@ -93,7 +93,7 @@ class RouterFactory {
                 );
             var mainHandle = configModel.handle || instance[methodName];
 
-            configModel.method.forEach(entryMethodType => {
+            configModel.method.forEach((entryMethodType) => {
                 var tempModel = configModel;
                 var url = prepareEventName(
                     configReader.getConfig("style"),

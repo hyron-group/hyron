@@ -80,18 +80,18 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
             var result = finalFunction.call(thisArgs, req, res, prev);
             completeCheckout();
             return result;
-        }
+        };
 
     } else {
         onInitResult = function (thisArgs, req, res, prev) {
             var result = finalFunction.call(thisArgs, req, res, prev);
             handlerHolder[index] = idleFunction;
             return result;
-        }
+        };
     }
 
     if (onCreate != null) {
-        return initFunction
+        return initFunction;
     } else {
         return finalFunction;
     }

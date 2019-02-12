@@ -11,12 +11,15 @@ class AddonsManager {
         this.addonsHolder[name] = {
             handler,
             config
-        }
+        };
         console.info(chalk.gray(`➝  Registered addons "${name}"`));
     }
 
-    runAddons(name){
-        var {handler, config} = this.addonsHolder[name];
+    runAddons(name) {
+        var {
+            handler,
+            config
+        } = this.addonsHolder[name];
         handler.call(this.instance, config);
     }
 
@@ -29,8 +32,11 @@ class AddonsManager {
     }
 
     static runGlobalAddons(instance) {
-        globalAddons.forEach((addons)=>{
-            var {handler, config} = addons;
+        globalAddons.forEach((addons) => {
+            var {
+                handler,
+                config
+            } = addons;
             handler.call(instance, config);
         });
     }

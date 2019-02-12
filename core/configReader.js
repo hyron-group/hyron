@@ -122,7 +122,7 @@ function loadConfig(path, moduleName) {
             path = path.substr(0, path.lastIndexOf("\\"));
             loadConfig(path, moduleName);
         } else if (pathStat.isDirectory()) {
-            loadConfigFromModule(path, moduleName)
+            loadConfigFromModule(path, moduleName);
         }
     } catch (err) {
         // console.error(err.message)

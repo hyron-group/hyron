@@ -34,7 +34,7 @@ function httpEventWrapper(
                 },
                 isFontware: false
             }
-        )
+        );
     }
 
     function runsFontwares(req, res, thisArgs) {
@@ -58,7 +58,7 @@ function httpEventWrapper(
         var sandbox = instance;
         Object.assign(sandbox, generalThisArgs);
         runsFontwares(req, res, sandbox);
-    }
+    };
 }
 
 module.exports = httpEventWrapper;
