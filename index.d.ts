@@ -85,15 +85,15 @@ interface RouterMeta {
      */
     method: SupportedMethod | Array<SupportedMethod>;
     /**
-     * Use to enable middleware or turn off global middleware if you add '!' at the beginning
+     * Use to enable middleware or turn off global middleware if you add "!" at the beginning
      */
     fontware: Array<string | Function>;
     /**
-     * Use to enable middleware or turn off global middleware if you add '!' at the beginning
+     * Use to enable middleware or turn off global middleware if you add "!" at the beginning
      */
     backware: Array<string | Function>;
     /**
-     * Use to enable plugins or turn off global plugins if you add '!' at the beginning
+     * Use to enable plugins or turn off global plugins if you add "!" at the beginning
      */
     plugins: Array<string>;
     /**
@@ -171,10 +171,10 @@ declare class ModuleManager {
      * Create a new instance with specified params
      *
      * ### params
-     * - **port** (number) : a free port. if port is 0, server will listen on random available port. default is '3000'
-     * - **host** (string - option) : host name or ip address of current machine. Default is 'localhost'
+     * - **port** (number) : a free port. if port is 0, server will listen on random available port. default is "3000"
+     * - **host** (string - option) : host name or ip address of current machine. Default is "localhost"
      * - **prefix** (string - option) : a path to separate your routers, used to group routers into an instance. Default is empty
-     * - **protocol** (string - option) : a protocol for this instance. default is 'http'
+     * - **protocol** (string - option) : a protocol for this instance. default is "http"
      */
     static getInstance(
         port: number,

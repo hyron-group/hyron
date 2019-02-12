@@ -1,4 +1,4 @@
-const {addAnonymousMiddleware} = require('./middlewareManager');
+const {addAnonymousMiddleware} = require("./middlewareManager");
 
 function parseRequireMiddleware(reqMidWare, isFontware) {
 
@@ -11,7 +11,7 @@ function parseRequireMiddleware(reqMidWare, isFontware) {
         var middlewareMeta = reqMidWare[i];
         if (typeof middlewareMeta == "string") {
             // prepare disable global middleware by name
-            if (middlewareMeta >= "!" && middlewareMeta < '"') {
+            if (middlewareMeta >= "!" && middlewareMeta < "\"") {
                 var middlewareName = middlewareMeta.substr(1);
                 var enableMiddlewareIndex = reqMidWare.indexOf(middlewareName);
                 if (middlewareName == "*") {

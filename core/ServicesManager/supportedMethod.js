@@ -26,7 +26,7 @@ function getAllowMethod() {
 
 function checkMethod(method, location) {
     if (!isSupported(method)) {
-        throw new TypeError(`method '${method}' in '${location}' is not valid`)
+        throw new TypeError(`method "${method}" in "${location}" is not valid`)
 
     }
 }

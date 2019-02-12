@@ -1,17 +1,17 @@
 const http = require("http");
 const ServicesManager = require("./ServicesManager");
-const PluginsManager = require('./PluginsManager');
-const AddonsManager = require('./AddonsManager');
+const PluginsManager = require("./PluginsManager");
+const AddonsManager = require("./AddonsManager");
 const generalSecretKey = require("../lib/generalKey");
-const configReader = require('./configReader');
-const loadModuleByPath = require('../lib/moduleLoader');
-const chalk = require('chalk');
+const configReader = require("./configReader");
+const loadModuleByPath = require("../lib/moduleLoader");
+const chalk = require("chalk");
 
 const URI_REG = /^([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?/;
 
 const {
     getBaseURL
-} = require('../lib/completeUrl');
+} = require("../lib/completeUrl");
 
 var instanceContainer = {};
 var serverContainer = {};
@@ -45,7 +45,7 @@ class ModuleManager {
     }
 
     static build(path) {
-        const appLoader = require('./appLoader');
+        const appLoader = require("./appLoader");
         appLoader(path);
     }
 
@@ -108,11 +108,11 @@ class ModuleManager {
     enableAddons(addonsList) {
         if (addonsList == null) return;
         if (addonsList.constructor.name != "Object") {
-            throw new TypeError('enableAddons(..) args at index 0 must be Object');
+            throw new TypeError("enableAddons(..) args at index 0 must be Object");
         }
         for (var addonsName in addonsList) {
             var addonsHandler = addonsList[addonsName];
-            if (typeof addonsHandler == 'string') {
+            if (typeof addonsHandler == "string") {
                 addonsHandler = loadModuleByPath(addonsHandler, addonsName);
             }
 
@@ -126,11 +126,11 @@ class ModuleManager {
     static enableGlobalAddons(addonsList) {
         if (addonsList == null) return;
         if (addonsList.constructor.name != "Object") {
-            throw new TypeError('enableAddons(..) args at index 0 must be Object');
+            throw new TypeError("enableAddons(..) args at index 0 must be Object");
         }
         for (var addonsName in addonsList) {
             var addonsHandler = addonsList[addonsName];
-            if (typeof addonsHandler == 'string') {
+            if (typeof addonsHandler == "string") {
                 addonsHandler = loadModuleByPath(addonsHandler, addonsName);
             }
 
@@ -142,7 +142,7 @@ class ModuleManager {
     enablePlugins(pluginsList) {
         if (pluginsList == null) return;
         if (typeof pluginsList != "object") {
-            throw new TypeError('enablePlugins(..) args at index 0 must be Object');
+            throw new TypeError("enablePlugins(..) args at index 0 must be Object");
         }
 
         Object.keys(pluginsList).forEach(pluginName => {
@@ -152,7 +152,7 @@ class ModuleManager {
             }
 
             if (typeof pluginsMeta != "object") {
-                throw new TypeError(`can't parse plugins '${pluginName}' metadata on type '${typeof pluginsMeta}'`);
+                throw new TypeError(`can"t parse plugins "${pluginName}" metadata on type "${typeof pluginsMeta}"`);
             }
 
             var pluginConfig = configReader.getConfig(pluginName);
@@ -169,7 +169,7 @@ class ModuleManager {
     enableServices(serviceList) {
         if (serviceList == null) return;
         if (serviceList.constructor.name != "Object") {
-            throw new TypeError('enableServices(..) args at index 0 must be Object');
+            throw new TypeError("enableServices(..) args at index 0 must be Object");
         }
 
         Object.keys(serviceList).forEach(serviceName => {
@@ -187,7 +187,7 @@ class ModuleManager {
                     routePackage(this.app, serviceConfig);
                 } catch (err) {
                     console.error(chalk.red(
-                        `Hyron do not support for service define like '${serviceName}' yet`
+                        `Hyron do not support for service define like "${serviceName}" yet`
                     ));
                 }
             } else {

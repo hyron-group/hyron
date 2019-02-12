@@ -1,5 +1,5 @@
 const argumentParser = require("../lib/argumentParser");
-const generalParserHandler = require('./extractor');
+const generalParserHandler = require("./extractor");
 
 var parserHolder = {};
 

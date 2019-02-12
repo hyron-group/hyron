@@ -1,7 +1,7 @@
-const ModuleManager = require('./ModulesManager');
-const PluginsManager = require('./PluginsManager');
-const AddonsManager = require('./AddonsManager');
-const loadModuleByPath = require('../lib/moduleLoader');
+const ModuleManager = require("./ModulesManager");
+const PluginsManager = require("./PluginsManager");
+const AddonsManager = require("./AddonsManager");
+const loadModuleByPath = require("../lib/moduleLoader");
 
 
 function loadGlobalAddons(){

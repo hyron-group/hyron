@@ -1,10 +1,10 @@
-const compare = require('performance-tools');
+const compare = require("performance-tools");
 
 var origin = `/user/:uid/class/:cid`;
-var ts = '/user/thangdjw/class/pt12354';
+var ts = "/user/thangdjw/class/pt12354";
 var reg = new RegExp(`/user/([\\w\\d_\\-+]*)/class/([\\w\\d_\\-+]*)`);
 
-var static = ['user', 'class'];
+var static = ["user", "class"];
 
 compare.comparator({
     v1: () => {

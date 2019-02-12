@@ -1,7 +1,7 @@
 const {
     checkMethod
-} = require('./supportedMethod');
-const chalk = require('chalk');
+} = require("./supportedMethod");
+const chalk = require("chalk");
 
 
 
@@ -19,7 +19,7 @@ function prepareMethod(data, method, funcPath) {
         });
     } else
         throw new TypeError(
-            `Method '${method}' in '${funcPath}' isn't string or array`
+            `Method "${method}" in "${funcPath}" isn"t string or array`
         );
 }
 
@@ -66,7 +66,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig) {
         !routeConfig instanceof Array &&
         routeConfig.constructor.name !== "Object") {
         console.warn(chalk.yellow(
-            `[warning] Don't support for config type at ${methodPath}`
+            `[warning] Don"t support for config type at ${methodPath}`
         ));
     }
 

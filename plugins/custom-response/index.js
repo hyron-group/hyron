@@ -10,5 +10,5 @@
  * $redirect : redirect to a page
  */
 module.exports = {
-    backware : require('./customResponse_bw')
+    backware : require("./customResponse_bw")
 }

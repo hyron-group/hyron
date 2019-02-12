@@ -6,5 +6,5 @@
  * 
  */
 module.exports = {
-    fontware: require('./src/paramParser_fw')
+    fontware: require("./src/paramParser_fw")
 }

@@ -2,16 +2,16 @@ const {
     getUriPath
 } = require("../../lib/queryParser");
 const handleResult = require("./responseHandler");
-const path = require('../../lib/path');
+const path = require("../../lib/path");
 const HTTPMessage = require("../../lib/HttpMessage");
-const prepareConfigModel = require('./configParser');
+const prepareConfigModel = require("./configParser");
 const {
     prepareEventName
-} = require('../../lib/completeUrl');
-const httpEventWrapper = require('./eventWrapper');
-const dynamicUrl = require('../../lib/dynamicURL');
-const configReader = require('../configReader');
-const chalk = require('chalk');
+} = require("../../lib/completeUrl");
+const httpEventWrapper = require("./eventWrapper");
+const dynamicUrl = require("../../lib/dynamicURL");
+const configReader = require("../configReader");
+const chalk = require("chalk");
 
 
 /**
@@ -40,7 +40,7 @@ class RouterFactory {
         } else {
             var err = new HTTPMessage(
                 404, // not found
-                `Can't find router at ${uriPath}`
+                `Can"t find router at ${uriPath}`
             );
             handleResult(err, res, this.isDevMode);
 
@@ -102,7 +102,7 @@ class RouterFactory {
                     methodName,
                 );
 
-                if (configModel.params != null || url.includes('/:')) {
+                if (configModel.params != null || url.includes("/:")) {
                     var params = configModel.params || "";
                     url = dynamicUrl
                         .registerUrl(url + params) +
@@ -111,7 +111,7 @@ class RouterFactory {
                         new Error(`URL ${url}/${configModel.params} at ${methodName} is not valid`);
                 }
 
-                url = entryMethodType + '/' + url;
+                url = entryMethodType + "/" + url;
                 path.build(configReader.getConfig("base_url"), url, mainHandle);
                 tempModel.method = entryMethodType;
                 this.registerRouterByMethod(
@@ -133,7 +133,7 @@ class RouterFactory {
         // store listener
 
         if (mainExecute == null) {
-            throw new ReferenceError(`main-handle of '${eventName}' has not been set`);
+            throw new ReferenceError(`main-handle of "${eventName}" has not been set`);
         }
 
         this.listener.set(

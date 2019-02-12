@@ -1,4 +1,4 @@
-const cookie = require('cookie');
+const cookie = require("cookie");
 
 const RESPONSE_HANDLE = {
     $addTrailers(data, res) {

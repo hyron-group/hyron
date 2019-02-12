@@ -1,5 +1,5 @@
 <div style = "text-align:center">
-    <img src='https://i.imgur.com/mAjPWAu.png' style='width:240px; margin:auto'/>
+    <img src="https://i.imgur.com/mAjPWAu.png" style="width:240px; margin:auto"/>
 </div>
 
 # Introduction (beta)

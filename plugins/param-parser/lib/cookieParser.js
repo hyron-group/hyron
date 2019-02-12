@@ -1,4 +1,4 @@
-const cookie = require('cookie');
+const cookie = require("cookie");
 
 function getCookieData(reqCookies) {
     if (reqCookies == null) return;

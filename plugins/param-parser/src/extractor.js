@@ -1,9 +1,9 @@
-const queryParser = require('../lib/queryParser');
-const cookieParser = require('../lib/cookieParser');
-const multiPartParser = require('../lib/multipartParser');
+const queryParser = require("../lib/queryParser");
+const cookieParser = require("../lib/cookieParser");
+const multiPartParser = require("../lib/multipartParser");
 const rawBodyParser = require("../lib/rawBodyParser");
 const urlEncodedParser = require("../lib/urlEncodedParser");
-const dynamicUrl = require('../../../lib/dynamicURL');
+const dynamicUrl = require("../../../lib/dynamicURL");
 
 var extractor = {
     cookieParser(req) {
@@ -85,7 +85,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
         })
     }
 
-    if (argsList.includes('$cookie')) {
+    if (argsList.includes("$cookie")) {
         parserChain.push(function parserParamsData(req, res, data) {
             var cookieData = extractor.cookieParser(req);
             if (cookieData != null)

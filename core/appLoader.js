@@ -1,7 +1,7 @@
-const hyron = require('./ModulesManager');
-const child_process = require('child_process');
-const chalk = require('chalk');
-var fs = require('fs');
+const hyron = require("./ModulesManager");
+const child_process = require("child_process");
+const chalk = require("chalk");
+var fs = require("fs");
 const RELATIVE_PATH_REG = /^[\.\/]+/;
 const INSTALLED_REG = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
 
@@ -46,7 +46,7 @@ function registerInstance(appMeta) {
 }
 
 function getMissingPackage(meta) {
-    const npmPackage = JSON.parse(fs.readFileSync('package.json').toString());
+    const npmPackage = JSON.parse(fs.readFileSync("package.json").toString());
     var dependencies = {
         ...npmPackage.dependencies,
         ...npmPackage.devDependencies,
@@ -68,7 +68,7 @@ function getMissingPackage(meta) {
 
 function downloadMissingPackage(name, url) {
     return new Promise((resolve, reject) => {
-        console.info(chalk.cyanBright(`Lockup '${name}'`));
+        console.info(chalk.cyanBright(`Lockup "${name}"`));
         child_process.exec(`yarn add ${url}`, (err, sto, ste) => {
             if (err == null) {
                 // get installed package name
@@ -132,7 +132,7 @@ function loadFromObject(appMeta) {
             applyChange(appMeta.services, downloadedServices);
 
             console.log(chalk.green("All package downloaded !\n"));
-            console.log('------------------------\n');
+            console.log("------------------------\n");
 
             if(appMeta.services!=null){
                 registerInstance(appMeta);

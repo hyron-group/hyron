@@ -1,1 +1,1 @@
-module.exports = require('./middlewareManager')
+module.exports = require("./middlewareManager")

@@ -1,8 +1,8 @@
 const crc = require("crc");
-const startRunMiddleware = require('./middlewareRunner');
-const eventWrapper = require('./eventWrapper');
-const parseRequireMiddleware = require('./prepareRequireMiddleware');
-const chalk = require('chalk');
+const startRunMiddleware = require("./middlewareRunner");
+const eventWrapper = require("./eventWrapper");
+const parseRequireMiddleware = require("./prepareRequireMiddleware");
+const chalk = require("chalk");
 
 var handlerHolder = [];
 var customFontWareIndex = {};
@@ -50,7 +50,7 @@ function addMiddleware(pluginsName, pluginsMeta, config, isFontware) {
             else customBackWareIndex[pluginsName] = index;
         }
         console.info(chalk.gray(
-            `➝  Registered ${isFontware ? "fontware" : "backware"} '${pluginsName}' ${
+            `➝  Registered ${isFontware ? "fontware" : "backware"} "${pluginsName}" ${
                         isGlobal ? "as global" : ""
                     }`
         ));
@@ -166,7 +166,7 @@ function prepareHandlerIndex(eventName, reqMidWare, isFontware) {
         }
         if (middlewareIndex != null)
             indexList.push(middlewareIndex);
-        else console.warn(chalk.yellow(`[warning] Can't find ${isFontware?"font":"back"}ware by name '${enableMidWareName}'`))
+        else console.warn(chalk.yellow(`[warning] Can"t find ${isFontware?"font":"back"}ware by name "${enableMidWareName}"`))
     }
 
     indexList = indexList.map(Number);

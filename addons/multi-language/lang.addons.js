@@ -1,4 +1,4 @@
-const plRunner = require('./runner');
+const plRunner = require("./runner");
 
 module.exports = function (cfg) {
     console.log("java supporter");

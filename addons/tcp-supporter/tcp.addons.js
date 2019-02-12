@@ -1,8 +1,8 @@
-const spdy = require('spdy');
-const fs = require('fs');
-const {getBaseURL} = require('../../lib/completeUrl')
-const ModuleManager = require('../../core/ModulesManager');
-const chalk = require('chalk');
+const spdy = require("spdy");
+const fs = require("fs");
+const {getBaseURL} = require("../../lib/completeUrl")
+const ModuleManager = require("../../core/ModulesManager");
+const chalk = require("chalk");
 
 function handle (options) {
     var protocol = this.protocol;
@@ -15,7 +15,7 @@ function handle (options) {
             key: null,
             cert: null,
             spdy: {
-                protocol: ['h2', 'spdy/3.1'],
+                protocol: ["h2", "spdy/3.1"],
                 plain: false,
             },
             ...options

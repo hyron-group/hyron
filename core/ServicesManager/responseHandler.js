@@ -37,7 +37,7 @@ function handingError(error, res, isDevMode) {
         res.setHeader("Content-Type", "text/html");
         res.write(`<h3>${message}</h3>`);
         var stack = error.stack;
-        res.write(stack.substr(stack.indexOf('at') || 0));
+        res.write(stack.substr(stack.indexOf("at") || 0));
     } else res.write(message);
     res.end();
 }

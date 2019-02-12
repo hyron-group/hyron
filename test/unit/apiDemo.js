@@ -2,7 +2,7 @@ module.exports = class Demo {
     static requestConfig() {
         return {
             $all: {
-                method: 'get',
+                method: "get",
             },
             "": "all",
             testGetParams: "get",
@@ -49,11 +49,11 @@ module.exports = class Demo {
     }
 
     testPath() {
-        var path = require('../../type/path');
+        var path = require("../../type/path");
         var data = [
             path.findURL(new Demo().upload),
             path.findURL(this.upload),
-            path.findURL('/upload'),
+            path.findURL("/upload"),
         ]
         return data;
     }

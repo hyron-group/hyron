@@ -1,6 +1,6 @@
 # Contributing
 
-Contributions are welcome, and they are greatly appreciated! Every littlebit helps, and credit will always be given. We'd love to accept your patches and contributions to this project. You can contribute in many ways:
+Contributions are welcome, and they are greatly appreciated! Every littlebit helps, and credit will always be given. We"d love to accept your patches and contributions to this project. You can contribute in many ways:
 
 ## Types of Contributions
 
