@@ -1,6 +1,5 @@
-const loadModuleByPath = require('../lib/moduleLoader');
-
 var globalAddons = [];
+const chalk = require('chalk');
 class AddonsManager {
     constructor(instance) {
         this.instance = instance;
@@ -13,7 +12,7 @@ class AddonsManager {
             handler,
             config
         }
-        console.log(`-> Registered addons '${name}'`);
+        console.info(chalk.gray(`➝  Registered addons '${name}'`));
     }
 
     runAddons(name){
@@ -26,7 +25,7 @@ class AddonsManager {
             handler,
             config
         });
-        console.log(`-> Registered addons '${name}' as global`);
+        console.info(chalk.gray(`➝  Registered addons '${name}' as global`));
     }
 
     static runGlobalAddons(instance) {

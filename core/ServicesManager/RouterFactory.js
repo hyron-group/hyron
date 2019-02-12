@@ -11,6 +11,7 @@ const {
 const httpEventWrapper = require('./eventWrapper');
 const dynamicUrl = require('../../lib/dynamicURL');
 const configReader = require('../configReader');
+const chalk = require('chalk');
 
 
 /**
@@ -67,7 +68,7 @@ class RouterFactory {
     };
 
     registerRoutesGroup(moduleName, handlePackage, config) {
-        console.log(`\nLockup service : ${moduleName}`)
+        console.info(chalk.blue.bold(`\nLockup service : ${moduleName}`))
         var requestConfig = handlePackage.requestConfig();
 
         var instance = new handlePackage();
@@ -125,7 +126,7 @@ class RouterFactory {
 
         // Executer will call each request
 
-        console.info("-> event : " + eventName);
+        console.info(chalk.cyanBright("➝  event : " + eventName));
         // store listener
 
         if (mainExecute == null) {

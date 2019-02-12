@@ -1,6 +1,7 @@
 const {
     checkMethod
 } = require('./supportedMethod');
+const chalk = require('chalk');
 
 
 
@@ -64,9 +65,9 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig) {
     if (typeof routeConfig !== "string" &&
         !routeConfig instanceof Array &&
         routeConfig.constructor.name !== "Object") {
-        console.warn(
+        console.warn(chalk.yellow(
             `[warning] Don't support for config type at ${methodPath}`
-        );
+        ));
     }
 
     var config = {

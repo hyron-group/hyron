@@ -1,12 +1,18 @@
-require('../');
+const chalk = require('chalk');
 
-const dynamicURL = require('../lib/dynamicURL');
-
-dynamicURL.registerUrl('/users/:uid/class/:classId');
-dynamicURL.registerUrl('/users/:uid/room/:roomId');
-dynamicURL.registerUrl('/users/:uid/argz/:orgz/depart/:name');
-
-var eventName = dynamicURL.getEventName('/users/thangdjw/class/32');
-console.log(eventName);
-var param = dynamicURL.getParams('/users/thangdjw/class/32');
-console.log(param)
+console.log(chalk.red("hello world"))
+console.log(chalk.black("hello world"))
+console.log(chalk.green("hello world"))
+console.log(chalk.yellow("hello world"))
+console.log(chalk.blue("hello world"))
+console.log(chalk.magenta("hello world"))
+console.log(chalk.cyan("hello world"))
+console.log(chalk.white("hello world"))
+console.log(chalk.gray("hello world"))
+console.log(chalk.redBright("hello world"))
+console.log(chalk.greenBright("hello world"))
+console.log(chalk.yellowBright("hello world"))
+console.log(chalk.blueBright("hello world"))
+console.log(chalk.magentaBright("hello world"))
+console.log(chalk.cyanBright("hello world"))
+console.log(chalk.whiteBright("hello world"))

@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "busboy": "^0.2.14",
+    "chalk": "^2.4.2",
     "cookie": "^0.3.1",
     "crc": "^3.8.0",
     "spdy": "^4.0.0",

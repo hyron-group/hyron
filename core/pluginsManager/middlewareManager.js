@@ -2,6 +2,7 @@ const crc = require("crc");
 const startRunMiddleware = require('./middlewareRunner');
 const eventWrapper = require('./eventWrapper');
 const parseRequireMiddleware = require('./prepareRequireMiddleware');
+const chalk = require('chalk');
 
 var handlerHolder = [];
 var customFontWareIndex = {};
@@ -22,13 +23,13 @@ var backwareHandleIndex = {};
 function addMiddleware(pluginsName, pluginsMeta, config, isFontware) {
     if (isFontware == null) {
         var {
-            fontware, backware
+            fontware,
+            backware
         } = pluginsMeta;
 
         addMiddleware(pluginsName, fontware, config, true);
         addMiddleware(pluginsName, backware, config, false);
-    }
-    else {
+    } else {
         if (pluginsMeta == null) return;
         var isGlobal = pluginsMeta.global || false;
 
@@ -48,11 +49,11 @@ function addMiddleware(pluginsName, pluginsMeta, config, isFontware) {
             if (isFontware) customFontWareIndex[pluginsName] = index;
             else customBackWareIndex[pluginsName] = index;
         }
-        console.info(
-            `-> Registered ${isFontware ? "fontware" : "backware"} '${pluginsName}' ${
+        console.info(chalk.gray(
+            `➝  Registered ${isFontware ? "fontware" : "backware"} '${pluginsName}' ${
                         isGlobal ? "as global" : ""
                     }`
-        );
+        ));
     }
 }
 
@@ -165,7 +166,7 @@ function prepareHandlerIndex(eventName, reqMidWare, isFontware) {
         }
         if (middlewareIndex != null)
             indexList.push(middlewareIndex);
-        else console.warn(`[warning] Can't find ${isFontware?"font":"back"}ware by name '${enableMidWareName}'`)
+        else console.warn(chalk.yellow(`[warning] Can't find ${isFontware?"font":"back"}ware by name '${enableMidWareName}'`))
     }
 
     indexList = indexList.map(Number);

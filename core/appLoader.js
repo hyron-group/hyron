@@ -1,5 +1,6 @@
-var hyron = require('./ModulesManager');
-var child_process = require('child_process');
+const hyron = require('./ModulesManager');
+const child_process = require('child_process');
+const chalk = require('chalk');
 var fs = require('fs');
 const RELATIVE_PATH_REG = /^[\.\/]+/;
 const INSTALLED_REG = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
@@ -67,7 +68,7 @@ function getMissingPackage(meta) {
 
 function downloadMissingPackage(name, url) {
     return new Promise((resolve, reject) => {
-        console.log(`lockup '${name}'`);
+        console.info(chalk.cyanBright(`Lockup '${name}'`));
         child_process.exec(`yarn add ${url}`, (err, sto, ste) => {
             if (err == null) {
                 // get installed package name
@@ -88,7 +89,7 @@ function startDownload(packageList) {
         jobs.push(
             downloadMissingPackage(packageName, packageList[packageName])
             .then((displayName, realName) => {
-                console.log("installed : " + displayName);
+                console.log(chalk.green("Installed : " + displayName));
                 realPackagesName[displayName] = realName;
             }))
     }
@@ -97,7 +98,7 @@ function startDownload(packageList) {
         return Promise.all(jobs).then(() => {
             resolve(realPackagesName);
         }).catch(err => {
-            console.log("has problem : " + err.message);
+            console.error(chalk.red("[error] has problem : " + err.message));
         });
     })
 }
@@ -116,8 +117,8 @@ function loadFromObject(appMeta) {
     if (missingPackages.length == 0) {
         registerInstance(appMeta);
     } else {
-        console.warn(`Missing (${missingPackages.length}) : ${missingPackages}`);
-        console.log("Installing missing package ...");
+        console.warn(chalk.gray(`Missing (${missingPackages.length}) : ${missingPackages}`));
+        console.log(chalk.magenta("Installing missing package ..."));
         Promise.all([
             startDownload(missingAddons),
             startDownload(missingPlugins),
@@ -130,7 +131,7 @@ function loadFromObject(appMeta) {
             applyChange(appMeta.plugins, downloadedPlugins);
             applyChange(appMeta.services, downloadedServices);
 
-            console.log("All package downloaded !\n");
+            console.log(chalk.green("All package downloaded !\n"));
             console.log('------------------------\n');
 
             if(appMeta.services!=null){

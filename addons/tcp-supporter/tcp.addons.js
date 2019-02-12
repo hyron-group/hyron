@@ -2,12 +2,12 @@ const spdy = require('spdy');
 const fs = require('fs');
 const {getBaseURL} = require('../../lib/completeUrl')
 const ModuleManager = require('../../core/ModulesManager');
-
+const chalk = require('chalk');
 
 function handle (options) {
     var protocol = this.protocol;
     if (protocol == "http2" || protocol == "https") {
-        console.log("enable spdy")
+        console.log(chalk.gray("enable spdy"))
         var key = ModuleManager.getConfig("key");
         var cert = ModuleManager.getConfig("cert");
 

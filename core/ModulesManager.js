@@ -5,6 +5,7 @@ const AddonsManager = require('./AddonsManager');
 const generalSecretKey = require("../lib/generalKey");
 const configReader = require('./configReader');
 const loadModuleByPath = require('../lib/moduleLoader');
+const chalk = require('chalk');
 
 const URI_REG = /^([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?/;
 
@@ -23,7 +24,7 @@ class ModuleManager {
     constructor(serverConfig) {
 
         var instanceUrl = getBaseURL(serverConfig);
-        console.log(`\n\n--- ${instanceUrl} ---\n`);
+        console.log(`\n\n——————————— ${instanceUrl} ———————————`);
         var instanceName = serverConfig.host + ":" + serverConfig.port;
         var instanceConfig = {
             secret: generalSecretKey(),
@@ -185,9 +186,9 @@ class ModuleManager {
                 try {
                     routePackage(this.app, serviceConfig);
                 } catch (err) {
-                    console.error(
+                    console.error(chalk.red(
                         `Hyron do not support for service define like '${serviceName}' yet`
-                    );
+                    ));
                 }
             } else {
                 // is as normal hyron service
@@ -254,7 +255,7 @@ function setupDefaultListener(instance, server) {
             var randomPort = server.address().port;
             instance.port = randomPort;
         }
-        console.log(`\nServer started at : ${instance.base_url}`);
+        console.log(chalk.green(`\n✔  Server started at : ${instance.base_url}`));
     });
 
 }
