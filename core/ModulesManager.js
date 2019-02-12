@@ -16,6 +16,27 @@ const {
 var instanceContainer = {};
 var serverContainer = {};
 
+
+function setupDefaultListener(instance, server) {
+    instance.app = server.on("listening", () => {
+        if (instance.port == 0) {
+            var randomPort = server.address().port;
+            instance.port = randomPort;
+        }
+        console.log(chalk.green(`\n✔  Server started at : ${instance.base_url}`));
+    });
+
+}
+
+function prepareBaseUrl(instance) {
+    instance.base_url = getBaseURL({
+        protocol: instance.protocol,
+        host: instance.host,
+        port: instance.port
+    });
+}
+
+
 /**
  * This class is used to setup & run a hyron server app
  */
@@ -248,25 +269,5 @@ class ModuleManager {
     }
 
 }
-
-function setupDefaultListener(instance, server) {
-    instance.app = server.on("listening", () => {
-        if (instance.port == 0) {
-            var randomPort = server.address().port;
-            instance.port = randomPort;
-        }
-        console.log(chalk.green(`\n✔  Server started at : ${instance.base_url}`));
-    });
-
-}
-
-function prepareBaseUrl(instance) {
-    instance.base_url = getBaseURL({
-        protocol: instance.protocol,
-        host: instance.host,
-        port: instance.port
-    });
-}
-
 
 module.exports = ModuleManager;

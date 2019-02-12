@@ -9,21 +9,6 @@ const INSTALLED_REG = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
     child_process.execSync("npm i -g yarn");
 })()
 
-function loadFromFile(buildPath) {
-    var fileData = fs.readFileSync(buildPath).toString();
-    var appMeta = JSON.parse(fileData);
-    if (appMeta instanceof Array) {
-        appMeta.forEach((child) => {
-            if (typeof child == "string")
-                loadFromFile(child);
-            else if (typeof child == "object") {
-                loadFromObject(child);
-            }
-        });
-    } else if (appMeta instanceof Object) {
-        loadFromObject(appMeta)
-    }
-}
 
 function applyChange(meta, changedMeta) {
     for (var changedField in changedMeta) {
@@ -144,6 +129,23 @@ function loadFromObject(appMeta) {
             }
 
         })
+    }
+}
+
+
+function loadFromFile(buildPath) {
+    var fileData = fs.readFileSync(buildPath).toString();
+    var appMeta = JSON.parse(fileData);
+    if (appMeta instanceof Array) {
+        appMeta.forEach((child) => {
+            if (typeof child == "string")
+                loadFromFile(child);
+            else if (typeof child == "object") {
+                loadFromObject(child);
+            }
+        });
+    } else if (appMeta instanceof Object) {
+        loadFromObject(appMeta)
     }
 }
 

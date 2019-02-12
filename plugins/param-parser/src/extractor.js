@@ -35,6 +35,16 @@ var extractor = {
     },
 }
 
+function resortDataIndex(data, argList) {
+    if (data == null) return data;
+    var resortInput = [];
+    argList.forEach(key => {
+        resortInput.push(data[key]);
+    });
+
+    return resortInput;
+}
+
 function isBodyParamType(method) {
     return (method == "POST") || (method == "PUT") || (method == "PATCH");
 }
@@ -108,16 +118,21 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
     if (isQueryParamType(method)) {
         parserChain.push(function parserQueryData(req, res, data) {
             var queryData = extractor.queryParser(req);
-            if (queryData != null){
+            if (queryData != null) {
                 Object.assign(data, queryData);
             }
         })
     }
 
+    function done(req, res, data) {
+        data = resortDataIndex(data, argsList);
+        onComplete(data);
+    };
+
     if (isBodyParamType(method)) {
         parserChain.push(function parserBodyData(req, res, data) {
             extractor.bodyParser(req, (bodyData) => {
-                if (bodyData != null){
+                if (bodyData != null) {
                     Object.assign(data, bodyData);
                 }
                 done(req, res, data);
@@ -127,22 +142,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
         parserChain.push(done);
     }
 
-    function done(req, res, data) {
-        data = resortDataIndex(data, argsList);
-        onComplete(data);
-    };
-
     return parserChain;
-}
-
-function resortDataIndex(data, argList) {
-    if (data == null) return data;
-    var resortInput = [];
-    argList.forEach(key => {
-        resortInput.push(data[key]);
-    });
-
-    return resortInput;
 }
 
 function generalParserHandler(reqCfg, argsList) {

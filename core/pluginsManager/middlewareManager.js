@@ -20,6 +20,51 @@ var backwareHandleIndex = {};
     handlerHolder[0] = syncFunc;
 })();
 
+function runMiddleware(
+    eventName,
+    middlewareArgs
+) {
+    var {
+        reqMiddleware,
+        thisArgs,
+        args,
+        onComplete,
+        onFailed,
+        isFontware
+    } = middlewareArgs;
+    var handlersIndex = prepareHandlerIndex(eventName, reqMiddleware, isFontware);
+    startRunMiddleware(handlersIndex, handlerHolder, thisArgs, args, onComplete, onFailed);
+}
+
+function indexOfHandle(name) {
+    var keyIndex;
+
+    var fontWareKeys = Object.keys(globalFontWareIndex);
+    for (let fwi = 0; fwi < fontWareKeys.length; fwi++) {
+        keyIndex = fontWareKeys[fwi];
+        let globalFwName = globalFontWareIndex[keyIndex];
+        if (globalFwName == name) return keyIndex;
+    }
+
+    if ((keyIndex = customFontWareIndex[name]) != null) {
+        return keyIndex;
+    }
+
+    if ((keyIndex = customBackWareIndex[name]) != null) {
+        return keyIndex;
+    }
+
+    var backWareKeys = Object.keys(globalBackWareIndex);
+    for (let bwi = 0; bwi < backWareKeys.length; bwi++) {
+        keyIndex = backWareKeys[bwi];
+        let globalBwName = globalBackWareIndex[keyIndex];
+        if (globalBwName == name) return keyIndex;
+    }
+
+    return -1;
+}
+
+
 function addMiddleware(pluginsName, pluginsMeta, config, isFontware) {
     if (isFontware == null) {
         var {
@@ -57,49 +102,6 @@ function addMiddleware(pluginsName, pluginsMeta, config, isFontware) {
     }
 }
 
-function runMiddleware(
-    eventName,
-    middlewareArgs
-) {
-    var {
-        reqMiddleware,
-        thisArgs,
-        args,
-        onComplete,
-        onFailed,
-        isFontware
-    } = middlewareArgs;
-    var handlersIndex = prepareHandlerIndex(eventName, reqMiddleware, isFontware);
-    startRunMiddleware(handlersIndex, handlerHolder, thisArgs, args, onComplete, onFailed);
-}
-
-function indexOfHandle(name) {
-    var keyIndex;
-
-    var fontWareKeys = Object.keys(globalFontWareIndex);
-    for (var i = 0; i < fontWareKeys.length; i++) {
-        keyIndex = fontWareKeys[i];
-        var val = globalFontWareIndex[keyIndex];
-        if (val == name) return keyIndex;
-    }
-
-    if ((keyIndex = customFontWareIndex[name]) != null) {
-        return keyIndex;
-    }
-
-    if ((keyIndex = customBackWareIndex[name]) != null) {
-        return keyIndex;
-    }
-
-    var backWareKeys = Object.keys(globalBackWareIndex);
-    for (var i = 0; i < backWareKeys.length; i++) {
-        keyIndex = backWareKeys[i];
-        var val = globalBackWareIndex[keyIndex];
-        if (val == name) return keyIndex;
-    }
-
-    return -1;
-}
 
 function getUniqueRepresentName(isFontware, handle) {
     return isFontware ? "fw-" : "bw-" +

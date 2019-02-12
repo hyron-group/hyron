@@ -34,34 +34,6 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
         }
     }
 
-    function onIdleResult(isChange, thisArgs, req, res, prev) {
-
-        if (isChange) {
-            return initFunction.call(thisArgs, req, res, prev);
-        } else {
-            return handle.call(thisArgs, req, res, prev, config);
-        }
-    }
-
-    function idleFunction(req, res, prev) {
-        var isChange = checkout.call(this, completeCheckout, config);
-        if (isChange instanceof Promise ||
-            isChange instanceof AsyncFunction) {
-            return isChange.then((isChangeAsync) => {
-                return onIdleResult(isChangeAsync, this, req, res, prev);
-            })
-        } else {
-            return onIdleResult(isChange, this, req, res, prev);
-        }
-    }
-
-    if (matchType != null) {
-        idleFunction = function (req, res, prev) {
-            if (!matchType(prev)) return prev;
-            idleFunction.call(this, req, res, prev);
-        }
-    }
-
     var onInitResult;
 
     if (checkout == null) {
@@ -87,6 +59,34 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
             })
         } else {
             return onInitResult(this, req, res, prev);
+        }
+    }
+
+    function onIdleResult(isChange, thisArgs, req, res, prev) {
+
+        if (isChange) {
+            return initFunction.call(thisArgs, req, res, prev);
+        } else {
+            return handle.call(thisArgs, req, res, prev, config);
+        }
+    }
+
+    function idleFunction(req, res, prev) {
+        var isChange = checkout.call(this, completeCheckout, config);
+        if (isChange instanceof Promise ||
+            isChange instanceof AsyncFunction) {
+            return isChange.then((isChangeAsync) => {
+                return onIdleResult(isChangeAsync, this, req, res, prev);
+            })
+        } else {
+            return onIdleResult(isChange, this, req, res, prev);
+        }
+    }
+
+    if (matchType != null) {
+        idleFunction = function (req, res, prev) {
+            if (!matchType(prev)) return prev;
+            idleFunction.call(this, req, res, prev);
         }
     }
 
