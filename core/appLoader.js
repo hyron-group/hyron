@@ -7,7 +7,7 @@ const INSTALLED_REG = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
 
 (() => {
     child_process.execSync("npm i -g yarn");
-})()
+})();
 
 
 function applyChange(meta, changedMeta) {

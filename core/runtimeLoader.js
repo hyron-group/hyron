@@ -23,7 +23,7 @@ function loadGlobalPlugins(){
             var modulePath = pluginsList[name];
             var config = ModuleManager.getConfig(name);
             pluginsMeta = loadModuleByPath(modulePath, name);
-            PluginsManager.addMiddleware(name, pluginsMeta, config)
+            PluginsManager.addMiddleware(name, pluginsMeta, config);
         }
     }
 }

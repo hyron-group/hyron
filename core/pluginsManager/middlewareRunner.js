@@ -5,7 +5,8 @@ function runFunction(func, thisArgs, args, onComplete, onFailed) {
 
     if (func == null) return onComplete(args[2]);
 
-    if (result instanceof Promise || result instanceof AsyncFunction) {
+    if (result instanceof Promise ||
+        result instanceof AsyncFunction) {
         result
             .then((data) => {
                 args[2] = data;
@@ -42,7 +43,7 @@ function runNextMiddleware(
                 execute,
                 thisArgs,
                 args,
-                result => {
+                (result) => {
                     args[2] = result;
                     runNextMiddleware(
                         handlersIndex,

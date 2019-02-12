@@ -62,80 +62,80 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
     var parserChain = [];
 
     if (argsList.includes("$req")) {
-        parserChain.push(function parserClientRequest(req, res, data) {
-            Object.assign(data, req);
+        parserChain.push(function parserClientRequest(req, res, prev) {
+            Object.assign(prev, req);
         })
     }
 
     if (argsList.includes("$res")) {
-        parserChain.push(function parserClientRequest(req, res, data) {
-            Object.assign(data, res);
+        parserChain.push(function parserClientRequest(req, res, prev) {
+            Object.assign(prev, res);
         })
     }
 
     if (argsList.includes("$headers")) {
         parserChain.push(function passHeaders(req, res, prev) {
-            Object.assign(data, req.headers);
+            Object.assign(prev, req.headers);
         })
     }
 
     if (argsList.includes("$socket")) {
         parserChain.push(function passSocket(req, res, prev) {
-            Object.assign(data, req.socket);
+            Object.assign(prev, req.socket);
         })
     }
 
     if (argsList.includes("$trailers")) {
         parserChain.push(function passTrailers(req, res, prev) {
-            Object.assign(data, req.trailers);
+            Object.assign(prev, req.trailers);
         })
     }
 
     if (argsList.includes("$events")) {
         parserChain.push(function passTrailers(req, res, prev) {
-            Object.assign(data, req.on);
+            Object.assign(prev, req.on);
         })
     }
 
     if (argsList.includes("$cookie")) {
-        parserChain.push(function parserParamsData(req, res, data) {
+        parserChain.push(function parserParamsData(req, res, prev) {
             var cookieData = extractor.cookieParser(req);
             if (cookieData != null) {
-                Object.assign(data, cookieData);
+                Object.assign(prev, cookieData);
             }
         })
     }
 
     if (params != null) {
-        parserChain.push(function parserParamsData(req, res, data) {
+        parserChain.push(function parserParamsData(req, res, prev) {
             var paramsData = extractor.paramsParser(req);
             if (paramsData != null) {
-                Object.assign(data, paramsData);
+                Object.assign(prev, paramsData);
             }
         })
     }
 
     if (isQueryParamType(method)) {
-        parserChain.push(function parserQueryData(req, res, data) {
+        parserChain.push(function parserQueryData(req, res, prev) {
             var queryData = extractor.queryParser(req);
             if (queryData != null) {
-                Object.assign(data, queryData);
+                Object.assign(prev, queryData);
             }
         })
     }
 
-    function done(req, res, data) {
-        data = resortDataIndex(data, argsList);
-        onComplete(data);
+    function done(req, res, prev) {
+        prev = resortDataIndex(prev, argsList);
+        onComplete(prev);
     }
 
     if (isBodyParamType(method)) {
-        parserChain.push(function parserBodyData(req, res, data) {
+        parserChain.push(function parserBodyData(req, res, prev) {
             extractor.bodyParser(req, (bodyData) => {
                 if (bodyData != null) {
-                    Object.assign(data, bodyData);
+                    Object.assign(prev, bodyData);
                 }
-                done(req, res, data);
+                done(req, res, prev);
             });
         })
     } else {
@@ -146,10 +146,10 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
 }
 
 function generalParserHandler(reqCfg, argsList) {
-    return function (req, res, data, onComplete) {
+    return function (req, res, prev, onComplete) {
         var parserChain = getExtractDataHandlers(reqCfg, argsList, onComplete);
         parserChain.forEach((parser) => {
-            parser(req, res, data);
+            parser(req, res, prev);
         })
     }
 }

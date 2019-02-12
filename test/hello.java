@@ -1,7 +1,7 @@
-public class hello implements DemoAPI {
+public class Hello implements DemoAPI {
 
     public static requestConfig(){
-        return Demo;
+        return DemoAPI;
     }
 
     public String sayHi(String name) {
