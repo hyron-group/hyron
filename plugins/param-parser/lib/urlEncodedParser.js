@@ -1,6 +1,6 @@
-module.exports = function(req, onComplete) {
+module.exports = function (req, onComplete) {
     var buf = [];
-    req.on("data", chunk => {
+    req.on("data", (chunk) => {
         buf.push(chunk);
     });
     req.on("end", () => {
