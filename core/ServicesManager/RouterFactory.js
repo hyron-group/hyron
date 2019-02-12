@@ -68,7 +68,7 @@ class RouterFactory {
     };
 
     registerRoutesGroup(moduleName, handlePackage, config) {
-        console.info(chalk.blue.bold(`\nLockup service : ${moduleName}`))
+        console.info(chalk.blue.bold(`\nLockup Service : ${moduleName}`))
         var requestConfig = handlePackage.requestConfig();
 
         var instance = new handlePackage();
@@ -102,8 +102,11 @@ class RouterFactory {
                     methodName,
                 );
 
-                if (configModel.params != null) {
-                    url = dynamicUrl.registerUrl(url + configModel.params);
+                if (configModel.params != null || url.includes('/:')) {
+                    var params = configModel.params || "";
+                    url = dynamicUrl
+                        .registerUrl(url + params) +
+                        params;
                     if (url == null)
                         new Error(`URL ${url}/${configModel.params} at ${methodName} is not valid`);
                 }
