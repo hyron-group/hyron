@@ -34,6 +34,15 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
         }
     }
 
+    function onIdleResult(isChange, thisArgs, req, res, prev) {
+
+        if (isChange) {
+            return initFunction.call(thisArgs, req, res, prev);
+        } else {
+            return handle.call(thisArgs, req, res, prev, config);
+        }
+    }
+
     function initFunction(req, res, prev) {
         var initResult = onCreate.call(this, config);
         if (initResult instanceof AsyncFunction) {
@@ -45,16 +54,7 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
         }
     }
 
-    function onIdleResult(isChange, thisArgs, req, res, prev) {
-
-        if (isChange) {
-            return initFunction.call(thisArgs, req, res, prev);
-        } else {
-            return handle.call(thisArgs, req, res, prev, config);
-        }
-    }
-
-    function idleFunction(req, res, prev) {
+    var idleFunction = function (req, res, prev) {
         var isChange = checkout.call(this, completeCheckout, config);
         if (isChange instanceof Promise ||
             isChange instanceof AsyncFunction) {
