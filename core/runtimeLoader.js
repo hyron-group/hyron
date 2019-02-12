@@ -31,6 +31,6 @@ function loadGlobalPlugins(){
 function run() {
     loadGlobalAddons();
     loadGlobalPlugins();
-};
+}
 
 module.exports = run;

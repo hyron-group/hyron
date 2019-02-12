@@ -10,7 +10,7 @@ function handle(req, res, prev) {
     if (prev.$end == null) {
         res.end();
     }
-};
+}
 
 module.exports = {
     handle,

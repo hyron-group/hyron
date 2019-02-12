@@ -18,7 +18,6 @@ function applyChange(meta, changedMeta) {
 
 function registerInstance(appMeta) {
     var server = appMeta.server;
-    var appInstance;
     if (server == null) {
         server = appMeta.base_url;
     }

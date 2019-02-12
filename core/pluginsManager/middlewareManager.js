@@ -20,22 +20,6 @@ var backwareHandleIndex = {};
     handlerHolder[0] = syncFunc;
 })();
 
-function runMiddleware(
-    eventName,
-    middlewareArgs
-) {
-    var {
-        reqMiddleware,
-        thisArgs,
-        args,
-        onComplete,
-        onFailed,
-        isFontware
-    } = middlewareArgs;
-    var handlersIndex = prepareHandlerIndex(eventName, reqMiddleware, isFontware);
-    startRunMiddleware(handlersIndex, handlerHolder, thisArgs, args, onComplete, onFailed);
-}
-
 function indexOfHandle(name) {
     var keyIndex;
 
@@ -183,6 +167,24 @@ function prepareHandlerIndex(eventName, reqMidWare, isFontware) {
 
     return indexList;
 }
+
+
+function runMiddleware(
+    eventName,
+    middlewareArgs
+) {
+    var {
+        reqMiddleware,
+        thisArgs,
+        args,
+        onComplete,
+        onFailed,
+        isFontware
+    } = middlewareArgs;
+    var handlersIndex = prepareHandlerIndex(eventName, reqMiddleware, isFontware);
+    startRunMiddleware(handlersIndex, handlerHolder, thisArgs, args, onComplete, onFailed);
+}
+
 
 function getMiddleware(name) {
     return handlerHolder[indexOfHandle(name)];

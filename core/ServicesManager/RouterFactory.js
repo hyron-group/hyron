@@ -65,7 +65,7 @@ class RouterFactory {
         ) {
             return execute;
         }
-    };
+    }
 
     registerRoutesGroup(moduleName, handlePackage, config) {
         console.info(chalk.blue.bold(`\nLockup Service : ${moduleName}`));

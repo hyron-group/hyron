@@ -34,23 +34,6 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
         }
     }
 
-    var onInitResult;
-
-    if (checkout == null) {
-        onInitResult = function (thisArgs, req, res, prev) {
-            var result = finalFunction.call(thisArgs, req, res, prev);
-            completeCheckout();
-            return result;
-        }
-
-    } else {
-        onInitResult = function (thisArgs, req, res, prev) {
-            var result = finalFunction.call(thisArgs, req, res, prev);
-            handlerHolder[index] = idleFunction;
-            return result;
-        }
-    }
-
     function initFunction(req, res, prev) {
         var initResult = onCreate.call(this, config);
         if (initResult instanceof AsyncFunction) {
@@ -87,6 +70,23 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
         idleFunction = function (req, res, prev) {
             if (!matchType(prev)) return prev;
             idleFunction.call(this, req, res, prev);
+        }
+    }
+
+    var onInitResult;
+
+    if (checkout == null) {
+        onInitResult = function (thisArgs, req, res, prev) {
+            var result = finalFunction.call(thisArgs, req, res, prev);
+            completeCheckout();
+            return result;
+        }
+
+    } else {
+        onInitResult = function (thisArgs, req, res, prev) {
+            var result = finalFunction.call(thisArgs, req, res, prev);
+            handlerHolder[index] = idleFunction;
+            return result;
         }
     }
 
