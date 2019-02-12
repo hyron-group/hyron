@@ -27,7 +27,9 @@
     "backend",
     "clean",
     "api",
-    "micro-service"
+    "micro-service",
+    "reusable",
+    "plugable"
   ],
   "license": "GPL-3.0",
   "main": "index.js",
