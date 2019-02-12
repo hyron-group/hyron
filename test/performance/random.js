@@ -18,4 +18,4 @@ compare.comparator({
     },
 }, {
     round: 8000000
-})
+});

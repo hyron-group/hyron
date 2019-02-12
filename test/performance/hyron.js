@@ -11,6 +11,6 @@ app.setting({
 
 app.enableServices({
     "" : "./test/performance/testCase"
-})
+});
 
 app.startServer();

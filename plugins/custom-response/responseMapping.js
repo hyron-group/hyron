@@ -48,7 +48,7 @@ const RESPONSE_HANDLE = {
         if (data != null) {
             data.forEach((field) => {
                 res.removeHeader(field);
-            })
+            });
         }
     },
     $sendDate(data, res) {

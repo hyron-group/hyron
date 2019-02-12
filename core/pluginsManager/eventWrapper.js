@@ -39,7 +39,7 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
         if (initResult instanceof AsyncFunction) {
             return initResult.then(() => {
                 return onInitResult(this, req, res, prev);
-            })
+            });
         } else {
             return onInitResult(this, req, res, prev);
         }
@@ -60,7 +60,7 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
             isChange instanceof AsyncFunction) {
             return isChange.then((isChangeAsync) => {
                 return onIdleResult(isChangeAsync, this, req, res, prev);
-            })
+            });
         } else {
             return onIdleResult(isChange, this, req, res, prev);
         }

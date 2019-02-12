@@ -236,7 +236,7 @@ class ModuleManager {
 
         configReader.setConfig({
             base_url: this.base_url
-        })
+        });
 
         serverContainer[this.instanceName] = defaultServer;
         this.app = defaultServer;

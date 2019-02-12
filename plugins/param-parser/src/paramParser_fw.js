@@ -9,7 +9,7 @@ function handle(req, res, prev = {}) {
         var paramParser = parserHolder[eventName];
         paramParser(req, res, prev, (data) => {
             resolve(data);
-        })
+        });
     });
 }
 
