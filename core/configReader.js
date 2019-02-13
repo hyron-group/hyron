@@ -6,7 +6,7 @@ const objectEditor = require("../lib/objectEditor");
 const INHERIT_REG = /\$[\w\d.\-]*/;
 const SELF_REF_REG = /<#([\w\d\-.]+)>/g;
 const FOREIGN_REF_REG = /<~([\w\d\-./]+)>/g;
-const chalk = require('chalk');
+const chalk = require("chalk");
 
 var appConfig = {};
 

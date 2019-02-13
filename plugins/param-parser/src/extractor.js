@@ -5,34 +5,129 @@ const rawBodyParser = require("../lib/rawBodyParser");
 const urlEncodedParser = require("../lib/urlEncodedParser");
 const dynamicUrl = require("../../../lib/dynamicURL");
 
-var extractor = {
-    cookieParser(req) {
-        return cookieParser(req.headers.cookie);
+
+function doneAsync(prev, data, argsList, onComplete) {
+    if (data != null) {
+        Object.assign(prev, data);
+    }
+    prev = resortDataIndex(prev, argsList);
+    onComplete(prev);
+}
+
+var fieldMapping = {
+
+    $req(req, res, prev) {
+        prev.$req = req;
     },
-    paramsParser(req) {
+
+    $res(req, res, prev) {
+        prev.$res = res;
+    },
+
+    $query(req, res, prev) {
+        var data = queryParser.parserRawQuery(req.url);
+        prev.$query = data;
+    },
+
+    $headers(req, res, prev) {
+        prev.$headers = req.headers;
+    },
+
+    $socket(req, res, prev) {
+        prev.$socket = req.socket;
+    },
+
+    $trailers(req, res, prev) {
+        prev.$trailers = req.trailers;
+    },
+
+    $events(req, res, prev) {
+        prev.$events = req.on;
+    },
+
+    $cookie(req, res, prev) {
+        var data = cookieParser(req.headers.cookie);
+        if (data != null) {
+            Object.assign(prev, data);
+        }
+    },
+
+}
+
+var bodyMapping = {
+    $urlencoded(onComplete) {
+        return function (req, res, prev) {
+            urlEncodedParser(req, (data) => {
+                if (data != null) {
+                    Object.assign(prev, data);
+                    onComplete(prev);
+                }
+            })
+        }
+    },
+
+    $multipart(onComplete) {
+        return function (req, res, prev) {
+            multiPartParser(req, (data) => {
+                if (data != null) {
+                    Object.assign(prev, data);
+                    onComplete(prev);
+                }
+            });
+        }
+    },
+
+    $raw(onComplete) {
+        return function (req, res, prev) {
+            rawBodyParser(req, (data) => {
+                if (data != null) {
+                    Object.assign(prev, data);
+                    onComplete(prev);
+                }
+            });
+        }
+    },
+
+}
+
+var extractor = {
+
+    paramsParser(req, res, prev) {
         var url = req.url;
         var eor = url.indexOf("?");
         if (eor == -1) {
             eor = url.length;
         }
-        var output = dynamicUrl.getParams(url.substr(0, eor));
-        return output;
-    },
-    queryParser(req) {
-        return queryParser(req.url);
-    },
-    bodyParser(req, onComplete) {
-        var reqBodyType = req.headers["content-type"];
-        if (reqBodyType == null) {
-            onComplete(null);
-        } else if (reqBodyType == "application/x-www-form-urlencoded") {
-            urlEncodedParser(req, onComplete);
-        } else if (reqBodyType >= "multipart" && reqBodyType < "multipart/z") {
-            multiPartParser(req, onComplete);
-        } else {
-            rawBodyParser(req, onComplete);
+        var data = dynamicUrl.getParams(url.substr(0, eor));
+        if (data != null) {
+            Object.assign(prev, data);
         }
     },
+    queryComplexParser(req, res, prev) {
+        var data = queryParser.parseComplexQuery(req.url);
+        if (data != null) {
+            Object.assign(prev, data);
+        }
+    },
+
+    flexBodyParser(onComplete, argsList) {
+        return function (req, res, prev) {
+            onComplete = (data) => {
+                doneAsync(prev, data, argsList, onComplete);
+            }
+            var reqBodyType = req.headers["content-type"];
+            if (reqBodyType == null) {
+                onComplete(null);
+            } else if (reqBodyType == "application/x-www-form-urlencoded") {
+                urlEncodedParser(req, onComplete);
+            } else if (reqBodyType >= "multipart" && reqBodyType < "multipart/z") {
+                multiPartParser(req, onComplete);
+            } else {
+                rawBodyParser(req, onComplete);
+            }
+        }
+    },
+
 };
 
 function resortDataIndex(data, argList) {
@@ -61,67 +156,50 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
 
     var parserChain = [];
 
-    if (argsList.includes("$req")) {
-        parserChain.push(function parserClientRequest(req, res, prev) {
-            Object.assign(prev, req);
-        })
-    }
-
-    if (argsList.includes("$res")) {
-        parserChain.push(function parserClientRequest(req, res, prev) {
-            Object.assign(prev, res);
-        })
-    }
-
-    if (argsList.includes("$headers")) {
-        parserChain.push(function passHeaders(req, res, prev) {
-            Object.assign(prev, req.headers);
-        })
-    }
-
-    if (argsList.includes("$socket")) {
-        parserChain.push(function passSocket(req, res, prev) {
-            Object.assign(prev, req.socket);
-        })
-    }
-
-    if (argsList.includes("$trailers")) {
-        parserChain.push(function passTrailers(req, res, prev) {
-            Object.assign(prev, req.trailers);
-        })
-    }
-
-    if (argsList.includes("$events")) {
-        parserChain.push(function passTrailers(req, res, prev) {
-            Object.assign(prev, req.on);
-        })
-    }
-
-    if (argsList.includes("$cookie")) {
-        parserChain.push(function parserParamsData(req, res, prev) {
-            var cookieData = extractor.cookieParser(req);
-            if (cookieData != null) {
-                Object.assign(prev, cookieData);
-            }
-        })
-    }
 
     if (params != null) {
-        parserChain.push(function parserParamsData(req, res, prev) {
-            var paramsData = extractor.paramsParser(req);
-            if (paramsData != null) {
-                Object.assign(prev, paramsData);
-            }
-        })
+        parserChain.push(extractor.paramsParser);
     }
 
-    if (isQueryParamType(method)) {
-        parserChain.push(function parserQueryData(req, res, prev) {
-            var queryData = extractor.queryParser(req);
-            if (queryData != null) {
-                Object.assign(prev, queryData);
+    var hasNormalVal = false;
+    argsList.forEach((key) => {
+        var parser;
+        if (key.charAt(0) != "$" &&
+            params!=null &&
+            !params.includes(key)) {
+            hasNormalVal = true;
+        }
+        if ((parser = fieldMapping[key])) {
+            parserChain.push(parser);
+        }
+    })
+
+    var specialBodyVal;
+
+    if (
+        argsList.includes("$urlencoded") &&
+        (specialBodyVal = "$urlencoded") ||
+
+        argsList.includes("$multipart") &&
+        (specialBodyVal = "$multipart") ||
+
+        argsList.includes("$raw") &&
+        (specialBodyVal = "$raw")
+
+    ) {
+        if (hasNormalVal) {
+            if (!argsList.includes("$query") &&
+                isQueryParamType(method)) {
+                parserChain.push(extractor.queryComplexParser);
             }
-        })
+        }
+
+        parserChain
+            .push(bodyMapping[specialBodyVal]((prev, data) => {
+                doneAsync(prev, data, argsList, onComplete)
+            }));
+
+        return parserChain;
     }
 
     function done(req, res, prev) {
@@ -129,20 +207,24 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
         onComplete(prev);
     }
 
-    if (isBodyParamType(method)) {
-        parserChain.push(function parserBodyData(req, res, prev) {
-            extractor.bodyParser(req, (bodyData) => {
-                if (bodyData != null) {
-                    Object.assign(prev, bodyData);
-                }
-                done(req, res, prev);
-            });
-        });
+    if (!hasNormalVal) {
+        parserChain.push(done);
+
+        return parserChain;
+    }
+
+    if (!argsList.includes("$query") &&
+        isQueryParamType(method)) {
+        parserChain.push(extractor.queryComplexParser);
+        parserChain.push(done);
+    } else if (isBodyParamType(method)) {
+        parserChain.push(extractor.flexBodyParser(onComplete, argsList));
     } else {
         parserChain.push(done);
     }
 
     return parserChain;
+
 }
 
 function generalParserHandler(reqCfg, argsList) {

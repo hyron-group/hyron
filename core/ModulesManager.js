@@ -76,7 +76,7 @@ class ModuleManager {
             host: "localhost",
             port: 3000,
             prefix: "",
-        }
+        };
 
         if (args.length == 1) {
             var arg0 = args[0];

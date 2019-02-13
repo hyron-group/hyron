@@ -1,6 +1,5 @@
 const AsyncFunction = (async () => {}).constructor;
 
-
 function handleObject(res, data) {
     res.setHeader("Content-Type", "application/json");
     res.end(JSON.stringify(data));
@@ -15,13 +14,21 @@ function handingError(error, res, isDevMode) {
     res.statusCode = code;
     if (isDevMode) {
         res.setHeader("Content-Type", "text/html");
+        res.write(`<style>*{font-family:calibri;}</style>`)
         res.write(`<h3>${message}</h3>`);
-        var stack = error.stack;
-        res.write(stack.substr(stack.indexOf("at") || 0));
+        var stack = getBeautyErrorReport(error.stack);
+        res.write(`<p>${stack.substr(stack.indexOf("at") || 0)}</p>`);
     } else {
         res.write(message);
     }
     res.end();
+}
+
+function getBeautyErrorReport(stack) {
+    stack = stack.replace(/\n/g, "<br>");
+    var pathReg = /[(](([\w\d\s:\\\/+-.]+):([\d]+):([\d]+))[)]/g;
+    stack = stack.replace(pathReg, `(<a href="file:///$2#line=$3,$4" type="text/plain">$1</a>)`);
+    return stack;
 }
 
 

@@ -5,7 +5,7 @@ module.exports = function parser(req, onComplete) {
     });
     req.on("end", () => {
         var output = {};
-        output.$body = Buffer.concat(buf);
+        output.$raw = Buffer.concat(buf);
         onComplete(output);
     });
     req.on("error", (err) => {

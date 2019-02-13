@@ -9,7 +9,7 @@ module.exports = class Demo {
             testPostParams: "post",
             testPlugins: ["get", "post"],
             testRest: {
-                params: "/:var1/:var2"
+                params: "/:var1/var2"
             },
             testConfig: "get",
             testPath: "get",

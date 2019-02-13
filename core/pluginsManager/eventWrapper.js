@@ -64,7 +64,7 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
         } else {
             return onIdleResult(isChange, this, req, res, prev);
         }
-    }
+    };
 
     if (matchType != null) {
         idleFunction = function (req, res, prev) {
