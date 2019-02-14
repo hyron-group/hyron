@@ -40,7 +40,7 @@ class RouterFactory {
         } else {
             var err = new HTTPMessage(
                 404, // not found
-                `Can"t find router at ${uriPath}`
+                `Can't find router at ${uriPath}`
             );
             handleResult(err, res, this.isDevMode);
 

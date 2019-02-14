@@ -6,6 +6,16 @@ const urlEncodedParser = require("../lib/urlEncodedParser");
 const dynamicUrl = require("../../../lib/dynamicURL");
 
 
+function resortDataIndex(data, argList) {
+    if (data == null) return data;
+    var resortInput = [];
+    argList.forEach((key) => {
+        resortInput.push(data[key]);
+    });
+
+    return resortInput;
+}
+
 function doneAsync(prev, data, argsList, onComplete) {
     if (data != null) {
         Object.assign(prev, data);
@@ -125,20 +135,10 @@ var extractor = {
             } else {
                 rawBodyParser(req, onComplete);
             }
-        }
+        };
     },
 
 };
-
-function resortDataIndex(data, argList) {
-    if (data == null) return data;
-    var resortInput = [];
-    argList.forEach((key) => {
-        resortInput.push(data[key]);
-    });
-
-    return resortInput;
-}
 
 function isBodyParamType(method) {
     return (method == "POST") || (method == "PUT") || (method == "PATCH");
@@ -172,7 +172,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
         if ((parser = fieldMapping[key])) {
             parserChain.push(parser);
         }
-    })
+    });
 
     var specialBodyVal;
 
@@ -196,7 +196,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
 
         parserChain
             .push(bodyMapping[specialBodyVal]((prev, data) => {
-                doneAsync(prev, data, argsList, onComplete)
+                doneAsync(prev, data, argsList, onComplete);
             }));
 
         return parserChain;

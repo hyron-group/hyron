@@ -5,6 +5,17 @@ function handleObject(res, data) {
     res.end(JSON.stringify(data));
 }
 
+
+function getBeautyErrorReport(stack) {
+    stack = stack.replace(/\n/g, "<br>");
+    var pathReg = /[(](([\w\d\s:\\\/+-.]+):([\d]+):([\d]+))[)]/g;
+    stack = stack
+        .replace(pathReg,
+            `(<a href="file:///$2#line=$3,$4" type="text/plain">$1</a>)`);
+    return stack;
+}
+
+
 function handingError(error, res, isDevMode) {
     var message = error.message;
     var code = error.code;
@@ -14,21 +25,15 @@ function handingError(error, res, isDevMode) {
     res.statusCode = code;
     if (isDevMode) {
         res.setHeader("Content-Type", "text/html");
-        res.write(`<style>*{font-family:calibri;}</style>`)
+        res.write(`<style>*{font-family:calibri;}</style>`);
         res.write(`<h3>${message}</h3>`);
         var stack = getBeautyErrorReport(error.stack);
-        res.write(`<p>${stack.substr(stack.indexOf("at") || 0)}</p>`);
+        var errorPosition = stack.substr(stack.indexOf("at") || 0);
+        res.write(`<p>${errorPosition}</p>`);
     } else {
         res.write(message);
     }
     res.end();
-}
-
-function getBeautyErrorReport(stack) {
-    stack = stack.replace(/\n/g, "<br>");
-    var pathReg = /[(](([\w\d\s:\\\/+-.]+):([\d]+):([\d]+))[)]/g;
-    stack = stack.replace(pathReg, `(<a href="file:///$2#line=$3,$4" type="text/plain">$1</a>)`);
-    return stack;
 }
 
 

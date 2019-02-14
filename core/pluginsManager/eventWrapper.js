@@ -31,7 +31,7 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
     } else {
         finalFunction = function (req, res, prev) {
             return handle.call(this, req, res, prev, config);
-        }
+        };
     }
 
     function onIdleResult(isChange, thisArgs, req, res, prev) {
