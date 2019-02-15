@@ -227,7 +227,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
 
 function generalParserHandler(reqCfg, argsList) {
     return function (req, res, prev, onComplete) {
-        this.argsList = argsList;
+        this.$argsList = argsList;
         var parserChain = getExtractDataHandlers(reqCfg, argsList, onComplete);
         parserChain.forEach((parser) => {
             parser(req, res, prev);
