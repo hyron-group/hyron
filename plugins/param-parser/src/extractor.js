@@ -132,8 +132,6 @@ var extractor = {
                 urlEncodedParser(req, onComplete);
             } else if (reqBodyType >= "multipart" && reqBodyType < "multipart/z") {
                 multiPartParser(req, onComplete);
-            } else {
-                rawBodyParser(req, onComplete);
             }
         };
     },
@@ -165,7 +163,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
     argsList.forEach((key) => {
         var parser;
         if (key.charAt(0) != "$" &&
-            params!=null &&
+            params != null &&
             !params.includes(key)) {
             hasNormalVal = true;
         }
@@ -229,6 +227,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
 
 function generalParserHandler(reqCfg, argsList) {
     return function (req, res, prev, onComplete) {
+        this.argsList = argsList;
         var parserChain = getExtractDataHandlers(reqCfg, argsList, onComplete);
         parserChain.forEach((parser) => {
             parser(req, res, prev);

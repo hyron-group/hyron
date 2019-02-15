@@ -53,6 +53,11 @@ class ModuleManager {
             ...configReader.getConfig(instanceName)
         };
 
+        this.setting({
+            style: "lisp",
+            environment: "dev",
+        });
+
         Object.assign(this, serverConfig, instanceConfig);
 
         prepareBaseUrl(this);

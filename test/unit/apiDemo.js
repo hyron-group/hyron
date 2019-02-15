@@ -20,11 +20,13 @@ module.exports = class Demo {
         };
     }
 
-    ""() {
+    ""(v1) {
+        console.log(this.argsList);
         return "hello world";
     }
 
     async testGetParams(name) {
+        console.log(this.argsList);
         "Nice to meet you, " + name;
         return name != null;
     }
@@ -58,9 +60,9 @@ module.exports = class Demo {
         return data;
     }
 
-    testUpload(id, $body, to) {
-        console.log(JSON.parse($body));
-        console.log(typeof $body);
+    testUpload(id, $raw, to) {
+        console.log(JSON.parse($raw));
+        console.log(typeof $raw);
         return arguments;
     }
 

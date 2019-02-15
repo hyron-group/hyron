@@ -7,7 +7,7 @@ function handle(req, res, prev = {}) {
     return new Promise((resolve) => {
         var eventName = this.$eventName;
         var paramParser = parserHolder[eventName];
-        paramParser(req, res, prev, (data) => {
+        paramParser.call(this, req, res, prev, (data) => {
             resolve(data);
         });
     });
