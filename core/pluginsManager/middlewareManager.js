@@ -79,7 +79,7 @@ function addMiddleware(pluginsName, pluginsMeta, config, isFontware) {
             else customBackWareIndex[pluginsName] = index;
         }
         console.info(chalk.gray(
-            `➝  Registered ${isFontware ? "fontware" : "backware"} "${pluginsName}" ${
+            `➝  Registered ${isFontware ? "fontware" : "backware"} '${pluginsName}' ${
                         isGlobal ? "as global" : ""
                     }`
         ));

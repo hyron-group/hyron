@@ -76,7 +76,7 @@ class RouterFactory {
         instance.$config = config;
         if (requestConfig == null) {
             throw new Error(
-                `Module ${moduleName} do not contain requestConfig() method`
+                `Module '${moduleName}' do not contain requestConfig() method`
             );
         }
         var generalConfig = requestConfig.$all;
@@ -133,7 +133,7 @@ class RouterFactory {
         // store listener
 
         if (mainExecute == null) {
-            throw new ReferenceError(`main-handle of "${eventName}" has not been set`);
+            throw new ReferenceError(`main-handle of '${eventName}' has not been set`);
         }
 
         this.listener.set(

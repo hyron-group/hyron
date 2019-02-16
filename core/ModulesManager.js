@@ -178,7 +178,7 @@ class ModuleManager {
             }
 
             if (typeof pluginsMeta != "object") {
-                throw new TypeError(`can"t parse plugins "${pluginName}" metadata on type "${typeof pluginsMeta}"`);
+                throw new TypeError(`cannot parse plugins '${pluginName}' metadata on type '${typeof pluginsMeta}'`);
             }
 
             var pluginConfig = configReader.getConfig(pluginName);
@@ -213,7 +213,7 @@ class ModuleManager {
                     routePackage(this.app, serviceConfig);
                 } catch (err) {
                     console.error(chalk.red(
-                        `Hyron do not support for service define like "${serviceName}" yet`
+                        `[error] Hyron do not support for service define like '${serviceName}' yet`
                     ));
                 }
             } else {
