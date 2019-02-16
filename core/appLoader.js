@@ -52,7 +52,7 @@ function getMissingPackage(meta) {
 
 function downloadMissingPackage(name, url) {
     return new Promise((resolve, reject) => {
-        console.info(chalk.cyanBright(`Lockup "${name}"`));
+        console.info(chalk.cyanBright(`Lockup '${name}'`));
         childProcess.exec(`yarn add ${url}`, (err, sto, ste) => {
             if (err == null) {
                 // get installed package name
@@ -86,7 +86,7 @@ function startDownload(packageList) {
         return Promise.all(jobs).then(() => {
             resolve(realPackagesName);
         }).catch((err) => {
-            console.error(chalk.red("[error] has problem : " + err.message));
+            console.error(chalk.red(`[error] has problem : '${err.message}'`));
         });
     });
 }

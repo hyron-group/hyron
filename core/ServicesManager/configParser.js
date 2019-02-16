@@ -74,7 +74,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig) {
         !routeConfig instanceof Array &&
         routeConfig.constructor.name !== "Object") {
         console.warn(chalk.yellow(
-            `[warning] Don"t support for config type at ${methodPath}`
+            `[warning] Don't support for config type at '${methodPath}'`
         ));
     }
 

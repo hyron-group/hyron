@@ -12,7 +12,7 @@ class AddonsManager {
             handler,
             config
         };
-        console.info(chalk.gray(`➝  Registered addons "${name}"`));
+        console.info(chalk.gray(`➝  Registered addons '${name}'`));
     }
 
     runAddons(name) {
@@ -28,7 +28,7 @@ class AddonsManager {
             handler,
             config
         });
-        console.info(chalk.gray(`➝  Registered addons "${name}" as global`));
+        console.info(chalk.gray(`➝  Registered addons '${name}' as global`));
     }
 
     static runGlobalAddons(instance) {

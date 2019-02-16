@@ -152,7 +152,7 @@ function prepareHandlerIndex(eventName, reqMidWare, isFontware) {
         }
         if (middlewareIndex != null)
             indexList.push(middlewareIndex);
-        else console.warn(chalk.yellow(`[warning] Can"t find ${isFontware?"font":"back"}ware by name "${enableMidWareName}"`));
+        else console.warn(chalk.yellow(`[warning] Can't find ${isFontware?"font":"back"}ware by name '${enableMidWareName}'`));
     }
 
     indexList = indexList.map(Number);

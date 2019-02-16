@@ -138,7 +138,7 @@ function loadOrganizationModulesConfig(path) {
                 try {
                     loadConfig(moduleName, path + "/" + moduleName);
                 } catch (err) {
-                    console.error(chalk.red("[error] cant load module " + moduleName));
+                    console.error(chalk.red(`[error] cant load module  '${moduleName}'`));
                 }
             });
         }

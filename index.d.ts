@@ -1,153 +1,34 @@
-import { IncomingMessage, ServerResponse, Server } from "http";
-import { AsyncFunc } from "mocha";
-
-declare enum SupportedMethod {
-    // query type
-    GET,
-    HEAD,
-    DELETE,
-    // body type
-    POST,
-    PUT,
-    PATCH,
-    // server type
-    PRIVATE,
-    ALL
-}
-
 /**
- * path to a resource from root
+ * Used to management resource and run your application
  */
-type Path = string;
-
-/**
- * contains processing functions that extend the functionality of the hyron, by allowing access and editing to the resources that the Hyron manages.
- */
-type AddonsMeta = (config: object) => void;
-
-/**
- * end checkout of this middle, switch to the smallest optimal version
- */
-type onCompleteCheckout = () => void;
-interface Middleware {
-    /**
-     * This function will be called each time request has make
-     */
-    handle: (
-        /**
-         * corresponding to the http IncomingMessage
-         */
-        req: IncomingMessage,
-        /**
-         * corresponding to the http ServerResponse
-         */
-        res: ServerResponse,
-        /**
-         * Value returned by previous plugins. or the mainHandler result if it is the first backware
-         */
-        prev: any
-    ) => any;
-    /**
-     * Called for the first time request of current instance. Used to init value or do something
-     */
-    onCreate: (config: object) => void | Promise<void>;
-    /**
-     * Used to detect changes. If result is true, then onCreate will be recalled
-     */
-    checkout: (done: onCompleteCheckout) => boolean | Promise<boolean>;
-    /**
-     * Which filter to use for the prev data type will be handled by this middleware. If not in the list, this middleware will be ignored
-     */
-    typeFilter: Array<any>;
-}
-interface PluginsMeta {
-    /**
-     * Mark that middleware is called before mainHandler called when request has make
-     */
-    fontware: Middleware;
-    /**
-     * Mark that middleware is called after mainHandler called when request has make
-     */
-    backware: Middleware;
-}
-
-/**
- * Is the main function defined in the HyronService, which contains the main processing logic for a router
- */
-type mainHandler = (...args) => any;
-
-/**
- * Used to describe information about routers that will be registered processed by hyron
- */
-interface RouterMeta {
-    /**
-     * Indicates which method this router will listen to
-     */
-    method: SupportedMethod | Array<SupportedMethod>;
-    /**
-     * Use to enable middleware or turn off global middleware if you add "!" at the beginning
-     */
-    fontware: Array<string | Function>;
-    /**
-     * Use to enable middleware or turn off global middleware if you add "!" at the beginning
-     */
-    backware: Array<string | Function>;
-    /**
-     * Use to enable plugins or turn off global plugins if you add "!" at the beginning
-     */
-    plugins: Array<string>;
-    /**
-     * Used to register mainHandler for this router. This method has a higher priority than the same name method in this service
-     */
-    handle: mainHandler;
-    /**
-     * Use to customize the path for this router. If this method has not been defined. This method should be limited to ensure the rigor of the application
-     */
-    path: string;
-    /**
-     * Use to customize the path for this router. If this method has not been defined. This method should be limited to ensure the rigor of the application. a dynamic path is defined by the syntax /:param_name/
-     */
-    params: string;
-}
-interface RequestConfig {
-    [methodName: string]: string | RouterMeta;
-}
-interface HyronService {
-    /**
-     * Used to indicate which routers will be listening for this service, and configure the information for them
-     */
-    static requestConfig(): RequestConfig;
-    /**
-     * Used to initialize an instance, providing an interactive interface for other plugins. It is used as a regular javascript class
-     */
-    constructor(...args): any;
-    /**
-     * MainHandlers can be listened on the same name router declared in the requestConfig, or interactive interface for other services
-     */
-    [methodName: string]: mainHandler;
-}
-
-/**
- * The service is loosely managed by the hyron, since it is not yet complete. Therefore, features like addons, or plugins do not work on this service
- */
-type unofficialService = (app: Server, config: object) => void;
-
-type onServerStarted = () => void;
-
-
-
 declare class ModuleManager {
+
     /**
-     * Used to create servers with json file
+     * Used to create a instance that not managed by Hyron. Used getInstance instend it
+     * 
+     * ### params
+     * - serverConfig( object ) : object contain server config. include : protocol, host, port, prefix
+     */
+    constructor(serverConfig) : ModuleManager;
+
+    /**
+     * Used to create servers with [json build file](https://hyron.gitbook.io/reference/buildin-features/apploader.core)
      * If module is missing, hyron will auto install it
      *
      * ### params
-     * - **path** (string) : linked to build file from the root
+     * - **path** ( string ) : linked to a json build file from the root
+     *
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#function-build
      */
     static build(path: string): void;
 
     /**
      * used to create a new instance, that can be used to create difference server. default server will listen on http://localhost:3000
+     *
+     *  ### return
+     * -  ( Array<[ModuleManager](https://hyron.gitbook.io/reference/api-reference/modulemanager#class-modulemanager)> ) : return a set of instance that has been initialized
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#static-getinstance-modulemanager
      */
     static getInstance(): ModuleManager;
 
@@ -155,26 +36,45 @@ declare class ModuleManager {
      * Create a new instance with specified url. Hyron will parse params from it include : protocol, host, port, prefix
      *
      * ### params
-     * - **baseURL** (string) : specified url. example : https://localhost:1234
+     * - **baseURL** (string) : specified url. example : https://localhost:3000
+     * ### return
+     * -  ( Array<[ModuleManager](https://hyron.gitbook.io/reference/api-reference/modulemanager#class-modulemanager)> ) : return a set of instance that has been initialized
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#static-getinstance-baseurl-string-modulemanager
      */
     static getInstance(baseURL: string): ModuleManager;
 
     /**
-     * Create a new instance from specified port and current machine host
+     * Create a new instance with specified port
      *
      * ### params
-     * - **port** (number) : a free port. if port is 0, server will listen on random available port
+     * - **port** ( number ) : a free port. if port is 0, server will listen on random available port. default is 3000
+     * 
+     * ### return
+     * -  ( Array<[ModuleManager](https://hyron.gitbook.io/reference/api-reference/modulemanager#class-modulemanager)> ) : return a set of instance that has been initialized
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#static-getinstance-port-host-prefix-protocol-modulemanager
      */
-    static getInstance(port: number): ModuleManager;
+    static getInstance(
+        port: number,
+        host?: string,
+        prefix?: string,
+        protocol?: string
+    ): ModuleManager;
+
 
     /**
      * Create a new instance with specified params
      *
      * ### params
-     * - **port** (number) : a free port. if port is 0, server will listen on random available port. default is "3000"
-     * - **host** (string - option) : host name or ip address of current machine. Default is "localhost"
-     * - **prefix** (string - option) : a path to separate your routers, used to group routers into an instance. Default is empty
-     * - **protocol** (string - option) : a protocol for this instance. default is "http"
+     * - **port** ( number ) : a free port. if port is 0, server will listen on random available port. default is 3000
+     * - **host** ( string - option ) : host name or ip address of current machine. Default is 'localhost'
+     * - **prefix** ( string - option ) : a path to separate your routers, used to group routers into an instance. Default is empty
+     * - **protocol** ( string - option ) : a protocol for this instance. default is 'http'
+     * ### return
+     * -  ( Array<[ModuleManager](https://hyron.gitbook.io/reference/api-reference/modulemanager#class-modulemanager)> ) : return a set of instance that has been initialized
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#static-getinstance-port-host-prefix-protocol-modulemanager
      */
     static getInstance(
         port: number,
@@ -186,7 +86,12 @@ declare class ModuleManager {
     /**
      * Create a new instance from a description object
      * ### params
-     * - **serverConfig** : object contain server config. include : protocol, host, port, prefix
+     * - **serverConfig** ( object ) : object contain server config. include : protocol, host, port, prefix
+     *
+     * ### return
+     * -  ( Array<[ModuleManager](https://hyron.gitbook.io/reference/api-reference/modulemanager#class-modulemanager)> ) : return a set of instance that has been initialized
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#static-getinstance-serverconfig-modulemanager
      */
     static getInstance(serverConfig: {
         protocol: string;
@@ -198,20 +103,22 @@ declare class ModuleManager {
     /**
      * Retrieve a container contain all instances that has been initialized
      *
-     * **return** (Array<ModuleManager>) : return a set of instance that has been initialized
+     * ### return
+     * -  ( Array<[ModuleManager](https://hyron.gitbook.io/reference/api-reference/modulemanager#class-modulemanager)> ) : return a set of instance that has been initialized
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#static-getinstancecontainer-array-less-than-modulemanager-greater-than
      */
     static getInstanceContainer(): Array<ModuleManager>;
 
     /**
      * Set config for this instance. That can be used by modules like addons, plugins or services
      *
-     * In addition to this way, config can also be loaded by adding appcfg.yaml file in root dir or inside modules
+     * In addition to this way, config can also be loaded by adding [appcfg.yaml](https://hyron.gitbook.io/reference/appcfg-file) file in root dir or inside modules
      *
      * ### params
-     * - **config** (object) : a description object contain config for this instance modules
-     *
-     * ### note
-     * - appcfg from root and Hyron itself will auto loaded on startup
+     * - **config** ( object ) : a description object contain config for this instance modules
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#setting-config-void
      */
     setting(config: object): void;
 
@@ -219,17 +126,23 @@ declare class ModuleManager {
      * Retrieve config value for a key by name
      *
      * ### params
-     * - **name** (string) : name of config
+     * - **name** ( string ) : name of config, represent by parent.child
+     * - **defaultValue** ( any ) : default value if not found config data
      *
-     * **return** (any) : config value or null if config not found
+     * ### return
+     * - ( any ) : config value or null if config not found
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#static-getconfig-name-defaultvalue-any
      */
-    static getConfig(name: string): any;
+    static getConfig(name: string, defaultValue: any): any;
 
     /**
      * Enable addons by descriptions contain linked to addons module from root
      *
      * ### params
-     * - **addonsList** (object) : object description about module name (string) and path (string)
+     * - **addonsList** ( object < name, path > ) : object description about modules contain name and path from root
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#enableaddons-addonspaths-void
      */
     enableAddons(addonsList: { [name: string]: Path }): void;
 
@@ -237,15 +150,37 @@ declare class ModuleManager {
      * Enable addons by descriptions contain addons handler
      *
      * ### params
-     * - **addonsList** (object) : object description about module name (string) and handler (function)
+     * - **addonsList** (object < name, [AddonsMeta](https://hyron.gitbook.io/reference/api-reference/addonsmeta) > ) : object description about module name and AddonsMeta
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#enableaddons-addonslist-void
      */
     enableAddons(addonsList: { [name: string]: AddonsMeta }): void;
+
+    /**
+     * Enable global addons that run for all instance by descriptions contain addons handler
+     *
+     * ### params
+     * - **addonsList** ( object < name, path > ) : object description about module name and path from root
+     */
+    enableGlobalAddons(addonsList: { [name: string]: Path }): void;
+
+    /**
+     * Enable global addons that run for all instance by descriptions contain addons handler
+     *
+     * ### params
+     * - **addonsList** (object < name, [AddonsMeta](https://hyron.gitbook.io/reference/api-reference/addonsmeta) > ) : object description about module name and AddonsMeta
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#enableglobaladdons-addonslist-void
+     */
+    enableGlobalAddons(addonsList: { [name: string]: AddonsMeta }): void;
 
     /**
      * Enable plugins by descriptions contain linked to plugins module from root
      *
      * ### params
-     * - **pluginsList** (object) : object description about module name (string) and path (string)
+     * - **pluginsList** ( object < name, path > ) : object description about module name and path from root
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#enableplugins-pluginspaths-void
      */
     enablePlugins(pluginsList: { [name: string]: Path }): void;
 
@@ -253,7 +188,9 @@ declare class ModuleManager {
      * Enable addons by descriptions contain plugins metadata
      *
      * ### params
-     * - **pluginsList** (object) : object description about module name (string) and plugins metadata (object)
+     * - **pluginsList** ( object < name, [PluginsMeta](https://hyron.gitbook.io/reference/api-reference/pluginsmeta) > ) : object description about module name and plugins metadata (object)
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#enableplugins-pluginslist-void
      */
     enablePlugins(pluginsList: { [name: string]: PluginsMeta }): void;
 
@@ -261,7 +198,9 @@ declare class ModuleManager {
      * Enable services by descriptions contain linked to service module from root
      *
      * ### params
-     * - **servicesList** (object) : object description about module name (string) and path (string)
+     * - **servicesList** (object < name, path > ) : object description about module name and path from root
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#enableservices-servicepaths-void
      */
     enableServices(servicesList: { [name: string]: Path }): void;
 
@@ -269,15 +208,19 @@ declare class ModuleManager {
      * Enable services by descriptions contain service metadata
      *
      * ### params
-     * - **servicesList** (object) : object description about module name (string) and service metadata (object)
+     * - **servicesList** ( object < name, [HyronService](https://hyron.gitbook.io/reference/api-reference/hyronservice) | [UnnofficialService](https://hyron.gitbook.io/reference/api-reference/unofficialservice) > ) : object description about module name (string) and service metadata
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#enableservices-servicelist-void
      */
-    enableServices(servicesList: { [name: string]: HyronService }): void;
+    enableServices(servicesList: { [name: string]: HyronService | UnofficalService }): void;
 
     /**
      * Create server for this instance. This function called on instance have been initialized
      *
      * ### params
-     * - **server** (Server) : from net.server
+     * - **server** ( [Server](https://nodejs.org/api/http.html#http_class_http_server) ) : from net.server
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#initserver-server-void
      */
     initServer(server: Server): void;
 
@@ -285,9 +228,11 @@ declare class ModuleManager {
      * Edit a server from another instance by host and port as key
      *
      * ### params
-     * - **host** (string) : server host
-     * - **port** (string) : server port
-     * - **server** (string) : fom net.server
+     * - **host** ( string ) : server host
+     * - **port** ( number ) : server port
+     * - **server** ( [Server](https://nodejs.org/api/http.html#http_class_http_server) ) : fom net.server
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#static-setserver-host-port-server-void
      */
     static setServer(host: string, port: number, server: Server): void;
 
@@ -295,9 +240,12 @@ declare class ModuleManager {
      * Start server on specialized information from instance
      *
      * ### params
-     * - **callback** (function) : a function that called when server started
+     * - **callback** ( function ) : a function that called when server started
+     * 
+     * @see https://hyron.gitbook.io/reference/api-reference/modulemanager#startserver-callback-void
      */
     startServer(callback: onServerStarted): void;
+
 }
 
 export = ModuleManager;

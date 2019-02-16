@@ -161,7 +161,7 @@ class ModuleManager {
             }
 
             var addonsConfig = configReader.getConfig(addonsName);
-            AddonsManager.registerGlobalAddons(addonsHandler, addonsConfig);
+            AddonsManager.registerGlobalAddons(addonsName, addonsHandler, addonsConfig);
         }
     }
 
