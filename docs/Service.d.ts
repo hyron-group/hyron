@@ -33,7 +33,7 @@ export interface RouterMeta {
 /**
  * Used to group a set of method that could be used to register listener by hyron
  */
-export interface ServiceMeta {
+export interface ServicesMeta {
     /**
      * This could be used to apply properties for all routers. And could be override by each other
      */
@@ -41,7 +41,7 @@ export interface ServiceMeta {
     /**
      * List method could be used to register router. By default, hyron will register listener on method-name in current class
      */
-    [method_name: string]: RouterMeta | RouterMeta.method;
+    [method_name: string]: RouterMeta | RouterMeta["method"];
 }
 
 /**
@@ -51,7 +51,7 @@ declare class HyronService {
     /**
      * A interface used by Hyron to register Routers
      */
-    static requestConfig(): ServiceMeta;
+    static requestConfig(): ServicesMeta;
 }
 
 /**

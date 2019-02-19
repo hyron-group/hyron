@@ -3,16 +3,13 @@ const yaml = require("yaml");
 const CONFIG_FILE_NAME = "appcfg.yaml";
 const objectEditor = require("../lib/objectEditor");
 
-const INHERIT_REG = /\$[\w\d.\-]*/;
-const SELF_REF_REG = /<#([\w\d\-.]+)>/g;
-const FOREIGN_REF_REG = /<~([\w\d\-./]+)>/g;
 const chalk = require("chalk");
 
 var appConfig = {};
 
 function replaceSelfField(paths, val, map) {
     var match;
-
+    const SELF_REF_REG = /<#([\w\d\-.]+)>/g;
     if ((match = SELF_REF_REG.exec(val))) {
         var refPath = match[1];
         var refVal = objectEditor.getValue(refPath, map);
@@ -22,7 +19,7 @@ function replaceSelfField(paths, val, map) {
 
 function importValue(paths, val, map) {
     var match;
-
+    const FOREIGN_REF_REG = /<~([\w\d\-./]+)>/g;
     if ((match = FOREIGN_REF_REG.exec(val))) {
         var importLocal = match[1];
         var fileContent = fs.readFileSync(importLocal).toString();
@@ -39,6 +36,7 @@ function importValue(paths, val, map) {
 function inheritValue(paths, map) {
     var key = paths[paths.length - 1];
     var allowedInherit = true;
+    const INHERIT_REG = /\$[\w\d.\-]*/;
     if (INHERIT_REG.test(key)) {
         allowedInherit = false;
     }
@@ -110,7 +108,14 @@ function loadConfigFromModule(path, moduleName) {
                     Object.assign(entry, cfg[moduleName]);
                 });
         } else {
-            Object.assign(appConfig, cfg);
+            for(var key in cfg){
+                var cfgAtKey = cfg[key];
+                if(appConfig[key]==null){
+                    appConfig[key] = cfgAtKey;
+                } else {
+                    Object.assign(appConfig[key], cfgAtKey);
+                }
+            }
         }
     }
 }
@@ -125,7 +130,7 @@ function loadConfig(path, moduleName) {
             loadConfigFromModule(path, moduleName);
         }
     } catch (err) {
-        // console.error(err.message)
+        // console.error(err.message);
         // skip if file not exist
     }
 }
@@ -136,7 +141,7 @@ function loadOrganizationModulesConfig(path) {
         if (orgzModulesList != null) {
             orgzModulesList.forEach((moduleName) => {
                 try {
-                    loadConfig(moduleName, path + "/" + moduleName);
+                    loadConfig(path + "/" + moduleName);
                 } catch (err) {
                     console.error(chalk.red(`[error] cant load module  '${moduleName}'`));
                 }

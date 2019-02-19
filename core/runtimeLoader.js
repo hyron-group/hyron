@@ -26,6 +26,26 @@ function loadGlobalPlugins(){
             PluginsManager.addMiddleware(name, pluginsMeta, config);
         }
     }
+
+    var fontwareList = ModuleManager.getConfig("fontware");
+    if(fontwareList!=null) {
+        for(var name in fontwareList){
+            var modulePath = fontwareList[name];
+            var config = ModuleManager.getConfig(name);
+            var pluginsMeta = loadModuleByPath(modulePath, name);
+            PluginsManager.addMiddleware(name, pluginsMeta, config, true);
+        }
+    }
+
+    var backwareList = ModuleManager.getConfig("backware");
+    if(backwareList!=null) {
+        for(var name in backwareList){
+            var modulePath = backwareList[name];
+            var config = ModuleManager.getConfig(name);
+            var pluginsMeta = loadModuleByPath(modulePath, name);
+            PluginsManager.addMiddleware(name, pluginsMeta, config, false);
+        }
+    }
 }
 
 function run() {

@@ -7,7 +7,6 @@ const configReader = require("./configReader");
 const loadModuleByPath = require("../lib/moduleLoader");
 const chalk = require("chalk");
 
-const URI_REG = /^([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?/;
 
 const {
     getBaseURL
@@ -90,6 +89,7 @@ class ModuleManager {
             } else if (typeof arg0 == "number") {
                 serverConfig.port = arg0;
             } else if (typeof arg0 == "string") {
+                const URI_REG = /^([\w\d]+):\/\/([\w\d.-]+)(:([\d]+))?(\/([\w\d\/.-]+)?)?/;
 
                 var match = URI_REG.exec(arg0);
                 if (match == null) {
