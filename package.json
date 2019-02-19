@@ -37,7 +37,7 @@
   "scripts": {
     "test": "nodemon ./test"
   },
-  "version": "2.5.8",
+  "version": "2.5.9",
   "devDependencies": {
     "@hyron/stringer": "^1.2.5",
     "chai": "^4.2.0",
