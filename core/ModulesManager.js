@@ -47,12 +47,12 @@ class ModuleManager {
         console.log(`\n\n——————————— ${instanceUrl} ———————————`);
         var instanceName = serverConfig.host + ":" + serverConfig.port;
         var instanceConfig = {
-            secret: generalSecretKey(),
             instanceName,
             ...configReader.getConfig(instanceName)
         };
 
         this.setting({
+            secret: generalSecretKey(),
             style: "lisp",
             environment: "dev",
         });
