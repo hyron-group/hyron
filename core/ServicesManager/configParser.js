@@ -44,7 +44,6 @@ function inheritFromGeneralConfig(data, generalConfig, methodPath) {
     }
 
     data.path = generalConfig.path;
-    data.handle = generalConfig.handle;
     data.params = generalConfig.params;
 }
 
