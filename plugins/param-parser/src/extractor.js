@@ -66,7 +66,7 @@ var fieldMapping = {
 
 var bodyMapping = {
     $urlencoded(onComplete) {
-        return function (req, res, prev) {
+        return function parserUrlencoded(req, res, prev) {
             urlEncodedParser(req, (data) => {
                 if (data != null) {
                     Object.assign(prev, data);
@@ -77,7 +77,7 @@ var bodyMapping = {
     },
 
     $multipart(onComplete) {
-        return function (req, res, prev) {
+        return function parserMultipart(req, res, prev) {
             multiPartParser(req, (data) => {
                 if (data != null) {
                     Object.assign(prev, data);
@@ -88,7 +88,7 @@ var bodyMapping = {
     },
 
     $raw(onComplete) {
-        return function (req, res, prev) {
+        return function parserRaw(req, res, prev) {
             rawBodyParser(req, (data) => {
                 if (data != null) {
                     Object.assign(prev, data);
@@ -122,16 +122,21 @@ var extractor = {
 
     flexBodyParser(onComplete, argsList) {
         return function (req, res, prev) {
-            onComplete = (data) => {
+            var onCompleteBody = (data) => {
                 doneAsync(prev, data, argsList, onComplete);
             };
             var reqBodyType = req.headers["content-type"];
             if (reqBodyType == null) {
-                onComplete(null);
+                onCompleteBody(null);
             } else if (reqBodyType == "application/x-www-form-urlencoded") {
-                urlEncodedParser(req, onComplete);
+                urlEncodedParser(req, onCompleteBody);
             } else if (reqBodyType >= "multipart" && reqBodyType < "multipart/z") {
-                multiPartParser(req, onComplete);
+                multiPartParser(req, onCompleteBody);
+            } else {
+                throw new HTTPMessage(
+                    StatusCode.BAD_REQUEST,
+                    "Request header missing 'content-type' properties"
+                )
             }
         };
     },
@@ -163,8 +168,7 @@ function getExtractDataHandlers(reqCfg, argsList, onComplete) {
     argsList.forEach((key) => {
         var parser;
         if (key.charAt(0) != "$" &&
-            params != null &&
-            !params.includes(key)) {
+            params == null) {
             hasNormalVal = true;
         }
         if ((parser = fieldMapping[key])) {
