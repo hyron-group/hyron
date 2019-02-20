@@ -39,6 +39,13 @@ function inheritFromGeneralConfig(data, generalConfig, methodPath) {
     if (generalConfig.backware != null) {
         data.backware = data.backware.concat(generalConfig.backware);
     }
+    if (generalConfig.plugins != null) {
+        data.backware = data.plugins.concat(generalConfig.plugins);
+    }
+
+    data.path = generalConfig.path;
+    data.handle = generalConfig.handle;
+    data.params = generalConfig.params;
 }
 
 function loadFromRouteConfig(data, routeConfig, methodPath) {

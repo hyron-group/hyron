@@ -7,7 +7,7 @@ const loadModuleByPath = require("../lib/moduleLoader");
 function loadGlobalAddons(){
     var addonsList = ModuleManager.getConfig("addons");
     if(addonsList!=null) {
-        for(var name in addonsList){
+        for(let name in addonsList){
             var modulePath = addonsList[name];
             var config = ModuleManager.getConfig(name);
             var handler = loadModuleByPath(modulePath, name);
@@ -19,30 +19,30 @@ function loadGlobalAddons(){
 function loadGlobalPlugins(){
     var pluginsList = ModuleManager.getConfig("plugins");
     if(pluginsList!=null) {
-        for(var name in pluginsList){
-            var modulePath = pluginsList[name];
-            var config = ModuleManager.getConfig(name);
-            var pluginsMeta = loadModuleByPath(modulePath, name);
+        for(let name in pluginsList){
+            let modulePath = pluginsList[name];
+            let config = ModuleManager.getConfig(name);
+            let pluginsMeta = loadModuleByPath(modulePath, name);
             PluginsManager.addMiddleware(name, pluginsMeta, config);
         }
     }
 
     var fontwareList = ModuleManager.getConfig("fontware");
     if(fontwareList!=null) {
-        for(var name in fontwareList){
-            var modulePath = fontwareList[name];
-            var config = ModuleManager.getConfig(name);
-            var pluginsMeta = loadModuleByPath(modulePath, name);
+        for(let name in fontwareList){
+            let modulePath = fontwareList[name];
+            let config = ModuleManager.getConfig(name);
+            let pluginsMeta = loadModuleByPath(modulePath, name);
             PluginsManager.addMiddleware(name, pluginsMeta, config, true);
         }
     }
 
     var backwareList = ModuleManager.getConfig("backware");
     if(backwareList!=null) {
-        for(var name in backwareList){
-            var modulePath = backwareList[name];
-            var config = ModuleManager.getConfig(name);
-            var pluginsMeta = loadModuleByPath(modulePath, name);
+        for(let name in backwareList){
+            let modulePath = backwareList[name];
+            let config = ModuleManager.getConfig(name);
+            let pluginsMeta = loadModuleByPath(modulePath, name);
             PluginsManager.addMiddleware(name, pluginsMeta, config, false);
         }
     }

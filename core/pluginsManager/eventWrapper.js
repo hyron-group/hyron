@@ -27,7 +27,7 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
             return matchType(prev) ?
                 handle.call(this, req, res, prev, config) :
                 prev;
-        }
+        };
     } else {
         finalFunction = function (req, res, prev) {
             return handle.call(this, req, res, prev, config);

@@ -72,7 +72,7 @@ var bodyMapping = {
                     Object.assign(prev, data);
                     onComplete(prev);
                 }
-            })
+            });
         }
     },
 
@@ -124,7 +124,7 @@ var extractor = {
         return function (req, res, prev) {
             onComplete = (data) => {
                 doneAsync(prev, data, argsList, onComplete);
-            }
+            };
             var reqBodyType = req.headers["content-type"];
             if (reqBodyType == null) {
                 onComplete(null);
