@@ -70,9 +70,15 @@ function loadFromRouteConfig(data, routeConfig, methodPath) {
         data.backware = data.backware.concat(routeConfig.plugins);
     }
 
-    data.path = routeConfig.path;
-    data.handle = routeConfig.handle;
-    data.params = routeConfig.params;
+    if(routeConfig.path!== undefined){
+        data.path = routeConfig.path;
+    }
+    if(routeConfig.handle!== undefined){
+        data.handle = routeConfig.handle;
+    }
+    if(routeConfig.params!== undefined){
+        data.params = routeConfig.params;
+    }
 }
 
 function prepareConfigModel(methodPath, routeConfig, generalConfig) {
@@ -94,8 +100,8 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig) {
         params: undefined
     };
 
-    loadFromRouteConfig(config, routeConfig, methodPath);
     inheritFromGeneralConfig(config, generalConfig, methodPath);
+    loadFromRouteConfig(config, routeConfig, methodPath);
 
     return config;
 }
