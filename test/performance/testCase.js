@@ -32,12 +32,12 @@ module.exports = class {
         return $cookie;
     }
 
-    postRaw($body){
-        return $body;
+    postRaw($raw){
+        return $raw;
     }
 
-    postUpload($body){
-        return $body;
+    postUpload($raw){
+        return $raw;
     }
 
     postUrlEncoding(arg1, arg2){

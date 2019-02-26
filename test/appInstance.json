@@ -3,6 +3,6 @@
     "plugins": {
     },
     "services": {
-        "demo": "./test/unit/apiDemo.js"
+        "": "./test/performance/testCase.js"
     }
 }
