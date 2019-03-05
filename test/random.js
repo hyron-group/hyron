@@ -1,1 +1,1 @@
-var hyron = require('../');
+console.log(Error.name)

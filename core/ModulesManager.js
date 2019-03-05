@@ -187,11 +187,6 @@ class ModuleManager {
         });
     }
 
-
-    /**
-     * @description Register router with function packages
-     * @param {{moduleName:string,AbstractRouters}} serviceList a package of main handle contain business logic
-     */
     enableServices(serviceList) {
         if (serviceList == null) return;
         if (serviceList.constructor.name != "Object") {
@@ -252,10 +247,6 @@ class ModuleManager {
         return serverContainer[key] = server;
     }
 
-    /**
-     * @description start server
-     * @param {function} callback a function will be call when server started
-     */
     startServer(callback) {
         var host = this.host;
         var port = this.port;

@@ -37,14 +37,7 @@ npm install hyron
 
 # Release
 
--   more power for appcfg.yaml
--   more power for addons
--   build app from json
--   supported for rest api
--   supported for https and http2
--   supported path in getConfig
--   restructure + refactor
--   fix bug
+- fix bug typeFilter
 
 # Example
 
