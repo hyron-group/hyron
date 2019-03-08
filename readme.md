@@ -38,6 +38,7 @@ npm install hyron
 # Release
 
 - fix bug typeFilter
+- fix bug delay 500ms for connect
 
 # Example
 

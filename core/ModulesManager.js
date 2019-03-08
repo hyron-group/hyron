@@ -6,8 +6,6 @@ const generalSecretKey = require("../lib/generalKey");
 const configReader = require("./configReader");
 const loadModuleByPath = require("../lib/moduleLoader");
 const chalk = require("chalk");
-
-
 const {
     getBaseURL
 } = require("../lib/completeUrl");
@@ -234,6 +232,10 @@ class ModuleManager {
         }
         setupDefaultListener(this, defaultServer);
 
+        defaultServer.on("request", (req, res) => {
+            this.services.triggerRouter(req, res);
+        });
+
         configReader.setConfig({
             base_url: this.base_url
         });
@@ -249,13 +251,12 @@ class ModuleManager {
 
     startServer(callback) {
         var host = this.host;
+        if (host == "localhost") {
+            host = undefined;
+        }
         var port = this.port;
 
         if (this.app.running) return this.app;
-
-        this.app.on("request", (req, res) => {
-            this.services.triggerRouter(req, res);
-        });
 
         if (callback != null)
             this.app.listen(port, host, callback);
