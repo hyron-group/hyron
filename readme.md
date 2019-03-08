@@ -81,11 +81,11 @@ result :
 A router register on :
 
 ```http
-GET http://localhost:3000/demo/sayHello?yourName=[your_name]
+GET http://localhost:3000/demo/say-hello?yourName=[your_name]
 ```
 # Reference Document
 
-For more detail, please read at : https://hyron.gitbook.io/reference
+For more detail, please read at : https://docs.hyron.org
 
 # Contributing to Hyron
 

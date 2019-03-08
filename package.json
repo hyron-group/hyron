@@ -21,7 +21,7 @@
   },
   "homepage": "https://docs.hyron.org",
   "deprecated": false,
-  "description": "Build your server app faster and easier",
+  "description": "Build backend app like play lego",
   "keywords": [
     "framework",
     "backend",

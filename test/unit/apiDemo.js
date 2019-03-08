@@ -21,7 +21,6 @@ module.exports = class Demo {
     }
 
     ""(v1) {
-        console.log(this.argsList);
         return "hello world";
     }
 
