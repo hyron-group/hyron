@@ -26,7 +26,7 @@ function importValue(paths, val, map) {
         var importContent;
         try {
             importContent = JSON.parse(fileContent);
-        } catch {
+        } catch (err) {
             importContent = fileContent;
         }
         objectEditor.replaceValue(paths, map, importContent);
@@ -108,9 +108,9 @@ function loadConfigFromModule(path, moduleName) {
                     Object.assign(entry, cfg[moduleName]);
                 });
         } else {
-            for(var key in cfg){
+            for (var key in cfg) {
                 var cfgAtKey = cfg[key];
-                if(appConfig[key]==null){
+                if (appConfig[key] == null) {
                     appConfig[key] = cfgAtKey;
                 } else {
                     Object.assign(appConfig[key], cfgAtKey);
