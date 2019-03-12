@@ -18,7 +18,6 @@ npm install hyron
 [![chat](https://img.shields.io/gitter/room/hyron-group/community.svg?style=flat)](https://gitter.im/Hyron-group/community)
 [![license](https://img.shields.io/npm/l/hyron.svg?style=flat)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 [![](http://img.shields.io/liberapay/patrons/thangdjw.svg?logo=liberapay)](https://liberapay.com/thangdjw/donate)
-[![Beerpay](https://beerpay.io/hyron-group/hyron/badge.svg?style=flat)](https://beerpay.io/hyron-group/hyron)
 
 
 
@@ -37,8 +36,8 @@ npm install hyron
 
 # Release
 
-- fix bug typeFilter
-- fix bug delay 500ms for connect
+- fix bug
+- change license from GPL3.0 to MIT
 
 # Example
 

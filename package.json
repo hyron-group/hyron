@@ -21,7 +21,7 @@
   },
   "homepage": "https://docs.hyron.org",
   "deprecated": false,
-  "description": "Build backend app like play lego",
+  "description": "Build backend app easy like play lego",
   "keywords": [
     "framework",
     "backend",
@@ -31,7 +31,7 @@
     "reusable",
     "plugable"
   ],
-  "license": "GPL-3.0",
+  "license": "MIT",
   "main": "index.js",
   "name": "hyron",
   "scripts": {
