@@ -16,7 +16,7 @@ npm install hyron
 ![downloads](https://img.shields.io/npm/dm/hyron.svg?style=flat)
 ![version](https://img.shields.io/npm/v/hyron.svg?style=flat)
 [![chat](https://img.shields.io/gitter/room/hyron-group/community.svg?style=flat)](https://gitter.im/Hyron-group/community)
-[![license](https://img.shields.io/npm/l/hyron.svg?style=flat)]([MIT License](https://opensource.org/licenses/MIT))
+[![license](https://img.shields.io/npm/l/hyron.svg?style=flat)](https://opensource.org/licenses/MIT)
 [![](http://img.shields.io/liberapay/patrons/thangdjw.svg?logo=liberapay)](https://liberapay.com/thangdjw/donate)
 
 
