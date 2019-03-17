@@ -21,7 +21,7 @@
   },
   "homepage": "https://docs.hyron.org",
   "deprecated": false,
-  "description": "Build backend app easy like play lego",
+  "description": "Build micro-service app easy like play lego",
   "keywords": [
     "framework",
     "backend",

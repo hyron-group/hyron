@@ -12,3 +12,4 @@ package-lock.json
 strings/
 .log/
 .temp/
+.circleci/
