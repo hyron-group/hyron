@@ -38,6 +38,7 @@ npm install hyron
 
 - fix bug
 - change license from GPL3.0 to MIT
+- support run hyron inside modules (for test)
 
 # Example
 
