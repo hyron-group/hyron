@@ -141,9 +141,15 @@ class ModuleManager {
             }
 
             var addonsConfig = configReader.getConfig(addonsName);
-            this
-                .addons
-                .registerAddons(addonsName, addonsHandler, addonsConfig);
+            try {
+                this
+                    .addons
+                    .registerAddons(addonsName, addonsHandler, addonsConfig);
+            } catch (err) {
+                console.error(chalk.red(
+                    `[error] Has problem when register addons '${addonsName}'\n${err.toString()}`
+                ));
+            }
         }
     }
 
@@ -159,7 +165,13 @@ class ModuleManager {
             }
 
             var addonsConfig = configReader.getConfig(addonsName);
-            AddonsManager.registerGlobalAddons(addonsName, addonsHandler, addonsConfig);
+            try {
+                AddonsManager.registerGlobalAddons(addonsName, addonsHandler, addonsConfig);
+            } catch (err) {
+                console.error(chalk.red(
+                    `[error] Has problem when register global addons '${addonsName}'\n${err.toString()}`
+                ));
+            }
         }
     }
 
@@ -180,8 +192,13 @@ class ModuleManager {
             }
 
             var pluginConfig = configReader.getConfig(pluginName);
-
-            this.plugins.addMiddleware(pluginName, pluginsMeta, pluginConfig);
+            try {
+                this.plugins.addMiddleware(pluginName, pluginsMeta, pluginConfig);
+            } catch (err) {
+                console.error(chalk.red(
+                    `[error] Has problem when register plugins '${pluginName}'\n${err.toString()}`
+                ));
+            }
         });
     }
 
@@ -206,16 +223,22 @@ class ModuleManager {
                     routePackage(this.app, serviceConfig);
                 } catch (err) {
                     console.error(chalk.red(
-                        `[error] Hyron do not support for service define like '${serviceName}' yet`
+                        `[error] Hyron do not support for service define like '${serviceName}' yet\n${err.toString()}`
                     ));
                 }
             } else {
                 // is as normal hyron service
-                this.services.registerRoutesGroup(
-                    serviceName,
-                    routePackage,
-                    serviceConfig
-                );
+                try {
+                    this.services.registerRoutesGroup(
+                        serviceName,
+                        routePackage,
+                        serviceConfig
+                    );
+                } catch (err) {
+                    console.error(chalk.red(
+                        `[error] Has problem when register '${serviceName}'\n${err.toString()}`
+                    ));
+                }
             }
         });
     }
