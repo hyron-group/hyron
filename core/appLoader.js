@@ -1,12 +1,16 @@
 const hyron = require("./ModulesManager");
 const childProcess = require("child_process");
 const chalk = require("chalk");
-var fs = require("fs");
+const fs = require("fs");
 const RELATIVE_PATH_REG = /^[\.\/]+/;
 const INSTALLED_REG = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
 
-(() => {
-    childProcess.execSync("npm i -g yarn");
+(function installYarnEngine(){
+    childProcess.exec("yarn version", (err)=>{
+        if(err!=null){
+            childProcess.execSync("npm i -g yarn");
+        }
+    });
 })();
 
 
