@@ -6,11 +6,9 @@ const RELATIVE_PATH_REG = /^[\.\/]+/;
 const INSTALLED_REG = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-/_]+)@)/;
 const { Spinner } = require("cli-spinner");
 
-var spinner;
-
 (function installYarnEngine() {
     childProcess.exec("yarn version", (err) => {
-        spinner = new Spinner("install yarn ...%s");
+        var spinner = new Spinner("install yarn ...%s");
         if (err != null) {
             spinner.setSpinnerString(0);
             spinner.start();
@@ -22,7 +20,6 @@ var spinner;
 
 
 function applyChange(meta, changedMeta) {
-    console.log(changedMeta);
     for (var changedField in changedMeta) {
         meta[changedField] = changedMeta[changedField];
     }
@@ -64,23 +61,26 @@ function getMissingPackage(meta) {
 
 function downloadMissingPackage(name, url) {
     return new Promise((resolve, reject) => {
-        childProcess.exec(`yarn add ${url}`, (err, sto, ste) => {
-            console.log(ste)
-            if (err == null) {
-                // get installed package name
-                var match = INSTALLED_REG.exec(sto);
-                var packageName;
-                if (match != null) {
-                    packageName = match[2];
-                }
-                console.log(packageName)
-                resolve({
-                    displayName: name, realName: packageName
+        var installProcess = childProcess
+            .exec(`yarn add ${url}`,
+                (err, sto, ste) => {
+                    console.log(ste)
+                    if (err == null) {
+                        // get installed package name
+                        var match = INSTALLED_REG.exec(sto);
+                        var packageName;
+                        if (match != null) {
+                            packageName = match[2];
+                        }
+                        console.log(packageName)
+                        resolve({
+                            displayName: name, realName: packageName
+                        });
+                    } else {
+                        reject(err);
+                    }
                 });
-            } else {
-                reject(err);
-            }
-        });
+        // installProcess.stdout.pipe(process.stdout);
     });
 }
 
@@ -93,20 +93,21 @@ function startDownload(packageList) {
         jobs.push(
             downloadMissingPackage(packageName, downloadLink)
                 .then(({ displayName, realName }) => {
-                    console.log/("downloaded : " + realName);
+                    console.log("downloaded : " + realName);
                     realPackagesName[displayName] = realName;
                 }).catch((err) => {
-                    spinner.stop();
+                    console.log(err);
                 }));
     }
 
     return new Promise((resolve) => {
-        return Promise.all(jobs).then(() => {
-            console.log(realPackagesName);
-            resolve(realPackagesName);
-        }).catch((err) => {
-            console.error(chalk.red(`[error] has problem : '${err.message}'`));
-        });
+        return Promise
+            .all(jobs)
+            .then(() => {
+                resolve(realPackagesName);
+            }).catch((err) => {
+                console.error(chalk.red(`[error] has problem : '${err.message}'`));
+            });
     });
 }
 
@@ -126,7 +127,7 @@ function loadFromObject(appMeta) {
     } else {
         console.warn(chalk.gray(`Missing ${missingPackages.length} package : ${missingPackages}`));
 
-        spinner = new Spinner(chalk.magenta("Installing...%s"));
+        var spinner = new Spinner(chalk.magenta("installing...%s"));
         spinner.setSpinnerString(0);
         spinner.start();
 
@@ -136,8 +137,8 @@ function loadFromObject(appMeta) {
             startDownload(missingServices),
         ]).then((
             [downloadedAddons,
-            downloadedPlugins,
-            downloadedServices]) => {
+                downloadedPlugins,
+                downloadedServices]) => {
             applyChange(appMeta.addons, downloadedAddons);
             applyChange(appMeta.plugins, downloadedPlugins);
             applyChange(appMeta.services, downloadedServices);
@@ -145,12 +146,12 @@ function loadFromObject(appMeta) {
             spinner.stop();
             console.log(chalk.green("\nAll package downloaded !\n"));
             if (appMeta.services != null) {
-                registerInstance(appMeta);
+                // registerInstance(appMeta);
             } else if (appMeta.addons != null) {
-                hyron.enableGlobalAddons(appMeta.addons);
+                // hyron.enableGlobalAddons(appMeta.addons);
             }
 
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log(err);
             spinner.stop();
         });
