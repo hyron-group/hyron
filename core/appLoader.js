@@ -3,18 +3,26 @@ const childProcess = require("child_process");
 const chalk = require("chalk");
 const fs = require("fs");
 const RELATIVE_PATH_REG = /^[\.\/]+/;
-const INSTALLED_REG = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-_]+)@)/;
+const INSTALLED_REG = /Direct dependencies[\s]*└─[\s]*(([\w\d@\-/_]+)@)/;
+const { Spinner } = require("cli-spinner");
 
-(function installYarnEngine(){
-    childProcess.exec("yarn version", (err)=>{
-        if(err!=null){
+var spinner;
+
+(function installYarnEngine() {
+    childProcess.exec("yarn version", (err) => {
+        spinner = new Spinner("install yarn ...%s");
+        if (err != null) {
+            spinner.setSpinnerString(0);
+            spinner.start();
             childProcess.execSync("npm i -g yarn");
+            spinner.stop();
         }
     });
 })();
 
 
 function applyChange(meta, changedMeta) {
+    console.log(changedMeta);
     for (var changedField in changedMeta) {
         meta[changedField] = changedMeta[changedField];
     }
@@ -56,8 +64,8 @@ function getMissingPackage(meta) {
 
 function downloadMissingPackage(name, url) {
     return new Promise((resolve, reject) => {
-        console.info(chalk.cyanBright(`Lockup '${name}'`));
         childProcess.exec(`yarn add ${url}`, (err, sto, ste) => {
+            console.log(ste)
             if (err == null) {
                 // get installed package name
                 var match = INSTALLED_REG.exec(sto);
@@ -65,7 +73,10 @@ function downloadMissingPackage(name, url) {
                 if (match != null) {
                     packageName = match[2];
                 }
-                resolve(name, packageName);
+                console.log(packageName)
+                resolve({
+                    displayName: name, realName: packageName
+                });
             } else {
                 reject(err);
             }
@@ -78,16 +89,20 @@ function startDownload(packageList) {
     var jobs = [];
 
     for (var packageName in packageList) {
+        var downloadLink = packageList[packageName];
         jobs.push(
-            downloadMissingPackage(packageName, packageList[packageName])
-            .then((displayName, realName) => {
-                console.log(chalk.green("Installed : " + displayName));
-                realPackagesName[displayName] = realName;
-            }));
+            downloadMissingPackage(packageName, downloadLink)
+                .then(({ displayName, realName }) => {
+                    console.log/("downloaded : " + realName);
+                    realPackagesName[displayName] = realName;
+                }).catch((err) => {
+                    spinner.stop();
+                }));
     }
 
     return new Promise((resolve) => {
         return Promise.all(jobs).then(() => {
+            console.log(realPackagesName);
             resolve(realPackagesName);
         }).catch((err) => {
             console.error(chalk.red(`[error] has problem : '${err.message}'`));
@@ -109,29 +124,35 @@ function loadFromObject(appMeta) {
     if (missingPackages.length == 0) {
         registerInstance(appMeta);
     } else {
-        console.warn(chalk.gray(`Missing (${missingPackages.length}) : ${missingPackages}`));
-        console.log(chalk.magenta("Installing missing package ..."));
+        console.warn(chalk.gray(`Missing ${missingPackages.length} package : ${missingPackages}`));
+
+        spinner = new Spinner(chalk.magenta("Installing...%s"));
+        spinner.setSpinnerString(0);
+        spinner.start();
+
         Promise.all([
             startDownload(missingAddons),
             startDownload(missingPlugins),
             startDownload(missingServices),
         ]).then((
-            downloadedAddons,
+            [downloadedAddons,
             downloadedPlugins,
-            downloadedServices) => {
+            downloadedServices]) => {
             applyChange(appMeta.addons, downloadedAddons);
             applyChange(appMeta.plugins, downloadedPlugins);
             applyChange(appMeta.services, downloadedServices);
 
-            console.log(chalk.green("All package downloaded !\n"));
-            console.log("------------------------\n");
-
+            spinner.stop();
+            console.log(chalk.green("\nAll package downloaded !\n"));
             if (appMeta.services != null) {
                 registerInstance(appMeta);
             } else if (appMeta.addons != null) {
                 hyron.enableGlobalAddons(appMeta.addons);
             }
 
+        }).catch((err)=>{
+            console.log(err);
+            spinner.stop();
         });
     }
 }

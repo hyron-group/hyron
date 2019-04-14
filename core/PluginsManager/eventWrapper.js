@@ -11,7 +11,7 @@ function eventWrapper(index, handlerHolder, pluginsMeta, config) {
     } = pluginsMeta;
 
     var finalFunction;
-
+    
     var matchType = parseTypeFilter(typeFilter);
 
     function completeCheckout() {
