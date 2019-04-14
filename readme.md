@@ -1,3 +1,6 @@
+> Use hyron-cli in place of this package to make working easier and more convenient
+
+
 <div style = "text-align:center">
     <img src="https://i.imgur.com/mAjPWAu.png" style="width:240px; margin:auto"/>
 </div>
@@ -23,49 +26,18 @@ npm install hyron
 
 # Features
 
-1. **Easy to manage source code**, even with large applications. Hyron helps modules to be rigorously structured. Suitable for microservice architecture application development
-2. **High plug-in capability**, allowing you to develop individual modules and **reuse**
-3. **High sharing capacity**. Modules are designed to minimize dependency and increase flexibility.
-4. Get **help from the community**. Hyron allows you to **install** and **share**, **customize** modules easily
-5. Help your source code **independent of the platform**. It makes it easy to switch between platforms, ensuring that the source code is always intuitive
-6. **Easy to learn and use**. One of Hyron's top goals is to help the platform be accessible by a beginner
-7. **High performance**. Hyron has 40% higher initial performance than Express
-8. **Automation**, Hyron helps automate your application development process, and makes it easier for third party addons and plugins
+1. High reusability
+2. Easy to use
+3. Easy to upgrade and maintain
+4. High plug-in capability
+5. Save working time
 
-    [See more build-in feature](https://hyron.gitbook.io/reference/buildin-features)
-
-# Release
-
-- fix bug
-- change license from GPL3.0 to MIT
-- support run hyron inside modules (for test)
-
-# Example
-
-This is simple example project to help you have interview about Hyron Framework
-
-**_index.js_**
+# Hello world
 
 ```js
 const hyron = require("hyron");
-hyron.build("./server.json");
-```
 
-**_server.json_**
-
-```json
-{
-    "base_url": "http://localhost:3000",
-    "services": {
-        "demo": "./SimpleApp.js"
-    }
-}
-```
-
-**_SimpleApp.js_**
-
-```js
-module.exports = class {
+class demo {
     static requestConfig() {
         return {
             sayHello: "get"
@@ -76,22 +48,25 @@ module.exports = class {
         return "Hello " + yourName;
     }
 };
+
+var instance = hyron.getInstance(3000);
+
+instance.enableServices({
+    "api": demo
+})
+
+instance.startServer();
 ```
 
-result :
-A router register on :
+**Result** :
+A router register on
 
 ```http
-GET http://localhost:3000/demo/say-hello?yourName=[your_name]
+GET http://localhost:3000/api/demo/say-hello?yourName=[your_name]
 ```
 # Reference Document
 
-For more detail, please read at : https://docs.hyron.org
-
+For more detail, please read at : https://docs.hyron.org/api-reference
 # Contributing to Hyron
 
-Check out [contributing guide](https://hyron.gitbook.io/reference/contribution) to get an overview of how to contribute to Hyron.
-
-We will be happy to receive your small investment to help your business and product development take place more quickly and smoothly.
-
-[![](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/thangdjw/donate)
+Check out [contributing guide](https://docs.hyron.org/contribute) to get an overview of how to contribute to Hyron.
