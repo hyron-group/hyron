@@ -2,7 +2,7 @@ const {
     addAnonymousMiddleware
 } = require("./middlewareManager");
 
-function parseRequireMiddleware(reqMidWare, isFontware) {
+function parseRequireMiddleware(reqMidWare, isfrontware) {
 
     var disableList = [];
     var enableList = [];
@@ -29,7 +29,7 @@ function parseRequireMiddleware(reqMidWare, isFontware) {
             }
             // support embed middle handle in config
         } else if (typeof middlewareMeta == "function") {
-            var representName = addAnonymousMiddleware(middlewareMeta, isFontware);
+            var representName = addAnonymousMiddleware(middlewareMeta, isfrontware);
             enableList.push(representName);
         } else {
             throw new TypeError(`middleware at ${i} should be a string name or function handle`);

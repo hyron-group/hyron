@@ -9,9 +9,9 @@ export interface RouterMeta {
      */
     method: string | Array<string>;
     /**
-     * Specify exactly which fontware of the plugins will be run. Add '!' before a global fontware name to turn off it. If it is funciton, hyron will register a anonymous fontware with name is hash of this by crc algorithm
+     * Specify exactly which frontware of the plugins will be run. Add '!' before a global frontware name to turn off it. If it is funciton, hyron will register a anonymous frontware with name is hash of this by crc algorithm
      */
-    fontware: Array<string | Function>;
+    frontware: Array<string | Function>;
     /**
      * Specify exactly which backware of the plugins will be run. Add '!' before a global backware name to turn off it. If it is funciton, hyron will register a anonymous backware with name is hash of this by crc algorithm
      */

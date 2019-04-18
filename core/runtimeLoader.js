@@ -27,10 +27,10 @@ function loadGlobalPlugins(){
         }
     }
 
-    var fontwareList = ModuleManager.getConfig("fontware");
-    if(fontwareList!=null) {
-        for(let name in fontwareList){
-            let modulePath = fontwareList[name];
+    var frontwareList = ModuleManager.getConfig("frontware");
+    if(frontwareList!=null) {
+        for(let name in frontwareList){
+            let modulePath = frontwareList[name];
             let config = ModuleManager.getConfig(name);
             let pluginsMeta = loadModuleByPath(modulePath, name);
             PluginsManager.addMiddleware(name, pluginsMeta, config, true);

@@ -42,9 +42,9 @@ export interface Middleware {
  */
 export interface PluginsMeta {
     /**
-     * Fontware is a function that could be called before main-handler when a request to this event has make. It used to handle input data, load special resource or do something useful
+     * frontware is a function that could be called before main-handler when a request to this event has make. It used to handle input data, load special resource or do something useful
      */
-    fontware: Middleware,
+    frontware: Middleware,
     /**
     * Backware is a function that could be called after main-handler when a request to this event has make. It used to handle output response, or do something useful
     */

@@ -5,12 +5,12 @@ const parseRequireMiddleware = require("./prepareRequireMiddleware");
 const chalk = require("chalk");
 
 var handlerHolder = [];
-var customFontWareIndex = {};
+var customfrontwareIndex = {};
 var customBackWareIndex = {};
-var globalFontWareIndex = {};
+var globalfrontwareIndex = {};
 var globalBackWareIndex = {};
 
-var fontwareHandleIndex = {};
+var frontwareHandleIndex = {};
 var backwareHandleIndex = {};
 
 (function registerSyncFunc() {
@@ -23,14 +23,14 @@ var backwareHandleIndex = {};
 function indexOfHandle(name) {
     var keyIndex;
 
-    var fontWareKeys = Object.keys(globalFontWareIndex);
-    for (let fwi = 0; fwi < fontWareKeys.length; fwi++) {
-        keyIndex = fontWareKeys[fwi];
-        let globalFwName = globalFontWareIndex[keyIndex];
+    var frontwareKeys = Object.keys(globalfrontwareIndex);
+    for (let fwi = 0; fwi < frontwareKeys.length; fwi++) {
+        keyIndex = frontwareKeys[fwi];
+        let globalFwName = globalfrontwareIndex[keyIndex];
         if (globalFwName == name) return keyIndex;
     }
 
-    if ((keyIndex = customFontWareIndex[name]) != null) {
+    if ((keyIndex = customfrontwareIndex[name]) != null) {
         return keyIndex;
     }
 
@@ -49,14 +49,14 @@ function indexOfHandle(name) {
 }
 
 
-function addMiddleware(pluginsName, pluginsMeta, config, isFontware) {
-    if (isFontware == null) {
+function addMiddleware(pluginsName, pluginsMeta, config, isfrontware) {
+    if (isfrontware == null) {
         var {
-            fontware,
+            frontware,
             backware
         } = pluginsMeta;
 
-        addMiddleware(pluginsName, fontware, config, true);
+        addMiddleware(pluginsName, frontware, config, true);
         addMiddleware(pluginsName, backware, config, false);
     } else {
         if (pluginsMeta == null) return;
@@ -72,14 +72,14 @@ function addMiddleware(pluginsName, pluginsMeta, config, isFontware) {
         }
 
         if (isGlobal) {
-            if (isFontware) globalFontWareIndex[index] = pluginsName;
+            if (isfrontware) globalfrontwareIndex[index] = pluginsName;
             else globalBackWareIndex[index] = pluginsName;
         } else {
-            if (isFontware) customFontWareIndex[pluginsName] = index;
+            if (isfrontware) customfrontwareIndex[pluginsName] = index;
             else customBackWareIndex[pluginsName] = index;
         }
         console.info(chalk.gray(
-            `➝  Registered ${isFontware ? "fontware" : "backware"} '${pluginsName}' ${
+            `➝  Registered ${isfrontware ? "frontware" : "backware"} '${pluginsName}' ${
                         isGlobal ? "as global" : ""
                     }`
         ));
@@ -87,32 +87,32 @@ function addMiddleware(pluginsName, pluginsMeta, config, isFontware) {
 }
 
 
-function getUniqueRepresentName(isFontware, handle) {
-    return isFontware ? "fw-" : "bw-" +
+function getUniqueRepresentName(isfrontware, handle) {
+    return isfrontware ? "fw-" : "bw-" +
         crc
         .crc24(handle.toString())
         .toString(16);
 }
 
-function addAnonymousMiddleware(handle, isFontware) {
+function addAnonymousMiddleware(handle, isfrontware) {
 
-    var representName = getUniqueRepresentName(isFontware, handle);
+    var representName = getUniqueRepresentName(isfrontware, handle);
 
     var meta = {
         handle,
         global: false
     };
 
-    addMiddleware(representName, meta, null, isFontware);
+    addMiddleware(representName, meta, null, isfrontware);
 
     return representName;
 }
 
-function prepareHandlerIndex(eventName, reqMidWare, isFontware) {
+function prepareHandlerIndex(eventName, reqMidWare, isfrontware) {
     var handlersIndex;
 
-    if (isFontware) {
-        handlersIndex = fontwareHandleIndex[eventName];
+    if (isfrontware) {
+        handlersIndex = frontwareHandleIndex[eventName];
     } else {
         handlersIndex = backwareHandleIndex[eventName];
     }
@@ -126,12 +126,12 @@ function prepareHandlerIndex(eventName, reqMidWare, isFontware) {
         disableList,
         enableList,
         disableAll
-    } = parseRequireMiddleware(reqMidWare, isFontware);
+    } = parseRequireMiddleware(reqMidWare, isfrontware);
 
 
     // add all global middleware
     if (!disableAll) {
-        if (isFontware) indexList = Object.keys(globalFontWareIndex);
+        if (isfrontware) indexList = Object.keys(globalfrontwareIndex);
         else indexList = Object.keys(globalBackWareIndex);
     }
 
@@ -145,21 +145,21 @@ function prepareHandlerIndex(eventName, reqMidWare, isFontware) {
     for (var index in enableList) {
         var enableMidWareName = enableList[index];
         var middlewareIndex;
-        if (isFontware) {
-            middlewareIndex = customFontWareIndex[enableMidWareName];
+        if (isfrontware) {
+            middlewareIndex = customfrontwareIndex[enableMidWareName];
         } else {
             middlewareIndex = customBackWareIndex[enableMidWareName];
         }
         if (middlewareIndex != null)
             indexList.push(middlewareIndex);
-        else console.warn(chalk.yellow(`[warning] Can't find ${isFontware?"font":"back"}ware by name '${enableMidWareName}'`));
+        else console.warn(chalk.yellow(`[warning] Can't find ${isfrontware?"font":"back"}ware by name '${enableMidWareName}'`));
     }
 
     indexList = indexList.map(Number);
 
-    if (isFontware) {
+    if (isfrontware) {
         indexList.push(0); // sync handler
-        fontwareHandleIndex[eventName] = indexList;
+        frontwareHandleIndex[eventName] = indexList;
     } else {
         indexList = indexList.reverse();
         backwareHandleIndex[eventName] = indexList;
@@ -179,9 +179,9 @@ function runMiddleware(
         args,
         onComplete,
         onFailed,
-        isFontware
+        isfrontware
     } = middlewareArgs;
-    var handlersIndex = prepareHandlerIndex(eventName, reqMiddleware, isFontware);
+    var handlersIndex = prepareHandlerIndex(eventName, reqMiddleware, isfrontware);
     startRunMiddleware(handlersIndex, handlerHolder, thisArgs, args, onComplete, onFailed);
 }
 

@@ -33,8 +33,8 @@ function inheritFromGeneralConfig(data, generalConfig, methodPath) {
             prepareMethod(data, generalConfig.method, methodPath);
         }
     }
-    if (generalConfig.fontware != null) {
-        data.fontware = data.fontware.concat(generalConfig.fontware);
+    if (generalConfig.frontware != null) {
+        data.frontware = data.frontware.concat(generalConfig.frontware);
     }
     if (generalConfig.backware != null) {
         data.backware = data.backware.concat(generalConfig.backware);
@@ -59,14 +59,14 @@ function loadFromRouteConfig(data, routeConfig, methodPath) {
     }
     prepareMethod(data, routeConfig.method, methodPath);
 
-    if (routeConfig.fontware != null) {
-        data.fontware = data.fontware.concat(routeConfig.fontware);
+    if (routeConfig.frontware != null) {
+        data.frontware = data.frontware.concat(routeConfig.frontware);
     }
     if (routeConfig.backware != null) {
         data.backware = data.backware.concat(routeConfig.backware);
     }
     if (routeConfig.plugins != null) {
-        data.fontware = data.fontware.concat(routeConfig.plugins);
+        data.frontware = data.frontware.concat(routeConfig.plugins);
         data.backware = data.backware.concat(routeConfig.plugins);
     }
 
@@ -92,7 +92,7 @@ function prepareConfigModel(methodPath, routeConfig, generalConfig) {
 
     var config = {
         method: [],
-        fontware: [],
+        frontware: [],
         backware: [],
         plugins: [],
         handle: undefined,

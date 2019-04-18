@@ -9,7 +9,7 @@ function httpEventWrapper(
     routeConfig
 ) {
     var {
-        fontware,
+        frontware,
         backware
     } = routeConfig;
 
@@ -32,15 +32,15 @@ function httpEventWrapper(
                 onFailed(err) {
                     handleResult(err, res, isDevMode);
                 },
-                isFontware: false
+                isfrontware: false
             }
         );
     }
 
-    function runsFontwares(req, res, thisArgs) {
+    function runsfrontwares(req, res, thisArgs) {
         PluginsManager.runMiddleware(
             eventName, {
-                reqMiddleware: fontware,
+                reqMiddleware: frontware,
                 thisArgs,
                 args: [req, res],
                 onComplete(args) {
@@ -50,14 +50,14 @@ function httpEventWrapper(
                 onFailed(err) {
                     runBackwares(req, res, err, thisArgs);
                 },
-                isFontware: true
+                isfrontware: true
             });
     }
 
     return function httpEvent(req, res) {
         var sandbox = instance;
         Object.assign(sandbox, generalThisArgs);
-        runsFontwares(req, res, sandbox);
+        runsfrontwares(req, res, sandbox);
     };
 }
 
