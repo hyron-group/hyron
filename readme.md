@@ -23,7 +23,6 @@ npm install hyron
 [![](http://img.shields.io/liberapay/patrons/thangdjw.svg?logo=liberapay)](https://liberapay.com/thangdjw/donate)
 
 
-
 # Features
 
 1. High reusability
@@ -31,6 +30,12 @@ npm install hyron
 3. Easy to upgrade and maintain
 4. High plug-in capability
 5. Save working time
+
+# Benefit
+
+1. Save time, development costs
+2. Easy to scale, maintain, debug
+3. Easy and convenient to work
 
 # Hello world
 
@@ -62,7 +67,7 @@ instance.startServer();
 A router register on
 
 ```http
-GET http://localhost:3000/api/demo/say-hello?yourName=[your_name]
+GET http://localhost:3000/api/say-hello?yourName=[your_name]
 ```
 # Reference Document
 
