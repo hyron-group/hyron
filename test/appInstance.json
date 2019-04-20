@@ -1,8 +1,7 @@
 {
     "base_url": "http://localhost:3000/",
     "plugins": {
-        "validator" : "@hyron/validator",
-        "stringer" : "@hyron/stringer"
+        "validator" : "@hyron/validator"
     },
     "services": {
         "": "./test/unit/apiDemo.js"

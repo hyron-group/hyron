@@ -51,8 +51,7 @@ function getMissingPackage(meta) {
     var missingPackage = {};
     for (var packageName in meta) {
         var packageLink = meta[packageName];
-        var pathType = fs.statSync(packageLink);
-        if (!(pathType.isFile() || pathType.isDirectory()) &&
+        if (!fs.existsSync(packageLink) &&
             !installedPackage.includes(packageName) &&
             !installedPackage.includes(packageLink) &&
             !RELATIVE_PATH_REG.test(packageLink)) {

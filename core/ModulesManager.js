@@ -181,7 +181,7 @@ class ModuleManager {
             throw new TypeError("enablePlugins(..) args at index 0 must be Object");
         }
 
-        Object.keys(pluginsList).forEach((pluginName) => {
+        for (var pluginName in pluginsList) {
             var pluginsMeta = pluginsList[pluginName];
             if (typeof pluginsMeta == "string") {
                 pluginsMeta = loadModuleByPath(pluginsMeta, pluginName);
@@ -199,7 +199,7 @@ class ModuleManager {
                     `[error] Has problem when register plugins '${pluginName}'\n${err.toString()}`
                 ));
             }
-        });
+        }
     }
 
     enableServices(serviceList) {
@@ -208,7 +208,8 @@ class ModuleManager {
             throw new TypeError("enableServices(..) args at index 0 must be Object");
         }
 
-        Object.keys(serviceList).forEach((serviceName) => {
+        for (var serviceName in serviceList) {
+
             // routePackage is path
             var routePackage = serviceList[serviceName];
             if (typeof routePackage == "string") {
@@ -240,7 +241,7 @@ class ModuleManager {
                     ));
                 }
             }
-        });
+        }
     }
 
     static getInstanceContainer() {
