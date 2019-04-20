@@ -39,7 +39,8 @@ function registerInstance(appMeta) {
 }
 
 function getMissingPackage(meta) {
-    const npmPackage = JSON.parse(fs.readFileSync("package.json").toString());
+    var jsonBUildFile = fs.readFileSync("package.json").toString()
+    const npmPackage = JSON.parse(jsonBUildFile);
     var dependencies = {
         ...npmPackage.dependencies,
         ...npmPackage.devDependencies,
@@ -50,7 +51,9 @@ function getMissingPackage(meta) {
     var missingPackage = {};
     for (var packageName in meta) {
         var packageLink = meta[packageName];
-        if (!installedPackage.includes(packageName) &&
+        var pathType = fs.statSync(packageLink);
+        if (!(pathType.isFile() || pathType.isDirectory()) &&
+            !installedPackage.includes(packageName) &&
             !installedPackage.includes(packageLink) &&
             !RELATIVE_PATH_REG.test(packageLink)) {
             missingPackage[packageName] = meta[packageName];
@@ -61,24 +64,19 @@ function getMissingPackage(meta) {
 
 function downloadMissingPackage(name, url) {
     return new Promise((resolve, reject) => {
-        var installProcess = childProcess
+        childProcess
             .exec(`yarn add ${url}`,
                 (err, sto, ste) => {
-                    console.log(ste)
-                    if (err == null) {
-                        // get installed package name
-                        var match = INSTALLED_REG.exec(sto);
-                        var packageName;
-                        if (match != null) {
-                            packageName = match[2];
-                        }
-                        console.log(packageName)
-                        resolve({
-                            displayName: name, realName: packageName
-                        });
-                    } else {
-                        reject(err);
+                    if (err != null) reject(err);
+                    // get installed package name
+                    var match = INSTALLED_REG.exec(sto);
+                    var packageName;
+                    if (match != null) {
+                        packageName = match[2];
                     }
+                    resolve({
+                        displayName: name, realName: packageName
+                    });
                 });
         // installProcess.stdout.pipe(process.stdout);
     });
@@ -136,7 +134,8 @@ function loadFromObject(appMeta) {
             startDownload(missingPlugins),
             startDownload(missingServices),
         ]).then((
-            [downloadedAddons,
+            [
+                downloadedAddons,
                 downloadedPlugins,
                 downloadedServices]) => {
             applyChange(appMeta.addons, downloadedAddons);
