@@ -7,8 +7,10 @@
     "cli-spinner": "^0.2.10",
     "cookie": "^0.3.1",
     "crc": "^3.8.0",
+    "opencollective-postinstall": "^2.0.2",
     "spdy": "^4.0.0",
-    "yaml": "^1.2.1"
+    "yaml": "^1.2.1",
+    "opencollective": "^1.0.3"
   },
   "repository": {
     "type": "github",
@@ -38,7 +40,8 @@
   "main": "index.js",
   "name": "hyron",
   "scripts": {
-    "test": "nodemon ./test"
+    "test": "nodemon ./test",
+    "postinstall": "opencollective-postinstall"
   },
   "version": "2.6.8",
   "devDependencies": {
@@ -50,5 +53,9 @@
     "proxyquire": "^2.1.0",
     "sinon": "^7.2.2",
     "supertest": "^3.3.0"
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/hyron"
   }
 }
