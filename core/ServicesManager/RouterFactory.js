@@ -22,7 +22,7 @@ class RouterFactory {
     constructor(serverCfg) {
         Object.assign(this, serverCfg);
         this.listener = new Map();
-        this.isDevMode = configReader.getConfig("environment") != "production";
+        this.isDevMode = configReader.getConfig("environment") != "product";
     }
 
     getListener(eventName) {

@@ -13,6 +13,8 @@ class AddonsManager {
             config
         };
         console.info(chalk.gray(`➝  Registered addons '${name}'`));
+    
+        this.runAddons(name);
     }
 
     runAddons(name) {
