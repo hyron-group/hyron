@@ -256,10 +256,6 @@ class ModuleManager {
         }
         setupDefaultListener(this, defaultServer);
 
-        defaultServer.on("request", (req, res) => {
-            this.services.triggerRouter(req, res);
-        });
-
         configReader.setConfig({
             base_url: this.base_url
         });
@@ -286,6 +282,11 @@ class ModuleManager {
             this.app.listen(port, host, callback);
         else this.app.listen(port, host);
         this.app.running = true;
+
+        this.app.on("request", (req, res) => {
+            this.services.triggerRouter(req, res);
+        });
+
         return this.app;
     }
 
