@@ -43,7 +43,7 @@
     "test": "nodemon ./test",
     "postinstall": "opencollective-postinstall"
   },
-  "version": "2.6.8",
+  "version": "2.6.9",
   "devDependencies": {
     "chai": "^4.2.0",
     "debug": "^4.1.1",
